@@ -1,9 +1,9 @@
 name: Runtime validation
 on:
   push:
-    paths: ['runtime/**', 'global.json', '.github/workflows/runtime.yml']
+    paths: ['runtime/**', 'global.json', 'tests/runtime-smoke.mjs', '.github/workflows/runtime.yml']
   pull_request:
-    paths: ['runtime/**', 'global.json', '.github/workflows/runtime.yml']
+    paths: ['runtime/**', 'global.json', 'tests/runtime-smoke.mjs', '.github/workflows/runtime.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,16 +16,27 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: dotnet workload install wasm-tools
       - run: dotnet publish runtime/LearnUnoRunner.csproj -f net10.0-browserwasm -c Release -o artifacts/runtime
       - name: Require actual WebAssembly output
         run: |
-          find artifacts/runtime -name embedded.js -o -name dotnet.js -o -name '*.wasm'
           test -n "$(find artifacts/runtime -name embedded.js -print -quit)"
           test -n "$(find artifacts/runtime -name '*.wasm' -print -quit)"
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/runtime-smoke.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: uno-runtime
           path: artifacts/runtime
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: runtime-evidence
+          path: artifacts/evidence
           retention-days: 7

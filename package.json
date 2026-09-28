@@ -1,8 +1,29 @@
 {
-  "name": "learnuno", "version": "0.1.0", "private": true, "type": "module",
+  "name": "learnuno",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "description": "Interactive Uno Platform learning studio with real WebAssembly and Roslyn playgrounds",
-  "scripts": { "build": "node scripts/build.mjs", "dev": "node scripts/serve.mjs", "test": "node --test tests/*.test.mjs", "test:browser": "playwright test", "catalog": "node scripts/catalog.mjs" },
-  "dependencies": { "monaco-editor": "0.55.1", "fflate": "0.8.2" },
-  "devDependencies": { "esbuild": "0.28.2", "@playwright/test": "1.55.1" },
-  "engines": { "node": ">=22" }, "license": "MIT"
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "catalog": "node scripts/catalog.mjs"
+  },
+  "dependencies": {
+    "fflate": "0.8.2",
+    "monaco-editor": "0.55.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.1",
+    "esbuild": "0.28.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "overrides": {
+    "dompurify": "3.4.16"
+  }
 }

@@ -12,7 +12,7 @@
     "catalog": "node scripts/catalog.mjs"
   },
   "dependencies": {
-    "fflate": "0.8.2",
+    "fflate": "0.8.3",
     "monaco-editor": "0.55.1"
   },
   "devDependencies": {

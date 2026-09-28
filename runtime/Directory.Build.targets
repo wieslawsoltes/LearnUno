@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <EmbeddedResource Include="WasmScripts/AppManifest.js" LogicalName="LearnUnoRunner.WasmScripts.AppManifest.js" WithCulture="false" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,34 @@
+name: Course validation kit
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/devkit.yml']
+permissions:
+  contents: read
+jobs:
+  kit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - uses: actions/checkout@v4
+        with:
+          repository: unoplatform/uno
+          ref: e1292e0d87f9d38c9f3a120c69f0200b3c0999c1
+          path: .sources/uno
+          sparse-checkout: |
+            doc
+            src
+          persist-credentials: false
+      - run: node scripts/catalog.mjs
+        env:
+          REQUIRE_SOURCES: '1'
+      - run: tar -czf /tmp/learnuno-devkit.tar.gz --exclude=.git --exclude=.sources --exclude=artifacts .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: learnuno-devkit
+          path: /tmp/learnuno-devkit.tar.gz
+          retention-days: 3

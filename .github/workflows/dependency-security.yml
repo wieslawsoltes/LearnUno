@@ -1,0 +1,28 @@
+name: Browser dependency security
+on:
+  push:
+    branches: [main]
+    paths: ['package.json', 'package-lock.json', '.github/workflows/dependency-security.yml']
+  pull_request:
+    paths: ['package.json', 'package-lock.json', '.github/workflows/dependency-security.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Audit all locked browser and development dependencies
+        run: npm audit --json > dependency-audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-security-report
+          path: dependency-audit.json
+          retention-days: 14

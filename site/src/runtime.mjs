@@ -1,8 +1,108 @@
+/** Validated request/reply transport for one opaque-origin Uno preview. */
 export class UnoRuntime {
-  constructor(container,onStatus=()=>{}){this.container=container;this.onStatus=onStatus;this.pending=new Map();this.serial=0;this.ready=false;this.disposed=false;this.listener=event=>this.receive(event);window.addEventListener('message',this.listener);}
-  start(){if(this.disposed)return Promise.reject(new Error('Runtime was disposed.'));if(this.boot)return this.boot;this.channel=crypto.randomUUID();this.onStatus('loading','Downloading and starting Uno + Roslyn. First use is a substantial download.');this.boot=new Promise((resolve,reject)=>{this.resolveReady=resolve;this.rejectReady=reject;this.bootTimer=setTimeout(()=>this.fail(new Error('Runtime startup timed out. Check the network and reset the runtime.')),120000);this.frame=document.createElement('iframe');this.frame.title='Real Uno WebAssembly preview';this.frame.setAttribute('sandbox','allow-scripts');this.frame.setAttribute('referrerpolicy','no-referrer');const url=new URL('./runner/index.html',document.baseURI);url.hash=new URLSearchParams({channel:this.channel,parent:location.origin}).toString();this.frame.src=url.href;this.container.replaceChildren(this.frame);});return this.boot;}
-  receive(event){if(event.source!==this.frame?.contentWindow || event.origin!=='null')return;const data=event.data;if(!data||data.protocol!=='learnuno:1'||data.channel!==this.channel)return;if(data.type==='ready'){clearTimeout(this.bootTimer);this.ready=true;this.onStatus('ready','Uno WebAssembly is ready.');this.resolveReady?.();}else if(data.type==='error'){this.fail(new Error(data.error));}else if(data.type==='response'){const pending=this.pending.get(data.id);if(!pending)return;clearTimeout(pending.timer);this.pending.delete(data.id);if(data.payload?.ok)pending.resolve(data.payload.result);else pending.reject(new Error(data.payload?.error||'The runtime rejected the request.'));}}
-  async request(payload,timeout=45000){await this.start();if(this.disposed)throw new Error('Runtime was disposed.');const id=++this.serial;return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{this.pending.delete(id);reject(new Error('The runtime request timed out. Reset it if edited code is not returning.'));},timeout);this.pending.set(id,{resolve,reject,timer});this.frame.contentWindow.postMessage({protocol:'learnuno:1',channel:this.channel,type:'request',id,payload},'*');});}
-  fail(error){clearTimeout(this.bootTimer);this.onStatus('error',error.message);this.rejectReady?.(error);for(const pending of this.pending.values()){clearTimeout(pending.timer);pending.reject(error);}this.pending.clear();}
-  dispose(){this.disposed=true;this.ready=false;clearTimeout(this.bootTimer);window.removeEventListener('message',this.listener);for(const pending of this.pending.values()){clearTimeout(pending.timer);pending.reject(new Error('Runtime closed.'));}this.pending.clear();this.frame?.remove();}
+  constructor(container, onStatus = () => {}) {
+    this.container = container;
+    this.onStatus = onStatus;
+    this.pending = new Map();
+    this.serial = 0;
+    this.ready = false;
+    this.disposed = false;
+    this.listener = event => this.receive(event);
+    window.addEventListener('message', this.listener);
+  }
+
+  start() {
+    if (this.disposed) return Promise.reject(new Error('Runtime was disposed.'));
+    if (this.failure) return Promise.reject(this.failure);
+    if (this.boot) return this.boot;
+    this.channel = crypto.randomUUID();
+    this.onStatus('loading', 'Downloading and starting Uno + Roslyn. First use is a substantial download.');
+    this.boot = new Promise((resolve, reject) => {
+      this.resolveReady = resolve;
+      this.rejectReady = reject;
+      this.bootTimer = setTimeout(() => this.fail(new Error('Runtime startup timed out. Check the network and reset the runtime.')), 120000);
+      this.frame = document.createElement('iframe');
+      this.frame.title = 'Real Uno WebAssembly preview';
+      this.frame.setAttribute('sandbox', 'allow-scripts');
+      this.frame.setAttribute('referrerpolicy', 'no-referrer');
+      const url = new URL('./runner/index.html', document.baseURI);
+      url.hash = new URLSearchParams({ channel: this.channel, parent: location.origin }).toString();
+      this.frame.src = url.href;
+      this.container.replaceChildren(this.frame);
+    });
+    return this.boot;
+  }
+
+  receive(event) {
+    if (this.disposed || this.failure || event.source !== this.frame?.contentWindow || event.origin !== 'null') return;
+    const data = event.data;
+    if (!data || data.protocol !== 'learnuno:1' || data.channel !== this.channel) return;
+    if (data.type === 'ready') {
+      if (this.ready) return;
+      clearTimeout(this.bootTimer);
+      this.ready = true;
+      this.onStatus('ready', 'Uno WebAssembly is ready.');
+      this.resolveReady?.();
+      this.resolveReady = this.rejectReady = undefined;
+    } else if (data.type === 'error') {
+      this.fail(new Error(String(data.error || 'Uno runtime failed.')));
+    } else if (data.type === 'response') {
+      const pending = this.pending.get(data.id);
+      if (!pending) return;
+      clearTimeout(pending.timer);
+      this.pending.delete(data.id);
+      if (data.payload?.ok === true) pending.resolve(data.payload.result);
+      else pending.reject(new Error(String(data.payload?.error || 'The runtime rejected the request.')));
+    }
+  }
+
+  async request(payload, timeout = 45000) {
+    await this.start();
+    if (this.disposed) throw new Error('Runtime was disposed.');
+    if (this.failure) throw this.failure;
+    const id = ++this.serial;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error('The runtime request timed out. Reset it if edited code is not returning.'));
+      }, timeout);
+      this.pending.set(id, { resolve, reject, timer });
+      try {
+        this.frame.contentWindow.postMessage({ protocol: 'learnuno:1', channel: this.channel, type: 'request', id, payload }, '*');
+      } catch (error) {
+        clearTimeout(timer);
+        this.pending.delete(id);
+        reject(error);
+      }
+    });
+  }
+
+  rejectOutstanding(error) {
+    clearTimeout(this.bootTimer);
+    this.rejectReady?.(error);
+    this.resolveReady = this.rejectReady = undefined;
+    for (const pending of this.pending.values()) {
+      clearTimeout(pending.timer);
+      pending.reject(error);
+    }
+    this.pending.clear();
+  }
+
+  fail(error) {
+    if (this.disposed || this.failure) return;
+    this.failure = error;
+    this.ready = false;
+    this.rejectOutstanding(error);
+    this.onStatus('error', error.message);
+  }
+
+  dispose() {
+    if (this.disposed) return;
+    this.disposed = true;
+    this.ready = false;
+    this.rejectOutstanding(new Error('Runtime closed.'));
+    window.removeEventListener('message', this.listener);
+    this.frame?.remove();
+    this.frame = null;
+  }
 }

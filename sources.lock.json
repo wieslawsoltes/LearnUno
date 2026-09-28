@@ -1,0 +1,8 @@
+{
+  "repository": "unoplatform/uno",
+  "revision": "e1292e0d87f9d38c9f3a120c69f0200b3c0999c1",
+  "reviewedOn": "2026-09-28",
+  "documentationRoot": "doc",
+  "license": "Apache-2.0",
+  "scope": "Every Markdown document physically present under doc at this revision. External repositories referenced by DocFX are linked, not included. Source and sample paths are indexed separately."
+}

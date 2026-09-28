@@ -1,0 +1,118 @@
+name: Build, validate and publish
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: learnuno-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: npm install
+      - run: npm test
+      - uses: actions/checkout@v4
+        with:
+          repository: unoplatform/uno
+          ref: e1292e0d87f9d38c9f3a120c69f0200b3c0999c1
+          path: .sources/uno
+          sparse-checkout: |
+            doc
+            src
+          persist-credentials: false
+      - uses: actions/cache@v4
+        id: runtime-cache
+        with:
+          path: artifacts/runtime
+          key: uno-browser-v1-${{ hashFiles('global.json', 'runtime/*.csproj', 'runtime/*.cs', 'runtime/WasmScripts/**') }}
+      - if: steps.runtime-cache.outputs.cache-hit != 'true'
+        run: dotnet workload install wasm-tools
+      - name: Publish actual Uno WebAssembly
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p artifacts/evidence
+          dotnet publish runtime/LearnUnoRunner.csproj -f net10.0-browserwasm -c Release -o artifacts/runtime > artifacts/evidence/publish.log 2>&1 || { tail -80 artifacts/evidence/publish.log; exit 1; }
+          test -n "$(find artifacts/runtime -name embedded.js -print -quit)"
+          test -n "$(find artifacts/runtime -name '*.wasm' -print -quit)"
+      - run: npm run build
+        env:
+          REQUIRE_RUNTIME: '1'
+          REQUIRE_SOURCES: '1'
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/runtime-smoke.mjs
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-evidence
+          path: |
+            artifacts/evidence
+            playwright-report
+            test-results
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: source-and-lock
+          path: |
+            package-lock.json
+            site
+            scripts
+            tests
+          retention-days: 3
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: validate
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+          token: ${{ secrets.PAGES_TOKEN || github.token }}
+      - uses: actions/deploy-pages@v4
+        id: deployment
+  verify-public:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+        env:
+          PUBLIC_URL: https://wieslawsoltes.github.io/LearnUno/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-site-evidence
+          path: |
+            artifacts/evidence
+            playwright-report
+            test-results
+          retention-days: 7

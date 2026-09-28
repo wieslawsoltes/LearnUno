@@ -1,0 +1,26 @@
+name: Runtime validation
+on:
+  push:
+    paths: ['runtime/**', 'global.json', '.github/workflows/runtime.yml']
+  pull_request:
+    paths: ['runtime/**', 'global.json', '.github/workflows/runtime.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet workload install wasm-tools
+      - run: dotnet publish runtime/LearnUnoRunner.csproj -c Release -o artifacts/runtime
+      - run: find artifacts/runtime -maxdepth 4 -type f | head -80
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uno-runtime
+          path: artifacts/runtime
+          retention-days: 7

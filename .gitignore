@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.sources/
+**/bin/
+**/obj/
+artifacts/
+playwright-report/
+test-results/
+.DS_Store

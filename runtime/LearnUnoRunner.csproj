@@ -21,7 +21,7 @@
   </ItemGroup>
   <Target Name="EmbedLessonMetadata" AfterTargets="ResolveReferences" BeforeTargets="PrepareResources">
     <ItemGroup>
-      <EmbeddedResource Include="@(ReferencePath)" LogicalName="refs.%(Filename)%(Extension)" />
+      <EmbeddedResource Include="@(ReferencePath)" LogicalName="refs.%(Filename)%(Extension)" WithCulture="false" />
     </ItemGroup>
   </Target>
 </Project>

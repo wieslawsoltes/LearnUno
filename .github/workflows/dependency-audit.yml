@@ -1,0 +1,48 @@
+name: Dependency audit and sanitizer validation
+on:
+  push:
+    branches: [maintenance/dependency-audit]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Record the baseline audit and current package releases
+        run: |
+          mkdir -p artifacts/audit
+          npm audit --json > artifacts/audit/before.json || true
+          npm view dompurify version > artifacts/audit/dompurify-latest.txt
+          npm view monaco-editor version > artifacts/audit/monaco-latest.txt
+          npm view @playwright/test version > artifacts/audit/playwright-latest.txt
+      - name: Validate the current same-major sanitizer release
+        run: |
+          npm pkg set 'overrides.dompurify=3.4.16'
+          npm install --package-lock-only
+          npm ci
+          npm audit --json > artifacts/audit/after.json || true
+          npm test
+          npm run build
+      - name: Commit only the reviewed dependency override and lockfile on this branch
+        if: github.ref == 'refs/heads/maintenance/dependency-audit'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix: update Monaco transitive DOMPurify sanitizer to 3.4.16'
+            git push origin HEAD:maintenance/dependency-audit
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit-evidence
+          path: artifacts/audit
+          retention-days: 7

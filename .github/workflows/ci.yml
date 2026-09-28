@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-      - run: npm install
+      - run: npm ci
       - run: npm test
       - uses: actions/checkout@v4
         with:
@@ -32,11 +32,11 @@ jobs:
             doc
             src
           persist-credentials: false
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         id: runtime-cache
         with:
           path: artifacts/runtime
-          key: uno-browser-v1-${{ hashFiles('global.json', 'runtime/*.csproj', 'runtime/*.cs', 'runtime/WasmScripts/**') }}
+          key: uno-browser-v2-${{ hashFiles('global.json', 'runtime/*.csproj', 'runtime/*.cs', 'runtime/WasmScripts/**') }}
       - if: steps.runtime-cache.outputs.cache-hit != 'true'
         run: dotnet workload install wasm-tools
       - name: Publish actual Uno WebAssembly
@@ -44,8 +44,19 @@ jobs:
         run: |
           mkdir -p artifacts/evidence
           dotnet publish runtime/LearnUnoRunner.csproj -f net10.0-browserwasm -c Release -o artifacts/runtime > artifacts/evidence/publish.log 2>&1 || { tail -80 artifacts/evidence/publish.log; exit 1; }
+          cp runtime/bin/Release/net10.0-browserwasm/LearnUnoRunner.dll artifacts/runtime/compiler-metadata.dll
           test -n "$(find artifacts/runtime -name embedded.js -print -quit)"
           test -n "$(find artifacts/runtime -name '*.wasm' -print -quit)"
+      - uses: actions/cache/save@v4
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        with:
+          path: artifacts/runtime
+          key: ${{ steps.runtime-cache.outputs.cache-primary-key }}
+      - name: Compile every C# starter and solution against the actual runtime references
+        run: |
+          mkdir -p artifacts/evidence
+          node --input-type=module -e "import {lessons} from './site/src/course.mjs'; import {writeFileSync} from 'node:fs'; writeFileSync('artifacts/lessons.json',JSON.stringify(lessons));"
+          dotnet run --project tests/CompilerTests -c Release -- artifacts/runtime/compiler-metadata.dll artifacts/lessons.json | tee artifacts/evidence/compiler-tests.log
       - run: npm run build
         env:
           REQUIRE_RUNTIME: '1'
@@ -102,7 +113,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
+      - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
         env:

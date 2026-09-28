@@ -1,0 +1,36 @@
+name: Normalize authored source
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/repair-source.mjs', '.github/workflows/repair-source.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  normalize:
+    if: github.repository == 'wieslawsoltes/LearnUno'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/repair-source.mjs
+      - run: npm install --package-lock-only
+      - run: npm test
+      - name: Commit only reviewed source repairs and dependency lock
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site/src/course/architecture.mjs site/src/course/services.mjs site/src/course/performance.mjs site/src/course/platforms.mjs package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix: preserve C# string escapes and lock browser dependencies'
+            git push origin HEAD:main
+          fi
+      - name: Validate the resulting commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref main

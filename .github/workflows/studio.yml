@@ -1,0 +1,43 @@
+name: Studio interface checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: studio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  interface:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - uses: actions/checkout@v4
+        with:
+          repository: unoplatform/uno
+          ref: e1292e0d87f9d38c9f3a120c69f0200b3c0999c1
+          path: .sources/uno
+          sparse-checkout: |
+            doc
+            src
+          persist-credentials: false
+      - run: npm run build
+        env:
+          REQUIRE_SOURCES: '1'
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/browser/studio.spec.mjs --grep 'dashboard|interactive model|pinned documentation'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: studio-interface-evidence
+          path: |
+            artifacts/evidence
+            playwright-report
+            test-results
+          retention-days: 7

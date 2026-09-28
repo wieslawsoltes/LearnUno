@@ -10,7 +10,7 @@ for (const file of ['index.html', 'styles.css', 'favicon.svg']) await cp('site/'
 await writeFile('dist/.nojekyll', '');
 await build({
   entryPoints: {
-    app: 'site/src/app.mjs',
+    app: 'site/src/entry.mjs',
     editor: 'site/src/editor.mjs',
     'editor.worker': 'node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
   },

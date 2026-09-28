@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text.Json;
 
@@ -27,12 +28,24 @@ public static class Program
         Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = _logging;
         AppDomain.CurrentDomain.UnhandledException += (_, error) => Console.Error.WriteLine(error.ExceptionObject);
         TaskScheduler.UnobservedTaskException += (_, error) => Console.Error.WriteLine(error.Exception);
-        Report("Starting Uno Application");
+
+        // NativeRenderer resolves HtmlElementAttribute by scanning loaded assemblies.
+        // This hand-authored host has no generated App.xaml reference to force that load.
+        Assembly.Load("Uno.UI.Runtime.WebAssembly");
+        Report("Browser renderer assembly loaded");
         Application.Start(_ =>
         {
-            Report("Application factory entered");
-            _app = new App();
-            Report("Application constructed");
+            try
+            {
+                Report("Application factory entered");
+                _app = new App();
+                Report("Application constructed");
+            }
+            catch (Exception error)
+            {
+                Console.Error.WriteLine(error);
+                Bridge.BootFailed(error.ToString());
+            }
         });
         Report("Application.Start returned");
     }

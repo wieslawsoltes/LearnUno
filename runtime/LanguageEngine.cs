@@ -15,16 +15,14 @@ using Microsoft.UI.Xaml.Markup;
 
 namespace LearnUnoRunner;
 
-/// <summary>Real Roslyn and Uno services. No remote compiler and no HTML imitation of XAML.</summary>
+/// <summary>Real Roslyn and Uno services, hosted entirely in the browser.</summary>
 public sealed class LanguageEngine
 {
     public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private AdhocWorkspace? _workspace;
-    private Project? _project;
     private Document? _document;
     private string? _lastCode;
     private int _runCount;
-    private ImmutableArray<MetadataReference> _references;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     public async Task<object> HandleAsync(EngineRequest request)
@@ -63,18 +61,18 @@ public sealed class LanguageEngine
             }).Distinct();
             _workspace = new AdhocWorkspace(MefHostServices.Create(assemblies));
             var ownAssembly = typeof(LanguageEngine).Assembly;
-            _references = ownAssembly.GetManifestResourceNames()
+            var references = ownAssembly.GetManifestResourceNames()
                 .Where(name => name.StartsWith("refs.", StringComparison.Ordinal) && name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                 .Select(name =>
                 {
                     using var stream = ownAssembly.GetManifestResourceStream(name)!;
                     return (MetadataReference)MetadataReference.CreateFromStream(stream, filePath: name[5..]);
                 }).ToImmutableArray();
-            if (_references.Length < 5) throw new InvalidOperationException("Compiler reference metadata was not embedded by the build.");
-            _project = _workspace.AddProject(ProjectInfo.Create(ProjectId.CreateNewId(), VersionStamp.Create(), "Lesson", "Lesson", LanguageNames.CSharp,
+            if (references.Length < 5) throw new InvalidOperationException("Compiler reference metadata was not embedded by the build.");
+            var project = _workspace.AddProject(ProjectInfo.Create(ProjectId.CreateNewId(), VersionStamp.Create(), "Lesson", "Lesson", LanguageNames.CSharp,
                 compilationOptions: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, concurrentBuild: false, optimizationLevel: OptimizationLevel.Debug),
-                parseOptions: new CSharpParseOptions(LanguageVersion.Latest), metadataReferences: _references));
-            _document = _project.AddDocument("Lesson.cs", SourceText.From(code));
+                parseOptions: new CSharpParseOptions(LanguageVersion.Latest), metadataReferences: references));
+            _document = project.AddDocument("Lesson.cs", SourceText.From(code));
             _lastCode = code;
         }
         if (_lastCode != code)
@@ -90,8 +88,17 @@ public sealed class LanguageEngine
         var service = CompletionService.GetService(document) ?? throw new InvalidOperationException("Roslyn C# completion service is unavailable.");
         var list = await service.GetCompletionsAsync(document, position);
         if (list is null) return new { items = Array.Empty<object>(), incomplete = false };
-        var results = new List<object>();
-        foreach (var item in list.ItemsList.Take(180))
+        // A framework control can expose hundreds of inherited members. Do not truncate
+        // at 180 and silently remove members near the end of the alphabet (such as Text).
+        var text = await document.GetTextAsync();
+        var start = Math.Min(list.Span.Start, position);
+        var prefix = text.ToString(TextSpan.FromBounds(start, position));
+        var candidates = list.ItemsList.Where(item => prefix.Length == 0
+            || item.FilterText.Contains(prefix, StringComparison.OrdinalIgnoreCase)
+            || item.DisplayText.Contains(prefix, StringComparison.OrdinalIgnoreCase)).ToArray();
+        const int limit = 2048;
+        var results = new List<object>(Math.Min(candidates.Length, limit));
+        foreach (var item in candidates.Take(limit))
         {
             var change = await service.GetChangeAsync(document, item);
             results.Add(new
@@ -105,7 +112,7 @@ public sealed class LanguageEngine
                 tags = item.Tags
             });
         }
-        return new { items = results, incomplete = list.ItemsList.Count > 180 };
+        return new { items = results, incomplete = candidates.Length > limit };
     }
 
     private static async Task<object> HoverAsync(Document document, int position)
@@ -143,7 +150,7 @@ public sealed class LanguageEngine
         var root = await document.GetSyntaxRootAsync();
         var model = await document.GetSemanticModelAsync();
         var node = root!.FindToken(Math.Min(position, Math.Max(0, root.FullSpan.End - 1))).Parent;
-        var symbol = node is null ? null : model!.GetSymbolInfo(node).Symbol ?? model.GetDeclaredSymbol(node);
+        var symbol = node is null ? null : model!.GetSymbolInfo(node).Symbol ?? model!.GetDeclaredSymbol(node);
         var source = symbol?.Locations.FirstOrDefault(location => location.IsInSource);
         return new { start = source?.SourceSpan.Start ?? -1, length = source?.SourceSpan.Length ?? 0, symbol = symbol?.ToDisplayString() ?? "" };
     }

@@ -1,0 +1,33 @@
+name: Prepare syntax highlighting dependency
+on:
+  push:
+    branches: [feat/deeper-learning]
+    paths: ['.github/workflows/prepare-highlighter.yml']
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/deeper-learning
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --save-exact highlight.js@11.12.0
+      - run: npm audit --json > dependency-audit.json
+      - run: npm test
+      - name: Commit locked dependency only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          git commit -m 'build: pin highlight.js for static and live code examples'
+          git push origin HEAD:feat/deeper-learning
+      - run: tar -czf /tmp/highlighter-kit.tar.gz node_modules package.json package-lock.json dependency-audit.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: highlighter-kit
+          path: /tmp/highlighter-kit.tar.gz
+          retention-days: 3

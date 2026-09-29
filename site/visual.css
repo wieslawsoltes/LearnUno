@@ -1,0 +1,4 @@
+/* Visual edition styles are ordered: shell, labs, then responsive overrides. */
+@import url('./design/shell.css');
+@import url('./design/labs.css');
+@import url('./design/responsive.css');

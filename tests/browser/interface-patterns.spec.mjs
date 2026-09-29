@@ -11,7 +11,20 @@ test('design mockups preserve form drafts and document identity',async({page})=>
  await page.screenshot({path:'artifacts/evidence/design-adaptive-detail.png',fullPage:true});
 });
 test('design source map exposes pinned evidence and honest lesson gaps',async({page})=>{
- await page.goto('./#/feature-map');await expect(page.locator('.ip-survey-summary')).toContainText('discovered public UI types');await page.locator('#ip-feature-search').fill('ScrollViewer');await expect(page.locator('.ip-feature')).toHaveCount(1);await expect(page.locator('.ip-feature')).toContainText('Connected learning material');await page.locator('#ip-feature-search').fill('');await page.locator('#ip-gaps').check();await expect(page.locator('.ip-feature').first()).toContainText('Reference-only');await expect(page.locator('.ip-coverage.guided')).toHaveCount(0);
+ await page.goto('./#/feature-map');
+ await expect(page.locator('.ip-survey-summary')).toContainText('discovered public UI types');
+ await page.locator('#ip-feature-search').fill('ScrollViewer');
+ const exact=page.locator('.ip-feature').filter({has:page.getByRole('heading',{name:'ScrollViewer',exact:true})});
+ await expect(exact).toHaveCount(1);
+ await expect(exact).toContainText('Connected learning material');
+ // Search is substring-based: associated types must remain discoverable.
+ const headings=await page.locator('.ip-feature h2').allTextContents();
+ expect(headings.every(name=>name.toLowerCase().includes('scrollviewer'))).toBe(true);
+ expect(headings).toContain('ScrollViewerExtensions');
+ await page.locator('#ip-feature-search').fill('');
+ await page.locator('#ip-gaps').check();
+ await expect(page.locator('.ip-feature').first()).toContainText('Reference-only');
+ await expect(page.locator('.ip-coverage.guided')).toHaveCount(0);
  await page.screenshot({path:'artifacts/evidence/feature-coverage.png',fullPage:true});
 });
 test('design all C# examples execute in actual Uno',async({page})=>{

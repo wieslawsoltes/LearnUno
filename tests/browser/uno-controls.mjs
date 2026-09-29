@@ -1,22 +1,20 @@
 import {expect} from '@playwright/test';
 
 /**
- * The pinned NativeRenderer emits Button as a div. Read the control's actual
- * state through the .NET bridge; click its real DOM host rather than invoking
- * a managed event or inventing ARIA state in the test.
+ * Read actual control state, including open popup children and ButtonBase
+ * subclasses. Click its real DOM host; never synthesize managed input or ARIA.
  */
 export function unoControls(page, frame) {
   async function snapshot(name) {
     const result = await page.evaluate(() => window.learnUnoLab.request({method:'inspect',code:''}));
     expect(result.truncated, 'Control inspection must not truncate this lesson').toBe(false);
-    return result.controls.filter(c => c.type === 'Microsoft.UI.Xaml.Controls.Button' && c.text === name && c.isVisible);
+    return result.controls.filter(control => control.isButton && control.text === name && control.isVisible);
   }
   return {
     button(name) {
       async function current() {
         const values = await snapshot(name);
-        if (values.length !== 1) return null;
-        return values[0];
+        return values.length === 1 ? values[0] : null;
       }
       return {
         async expectEnabled(enabled) {

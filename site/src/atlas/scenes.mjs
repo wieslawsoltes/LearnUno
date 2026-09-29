@@ -1,4 +1,5 @@
 import {escapeHtml as h} from '../helpers.mjs';
+import {lessonLabMap,lessonScene} from './lessons/index.mjs';
 import {gridLayout,boxGeometry,visibleRange,effectiveValue,easing,raceState,damageTiles,round} from './models.mjs';
 const text=(x,y,value,cls='',extra='')=>`<text x="${x}" y="${y}" class="${cls}" ${extra}>${h(value)}</text>`;
 const rect=(x,y,w,he,cls='',extra='')=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${Math.max(0,he)}" rx="7" class="${cls}" ${extra}/>`;
@@ -9,6 +10,7 @@ const pill=(x,y,w,label,cls='tone-1')=>rect(x,y,w,28,cls)+text(x+w/2,y+19,label,
 const arrow=(x1,y1,x2,y2,cls='edge')=>line(x1,y1,x2,y2,cls)+`<path d="M ${x2-6} ${y2-5} L ${x2} ${y2} L ${x2-6} ${y2+5}" class="${cls}" fill="none"/>`;
 export const treeNodes=['Page','Grid','Border','StackPanel','TextBlock','Button'];
 export function scene(lab,s,step=0) {
+ if(lessonLabMap.has(lab.id))return lessonScene(lessonLabMap.get(lab.id),s,step);
  let svg='',metrics=[],code='',readout='',trace=[],segments=[];
  if(lab.id==='layout') {
   const m=gridLayout(s),scale=.54,left=42,top=92,height=156;
@@ -169,6 +171,7 @@ export function scene(lab,s,step=0) {
 
 /** Original vector covers; different geometry for every experiment family. */
 export function cover(id) {
+ if(lessonLabMap.has(id)){const lab=lessonLabMap.get(id);return `<svg viewBox="0 0 800 400" aria-hidden="true" focusable="false">${lessonScene(lab,lab.defaults).svg.replace(/<text[\s\S]*?<\/text>/g,'')}</svg>`;}
  const s={...({layout:{width:800,fixed:120,auto:104,weight:1,gap:12,padding:24},binding:{source:'Hello, Uno',target:'Hello, Uno',mode:'OneWay',notify:true,revision:0},tree:{selected:'TextBlock',padding:24,font:26},box:{width:520,margin:24,border:4,padding:32},state:{status:'loading',sequence:1,trace:[]},race:{a:1800,b:400,secondAt:300,time:2000,latestOnly:true},virtualization:{count:5000,offset:1600,rowHeight:40,viewport:240,overscan:2},pipeline:{property:'Opacity',changed:true},damage:{x:344,y:152,size:112,stroke:8,tile:32},easing:{kind:'ease-in-out',t:35,distance:360},precedence:{styleValue:24,localValue:40,hasLocal:true,animated:false,animationValue:32}}[id])};
  // Compact covers retain the distinctive geometry but omit verbose annotations.
  const raw=scene({id},s,0).svg.replace(/<text[\s\S]*?<\/text>/g,'');

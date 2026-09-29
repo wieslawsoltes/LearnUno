@@ -13,7 +13,8 @@ await build({
   entryPoints: {
     app: 'site/src/entry.mjs',
     editor: 'site/src/editor.mjs',
-    'editor.worker': 'node_modules/monaco-editor/esm/vs/editor/editor.worker.js'
+    'editor.worker': 'node_modules/monaco-editor/esm/vs/editor/editor.worker.js',
+    'coloring.worker': 'site/src/coloring/worker.mjs'
   },
   bundle: true, splitting: true, format: 'esm', outdir: 'dist/assets', target: ['es2022'],
   minify: true, sourcemap: true, loader: {'.ttf': 'file'}, assetNames: '[name]-[hash]',
@@ -21,6 +22,8 @@ await build({
 });
 await cp('LICENSE', 'dist/LICENSE.txt');
 await cp('THIRD_PARTY_NOTICES.md', 'dist/THIRD_PARTY_NOTICES.md');
+await mkdir('dist/third-party', {recursive: true});
+await cp('node_modules/highlight.js/LICENSE', 'dist/third-party/highlight.js-LICENSE.txt');
 await buildCatalog();
 
 async function findEmbedded(directory) {
@@ -46,9 +49,11 @@ if (runtime) {
 
 const {lessons, tracks} = await import('../site/src/course.mjs');
 const source = JSON.parse(await readFile('sources.lock.json', 'utf8'));
+const {labs}=await import('../site/src/atlas/catalog.mjs');
+const {guides}=await import('../site/src/learning/guides.mjs');
 const manifest = {
-  version: '0.1.0', builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
-  runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, source
+  version: '0.2.0', builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
+  runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, visualLabs:labs.length, foundationGuides:guides.length, source
 };
 await writeFile('dist/build.json', JSON.stringify(manifest, null, 2));
 console.log(JSON.stringify(manifest, null, 2));

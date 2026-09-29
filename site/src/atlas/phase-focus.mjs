@@ -1,7 +1,9 @@
 import {gridLayout,boxGeometry,effectiveValue,damageTiles} from './models.mjs';
+import {lessonLabMap,lessonScene} from './lessons/index.mjs';
 
 /** Narration highlights actual model regions without mutating experiment inputs. */
 export function phaseOverlay(lab,s,step) {
+  if(lessonLabMap.has(lab.id))return lessonScene(lessonLabMap.get(lab.id),s,step).overlay;
   let bounds=[];
   if(lab.id==='layout'){
     const m=gridLayout(s);

@@ -1,0 +1,11 @@
+/* Grammar scopes use theme variables; code remains selectable/copyable text. */
+:root{--code-bg:#f1f4f7;--code-fg:#243748;--code-comment:#66727e;--code-key:#6748b6;--code-string:#166647;--code-number:#9a4629;--code-type:#176b84;--code-name:#315fa9;--code-attr:#795416;--code-add:#166647;--code-del:#b13548}
+:root[data-theme=dark]{--code-bg:#142631;--code-fg:#deebf1;--code-comment:#9badbb;--code-key:#c8b2ff;--code-string:#9bd6b7;--code-number:#efb597;--code-type:#8ad0e2;--code-name:#aacdff;--code-attr:#e9cc91;--code-add:#9bd6b7;--code-del:#ffadbc}
+pre:has(>code){background:var(--code-bg)!important;color:var(--code-fg)!important;border-color:var(--line);position:relative;line-height:1.85;tab-size:4}
+pre[data-code-language]:before{content:attr(data-code-language);display:block;font:9px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;user-select:none}
+code.syntax-code{color:var(--code-fg);font-family:var(--mono)}p code.syntax-code,li code.syntax-code{background:var(--code-bg)}
+.syntax-code .hljs-comment,.syntax-code .hljs-quote{color:var(--code-comment);font-style:italic}.syntax-code .hljs-keyword,.syntax-code .hljs-selector-tag,.syntax-code .hljs-literal,.syntax-code .hljs-meta{color:var(--code-key)}
+.syntax-code .hljs-string,.syntax-code .hljs-regexp,.syntax-code .hljs-doctag{color:var(--code-string)}.syntax-code .hljs-number,.syntax-code .hljs-symbol,.syntax-code .hljs-bullet{color:var(--code-number)}
+.syntax-code .hljs-type,.syntax-code .hljs-built_in,.syntax-code .hljs-title.class_{color:var(--code-type)}.syntax-code .hljs-title,.syntax-code .hljs-name,.syntax-code .hljs-section{color:var(--code-name)}
+.syntax-code .hljs-attr,.syntax-code .hljs-attribute,.syntax-code .hljs-selector-attr,.syntax-code .hljs-property{color:var(--code-attr)}.syntax-code .hljs-addition{color:var(--code-add)}.syntax-code .hljs-deletion{color:var(--code-del)}
+.syntax-code .hljs-emphasis{font-style:italic}.syntax-code .hljs-strong{font-weight:700}.syntax-code .hljs-subst{color:var(--code-fg)}

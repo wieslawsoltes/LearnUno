@@ -1,69 +1,58 @@
-# Authoring a lesson
+# Authoring course material
 
-## The learning contract
+## Teach an observable contract
 
-Each lesson should teach a specific observable behavior, not just introduce an API name. Start with a prediction, explain a causal model, provide a runnable experiment, and ask the learner to transfer the idea to a new situation.
+A lesson should let the learner predict a result, change one assumption, observe the consequence and explain why it happened. A paragraph naming an API is not a substitute for an experiment. Preserve counterexamples and target/version boundaries rather than hiding them behind a success badge.
 
-The course currently has ten modules under `site/src/course`. Each exports six lessons built with `L`. The helper records an ID, title, summary, concept sections, starter, focused edit, retrieval question, source-search term, and optional advanced material.
+The ten modules in `site/src/course` retain the existing sixty lesson IDs and runnable starter/solution pairs. The `L` helper records explanations, starter, focused edit, question, answer reasoning and source term. The `cs` and `xaml` helpers produce the supported single-document playground forms.
+
+C# must return a real Uno `UIElement` from `Lesson.Build()`. Runtime XAML must include its namespace and remain compatible with `XamlReader`. Package-dependent APIs and generated x:Bind/x:Class/event code belong in labelled project-only material, not a purportedly runnable runtime-XAML sample.
+
+JavaScript source strings that emit C# need the correct escaping. To emit a C# `\n`, the physical JavaScript string must contain `\\n`. CI compiles the resulting C#, not just the JavaScript module.
+
+## Every lesson needs its own model
+
+`atlas/catalog.mjs` now has explicit one-to-one assignments. Adding a lesson without authoring its visual model is an error. Do not route an unrelated concept to a generic pipeline merely to populate the Visualize tab.
+
+The established eleven models live in the core scene/model modules. Additional models are grouped by path under `atlas/lessons`. The `D` helper describes an authored model:
 
 ```js
-import { L, xaml } from './helpers.mjs';
-
-L(
-  'clear-example',
-  'A visible property change',
-  'Predict how a TextBlock property changes its output.',
-  [
-    ['Own the value', 'Explain the owning object, the relevant property, and the behavior being tested.'],
-    ['Follow the change', 'Explain how this value reaches the rendered result and which assumptions matter.'],
-    ['Test a boundary', 'Describe a nearby failure or boundary case and how to observe it.']
-  ],
-  xaml('  <TextBlock Text="Hello" FontSize="24" />'),
-  ['FontSize="24"', 'FontSize="32"', 'Increase the text size to 32'],
-  [
-    'Which property did you change?',
-    ['FontSize', 'DataContext', 'Grid.Column'],
-    0,
-    'FontSize changes the text-size request. It does not select a data source or a grid track.'
-  ],
-  'custom-fonts'
+D(
+  lessonId, title, category,
+  controls,              // R: numeric range; S: selection; B: toggle; T: text
+  fourExplanationSteps, // [title, causal explanation] pairs
+  challenge,
+  mechanism,
+  counterexample,
+  explicitScope,
+  state => result(svg, metrics, code, readout, data, phaseBounds, language)
 );
 ```
 
-The example illustrates the schema; production lessons need sufficiently developed explanations and meaningful boundary/transfer work.
+`run` must be pure. Inputs must affect calculated data and an inspectable result—not just change a caption. Share drawing primitives for visual consistency, but author geometry appropriate to the concept: a reference graph, distribution, ownership map, lookup path, scope tree, raster difference or another relevant representation.
 
-## Runnable C#
+The scene uses an 800×400 coordinate space. Keep text and geometry inside it, provide matching phase bounds, and test extreme control values. Use escaped text helpers rather than interpolating arbitrary learner text into SVG markup. Pair important visual results with numerical/text readouts. Inputs have keyboard-operable controls even when direct manipulation is also offered.
 
-The `cs` helper adds common using directives and the `Lesson.Build()` wrapper. A lab must return a real Uno `UIElement`. Keep external I/O deterministic: use explicit fixtures instead of depending on a public endpoint being available during tests.
+Scope statements must name assumptions. An HTTP fixture is not a network request; an assumed latency is not a measured benchmark; a namescope model is not the entire XAML generator. Link the model to the corresponding real Uno exercise and pinned source material.
 
-Remember that the authored file is JavaScript while the generated text is C#. A C# escaped newline must survive JavaScript parsing:
+## Reading depth and fundamentals
 
-```js
-cs('return new TextBlock { Text = "First line\\nSecond line" };');
-```
+New models supply the mechanism, counterexample, phases and challenge used by the deeper reading section in `learning/views.mjs`. Existing core models have explicit corresponding reading material. Avoid redundant restatements of the initial lesson: explain the ownership, data flow, invariants or failure boundary underneath it.
 
-The physical JavaScript string uses two backslashes to emit the one backslash required in C# source. Compile tests validate the resulting C#, not merely the JavaScript module.
+A chapter in `learning/guides.mjs` has three developed sections, a labelled code fragment, recall question and explanation, transfer exercise, connected lesson and primary-reference link. Fragments may need supporting context and are labelled accordingly; do not count them as new runnable applications. The chapter scratchpad is transient. Use the regular lesson-notes workflow for saved learner work.
 
-## Runtime XAML and project-only examples
+## Code grammar metadata
 
-Runtime XAML must include the presentation namespace and be compatible with `XamlReader.Load`. Do not put `x:Class`, compiled `x:Bind`, or compiled event-handler names into a purportedly runnable runtime-XAML example.
+Use `<code data-language="csharp">` or the correct canonical grammar name for HTML examples. Reference Markdown fences retain their language token. Generated model code should return its language alongside the source. The default inference handles common forms but explicit authoring is preferable.
 
-Use `projectCode` and `projectNote` for package-dependent or generator-dependent material. State required packages, surrounding class members, and whether the example is illustrative or a complete project. Keep the executable lab honest about what it actually demonstrates.
+The worker supports C#, XML/XAML, JavaScript, TypeScript, JSON, CSS, Bash, PowerShell, YAML, diff, INI, SQL, Markdown, Python, C++, F#, HTTP, Dockerfile, plaintext and WGSL. Unknown languages are escaped plaintext. The coloring adapter covers dynamically inserted code and dialogs; do not put a separate highlighter inside a model or mutate Monaco's owned DOM.
 
-## Visual models and the coach
+## Playback and input ownership
 
-Select a diagram family: `pipeline`, `binding`, `tree`, `layout`, `box`, `state`, `timeline`, or `virtualization`. State that a model is explanatory and keep an accessible description outside the canvas.
+Use the shared playback controller rather than adding a second clock. Manual changes pause automatic playback before editing state. Phases highlight the appropriate model region without overwriting unrelated inputs. Continuous time-based experiments must synchronize inspector values and timeline position explicitly. Never present teaching durations as framework timings.
 
-The coach’s source checks are focused hints, not an adversarial or semantic grader. Design an observable runtime interaction to accompany them. Do not claim mastery because a source substring is present.
+## Verification before publication
 
-## Reference attribution
+Run `npm test`, the static build and browser tests. The suite checks each assignment, calculation contracts, changed-input effects, all lesson routes, guide chapters, grammar output, hostile text, mobile overflow, keyboard behavior and the preserved Uno/Roslyn runtime. A new input should be checked at its bounds; a new fragment needs correct language metadata and review for source validity.
 
-Use a source term that finds relevant material in the pinned reference library. Verify its results. Add a pinned source link when a statement depends on a precise implementation. Do not silently use a newer API than the runner supports.
-
-Updating the upstream snapshot is a deliberate change to `sources.lock.json` and the checkout revision in CI. Rebuild the catalog, review changed APIs, and run all examples before publishing.
-
-## Acceptance checklist
-
-The lesson has an original explanation, prediction, runnable starter, correct solution, progressive hints, misconception feedback, source reference, and independent transfer exercise. Its code compiles and executes. The knowledge-check explanation teaches why, not just which letter to choose. The narrow-screen view is usable. The example does not rely on a missing package, a generated member, or a fabricated native capability.
-
-Run `npm test` and the browser suite. CI also compiles C# against the exact runtime references and executes both starter and solution for every lesson.
+Inspect screenshots, not only test status. Verify code color in both themes, text fit in diagram cards, meaningful phase highlights and narrow-screen controls. Keep deterministic service fixtures and exact expected outcomes. The source snapshot, package versions, licenses and docs must match the implementation being shipped.

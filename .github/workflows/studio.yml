@@ -31,7 +31,7 @@ jobs:
         env:
           REQUIRE_SOURCES: '1'
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --grep 'dashboard|interactive model|pinned documentation|WebGPU compute'
+      - run: npx playwright test --grep 'dashboard|interactive model|pinned documentation|WebGPU compute|visual atlas'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

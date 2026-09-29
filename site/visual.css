@@ -2,6 +2,7 @@
 @import url('./design/shell.css');
 @import url('./design/labs.css');
 @import url('./design/responsive.css');
+@import url('./design/playback.css');
 
 /* Damage cells represent rectangular tiles even at the smallest grid size. */
 .tile-clean,.tile-old,.tile-new,.tile-overlap{rx:1px}

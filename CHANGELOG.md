@@ -1,10 +1,15 @@
 # Changelog
 
-## Visual edition
+## 0.2.0 — Lesson-specific learning
 
-- Redesigned the learning studio with an editorial homepage, interactive interface/layout/state layers, quieter navigation, clearer typography and all ten curriculum paths visible.
-- Added a searchable visual atlas with eleven independent, inspectable experiments and lesson-specific mapping.
-- Added direct manipulation, equation readouts, event traces, property inspection, timeline scrubbing, scenario presets, shared inputs and connected code examples.
-- Replaced decorative GPU particles with a real dirty-tile classification experiment, GPU rendering and complete CPU-reference comparison.
-- Retained real Uno/Roslyn playgrounds, the 60-lesson curriculum, the pinned reference corpus and local learning data.
-- Added model invariants and browser regression coverage for all new experiences, including mobile, keyboard, dark mode and reduced motion.
+- Replace shared fallback visualization assignment with sixty explicit, unique lesson/model assignments.
+- Add forty-nine models with their own inputs, calculations, scene geometry, phases, outcomes and stated limits.
+- Add twelve foundations chapters and a mechanism/counterexample/investigation deep dive to every existing lesson.
+- Color static and dynamically updated code throughout the site using locally bundled grammar services in a bounded worker; preserve Markdown fence language and exact copied text.
+- Preserve the repaired timeline/step controls, all existing Uno examples, identifiers, progress and notes.
+- Expand model, coloring and browser coverage without disabling the existing course or real-runtime validation.
+
+## Visual edition and playback
+
+- Introduced the editorial interface, original eleven labs and actual WebGPU tile classification with CPU parity checking.
+- Unified playback, manual steps and timeline seeking; moved labelled navigation beside the explanation below the diagram.

@@ -18,7 +18,7 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import subprocess
+          import subprocess, re
           changed=[]
           def write(path, source):
               Path(path).write_text(source)
@@ -41,7 +41,7 @@ jobs:
           write(path, source)
           for path in ['site/src/atlas/catalog.mjs','site/src/atlas/scenes.mjs','tests/browser/atlas.spec.mjs']:
               source=Path(path).read_text()
-              updated=source.replace("'pt'", "'u'").replace(' pt', ' u')
+              updated=re.sub(r'\bpt\b', 'u', source)
               if updated == source:
                   raise RuntimeError('Expected FontSize unit labels: '+path)
               write(path, updated)

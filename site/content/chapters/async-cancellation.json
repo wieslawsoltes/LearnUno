@@ -1,0 +1,57 @@
+{
+  "id": "async-cancellation",
+  "scenario": "A Load operation should keep the interface usable, report progress, allow cancellation and avoid stale results. Adding async to a method does not solve all of those problems. This lesson separates suspension, cooperative cancellation, task ownership and result ordering. The live example uses a deterministic delay so that the behavior is reproducible without depending on a network service.",
+  "vocabulary": [
+    {
+      "term": "Await",
+      "meaning": "A suspension point that allows an asynchronous operation to complete without synchronously waiting on the current method’s continuation."
+    },
+    {
+      "term": "Cancellation token",
+      "meaning": "A cooperative signal passed to operations that can observe and respond to cancellation."
+    },
+    {
+      "term": "Generation check",
+      "meaning": "A comparison that rejects results from an older request after newer user intent has superseded it."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with ownership and a visible state. The Load action creates one operation, disables duplicate starts and presents Loading. Async does not automatically put CPU work on another thread; code runs synchronously until it reaches an incomplete await. A long loop before that point can still block input and rendering.",
+      "worked": "Read the starter’s async click handler and locate Task.Delay. The delay is a stand-in for asynchronous waiting, not a performance benchmark. The handler keeps the UI thread available while the delay is pending. In a real service operation, prefer a testable Task-returning method behind the event handler.",
+      "question": "Would adding async to a CPU-heavy synchronous loop make it parallel?",
+      "answer": "No. Async describes suspension and continuation. CPU scheduling and browser threading support are separate concerns that require an explicit design."
+    },
+    {
+      "explain": "Cancellation is a request, not forced termination. The token source issues a signal; each cancellable operation must observe the token and stop cooperatively. Distinguish OperationCanceledException from a failure that should be reported as an error. Dispose the token source only when its ownership ends, and do not reuse a cancelled source for a new task.",
+      "worked": "Click Load and then Cancel in the live example. The token is passed to Task.Delay, so the wait responds to cancellation. Remove that token only in a separate controlled variation and observe why calling Cancel alone would no longer stop the wait. The signal and its observation are two distinct parts of the contract.",
+      "question": "Why might Cancel have no visible effect even though the token source was cancelled?",
+      "answer": "The underlying operation may not observe the token, or it may only check at a later boundary. Cancellation cannot forcibly preempt arbitrary synchronous code."
+    },
+    {
+      "explain": "Completion order can differ from request order. If a search for an older query finishes after a newer query, blindly assigning its result can show stale information. Cancellation can reduce waste, but the application may still need a generation or identity check before accepting a result. Ignoring an obsolete result is not the same as cancelling its work.",
+      "worked": "The race model starts request A, then request B, and lets you change their latencies. Choose the stale-result scenario and inspect which completion wins. Enable the latest-request policy and explain the different accepted output. These latencies are editable inputs; the model does not report measured network speed.",
+      "question": "What should decide whether a result is accepted in a latest-query search?",
+      "answer": "Whether it still belongs to the newest relevant request, not merely whether it completed last. Check request identity or generation before updating the view state."
+    },
+    {
+      "explain": "Every exit path should restore the operation’s invariants. A finally block can clear the pending source and reenable the action whether work succeeds or is cancelled. Failures should also leave a coherent state and useful feedback. Do not let an exception permanently disable the only retry control or discard the user’s query.",
+      "worked": "The starter disposes its source and resets the button in finally. Test completion and cancellation separately, then design a failure fixture in a full project. Add a test for navigating away while work is pending so that a closed view does not receive an obsolete update or retain a long-lived subscription.",
+      "question": "Which code must still execute after cancellation to keep the next Load valid?",
+      "answer": "Cleanup that disposes and clears the old source and restores action availability. A cancelled operation should not leave the interface permanently busy."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Cancel a token-aware delay",
+      "expected": "The cancellation branch runs and the action becomes available again.",
+      "why": "The operation observes the token and cleanup runs in finally."
+    },
+    {
+      "change": "An older request completes after a newer one",
+      "expected": "Reject it under a latest-request policy.",
+      "why": "Completion time does not establish relevance to current intent."
+    }
+  ],
+  "bridge": "The Uno networking and exception material supplies real asynchronous API contexts. The runner’s delay and the atlas’s latencies are deterministic teaching fixtures; use the upstream examples to inspect token propagation, error handling and host-specific behavior before connecting a real service."
+}

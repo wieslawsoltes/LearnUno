@@ -1,0 +1,57 @@
+{
+  "id": "layout-panels",
+  "scenario": "You are arranging a small dashboard that must work in a narrow browser preview and a wide desktop window. The temptation is to fix every coordinate. A better starting point is to choose a container whose layout policy expresses the relationship between its children. This lesson contrasts sequence, rows and columns, and explicit positioning while keeping measurement constraints visible. A panel is an algorithm with inputs and outputs, not just a decorative box around controls.",
+  "vocabulary": [
+    {
+      "term": "DesiredSize",
+      "meaning": "The size a child reports after measurement under the offered constraint; it is not necessarily the rectangle it will receive."
+    },
+    {
+      "term": "Layout slot",
+      "meaning": "The rectangle a parent assigns to a child during arrangement, before all child alignment and margin effects are considered."
+    },
+    {
+      "term": "Unbounded constraint",
+      "meaning": "An available dimension without a finite limit, often encountered along a scrolling or stacking axis."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start by naming the relationship: a vertical form is a sequence; a sidebar beside a content area is a two-region allocation; a diagram may use deliberate coordinates. StackPanel, Grid and Canvas express different policies for these cases. Nesting panels is reasonable when each layer has a separate responsibility, but adding panels without a reason makes constraints harder to follow.",
+      "worked": "In the starter, the three cards are siblings in a StackPanel. Its Orientation selects the stacking axis, and Spacing applies between consecutive children. Identify the parent that places the cards and the Border that positions text inside each card. A child’s appearance does not tell you which ancestor allocated its slot.",
+      "question": "Which object decides whether the three cards form a row or a column?",
+      "answer": "The StackPanel containing them. Changing a TextBlock alignment inside one card does not change the sibling arrangement policy."
+    },
+    {
+      "explain": "Measurement begins with the size offered by the parent. A stacking panel can let children request space along its stacking direction, while a Grid negotiates tracks and a Canvas uses positioned children. The resulting desired size may exceed a viewport. Do not assume that a successful layout pass means all content fits or that every container will wrap overflowing items.",
+      "worked": "Change the starter to horizontal orientation and narrow the preview. The cards remain a sequence rather than automatically creating a second row. The lesson-specific atlas contrasts panel policies under a finite width. Use it to predict the placement first, then verify the actual control behavior in Uno rather than treating the SVG model as a replacement layout engine.",
+      "question": "Will Orientation=\"Horizontal\" automatically wrap cards when they no longer fit?",
+      "answer": "No. Horizontal stacking is not wrapping. Choose another layout strategy or responsive state when wrapping or reflow is part of the requirement."
+    },
+    {
+      "explain": "Arrangement assigns rectangles using the panel’s policy and the measured information. Alignment, margins and child constraints can affect how a child occupies its slot. Avoid diagnosing every gap as a padding problem: the space may come from a track, the child’s desired size or an alignment choice. Trace one child from parent constraint to final bounds.",
+      "worked": "In the upstream panel sample, read the layout-affecting properties before the colors. Compare the same small set of children under two containers and describe which dimensions the container controls. Keep content and typography unchanged so that the experiment isolates the panel algorithm instead of changing several variables simultaneously.",
+      "question": "Why hold the child content constant while comparing panels?",
+      "answer": "Content affects measurement. Keeping it fixed lets you attribute changed placement to the container policy rather than to different desired sizes."
+    },
+    {
+      "explain": "A scrollable list needs a meaningful viewport if its virtualization strategy depends on one. An outer panel that measures a child without a finite limit can change that behavior. This is why blindly nesting a ListView in a scrolling StackPanel can create surprising performance or scrolling results. Measure the actual target; do not infer virtualization from the control name alone.",
+      "worked": "Write a layout decision for your dashboard: which region owns scrolling, which region has a bounded height, and which container owns responsive rearrangement? Then test an empty list, one item and many items. The goal is a small tree whose responsibilities remain understandable when the window is resized.",
+      "question": "What should you inspect before replacing a slow list with a custom renderer?",
+      "answer": "Its available constraint, scrolling owner, item template and realized-container behavior. A viewport or layout mistake can be cheaper and safer to fix than replacing the rendering architecture."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Switch the starter to horizontal",
+      "expected": "Cards form a horizontal sequence.",
+      "why": "Orientation changes the stacking axis, not the wrapping policy."
+    },
+    {
+      "change": "Keep content fixed and swap panel policy in the model",
+      "expected": "The allocation changes without changing data.",
+      "why": "The container algorithm determines how sibling geometry is derived."
+    }
+  ],
+  "bridge": "The source excerpt shows an actual SamplesApp layout rather than an invented browser equivalent. Identify the scrolling owner and the panel that supplies each constraint. Historical platform-specific details in the docs must be checked against the selected Uno renderer before generalizing."
+}

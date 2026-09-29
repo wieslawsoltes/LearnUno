@@ -1,0 +1,57 @@
+{
+  "id": "mvux",
+  "scenario": "A screen loads data, changes a count and can receive results from overlapping requests. A collection of unrelated mutable fields can make it difficult to tell which combination represents a valid state. This lesson introduces immutable snapshots and deliberate transitions before connecting them to Uno’s MVUX feeds, states and generated binding adapters. The live example uses ordinary C# records so the state-transition idea can be tested without pretending that the runtime compiler installed an extensions package.",
+  "vocabulary": [
+    {
+      "term": "Snapshot",
+      "meaning": "A value describing state at a particular logical point, suitable for comparison or history when its members have appropriate immutability."
+    },
+    {
+      "term": "Transition",
+      "meaning": "An operation that derives a new state from a previous state and an action or result."
+    },
+    {
+      "term": "Feed/state abstraction",
+      "meaning": "Uno.Extensions.Reactive concepts for observing asynchronous data and state; their concrete APIs require the corresponding project packages."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with a state that can be read as a coherent value. A record is convenient for a small snapshot because it supports value-oriented comparison and with-expressions. This does not automatically make every nested object immutable. A record containing a mutable list can still share that list with another snapshot unless you choose a copying or immutable-collection policy.",
+      "worked": "The runnable Session record contains an integer and a string, making the example’s state simple to reason about. Before clicking, write the initial snapshot. Do not infer a deep-copy guarantee from the record keyword; the lesson model deliberately distinguishes outer snapshot replacement from nested reference ownership.",
+      "question": "Does a with-expression deep-clone an arbitrary object graph?",
+      "answer": "No. It creates a modified outer record copy. Reference-valued members can still refer to the same nested objects unless a separate policy makes them independent."
+    },
+    {
+      "explain": "A transition should explain exactly which fields change and why. Pure transitions are easy to test because the same previous state and input produce the same next state. Side effects such as network requests should have explicit boundaries; they are not made deterministic merely by returning a record.",
+      "worked": "The click handler creates a new Session with an incremented count and a changed status. Keep a reference to the previous snapshot in a separate experiment and compare it with the new one. The count change is a new value, not a mutation of the previous record’s integer property.",
+      "question": "What makes a snapshot transition easier to replay than an arbitrary event handler?",
+      "answer": "Its input and output can be explicit values. Hidden global mutations and external effects must still be separated or recorded to make replay meaningful."
+    },
+    {
+      "explain": "MVUX adds a reactive application model around data and state, including asynchronous outcomes and generated adapters for binding. Loading, errors and valid data should not be treated as unrelated Booleans that can contradict one another. Learn the state contract before relying on generated convenience APIs.",
+      "worked": "Read the official MVUX counter material and identify the state definition, update operation and generated binding context. The source example belongs to its Uno.Extensions.Reactive project. Compare its transition intent with the ordinary record transition in the runner rather than assuming the two snippets have identical compilation requirements.",
+      "question": "Why does the course label the IState example as project-only?",
+      "answer": "It depends on extensions packages and generation supplied by a full project. The single-file runner demonstrates the underlying C# concept without fabricating those generated members."
+    },
+    {
+      "explain": "Asynchronous results can arrive after newer intent has replaced the state they were requested for. Immutable values make those versions easier to compare, but they do not choose a concurrency policy. Decide whether to cancel previous work, queue operations, merge results or reject stale generations, and test that policy explicitly.",
+      "worked": "Create two modeled requests and make the first finish last. Explain whether its result is still relevant to the current screen. In a full MVUX application, inspect the documented feed/state behavior for the operators you use instead of assuming every sequence automatically implements your preferred latest-request rule.",
+      "question": "Does immutable state alone prevent an older request from overwriting newer intent?",
+      "answer": "No. It clarifies state identity, but acceptance ordering and cancellation remain explicit workflow policies."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use a with-expression on the simple Session record",
+      "expected": "A new outer snapshot is produced.",
+      "why": "The transition replaces selected values rather than mutating the previous snapshot."
+    },
+    {
+      "change": "Two requests complete out of order",
+      "expected": "An explicit result-acceptance policy is required.",
+      "why": "Immutability does not determine concurrency semantics by itself."
+    }
+  ],
+  "bridge": "The Uno MVUX tutorial is the primary project reference. Its package-dependent state and generated binding APIs are shown with their context, while the runnable record example remains a small ordinary-C# transition experiment."
+}

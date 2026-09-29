@@ -1,0 +1,57 @@
+{
+  "id": "csharp-essentials",
+  "scenario": "A counter view seems simple until two variables appear to disagree about what was changed. This lesson uses real UI construction to introduce C# types, assignment and method results, then uses a separate object-identity experiment to make copying rules visible. You do not need to memorize where the runtime puts every byte. You need to predict what an assignment copies, which object owns a property, and why constructing a string does not create an automatic update relationship.",
+  "vocabulary": [
+    {
+      "term": "Object initializer",
+      "meaning": "Property assignments performed while constructing an instance, such as new TextBlock { Text = \"Hello\" }."
+    },
+    {
+      "term": "Reference alias",
+      "meaning": "Another variable whose copied reference identifies the same object; it is not a second copy of that object."
+    },
+    {
+      "term": "Return contract",
+      "meaning": "The type and meaning of the result a method promises to its caller; the runner expects a UIElement from Lesson.Build()."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Read a declaration from right to left: the expression creates or computes a value, and the variable gives you a typed way to use it. The starter’s count is an integer; title is a TextBlock reference. The var keyword asks the compiler to infer a static type. It does not turn the variable into an untyped JavaScript value, and assigning a string to an inferred integer variable remains a compiler error.",
+      "worked": "Locate new TextBlock and its initializer. Text accepts a string, FontSize a numeric size, and Margin a Thickness value. Use hover information in Monaco to inspect these types after the semantic runtime starts. An initializer is convenient syntax for assignments; it does not make every property reactive or postpone the assignments until a click.",
+      "question": "Is var count = 3 dynamically typed?",
+      "answer": "No. The compiler infers int from the initializer. The variable remains statically typed, so a later incompatible assignment is rejected."
+    },
+    {
+      "explain": "Assignment copies the value held by a variable. For a reference-type variable, that value is a reference, so copying it can give two names for one object. For a struct, copying creates an independent outer value. A struct can still contain references to shared nested objects, which is why “all structs are deep copies” is an incorrect shortcut.",
+      "worked": "The atlas starts with a and b referring to one Box. Predict a.Value after changing b.Value. Switch to value-struct assignment and repeat the same mutation. The diagram’s different topology is the point: two variables can either share an identity or own separate integer fields. It intentionally does not claim that every value type lives on the stack.",
+      "question": "After var b = a for a class instance, did you clone the object?",
+      "answer": "No. You copied the reference. A mutation to the shared instance can be observed through either variable. An independent copy requires an explicit copying policy."
+    },
+    {
+      "explain": "A string interpolation expression produces a string from the values available when it executes. Assigning that result to Text stores the resulting string, not an instruction to keep reevaluating count. This is an important bridge from ordinary C# to data binding: construction-time evaluation and an ongoing source-to-target relationship are different mechanisms.",
+      "worked": "The starter computes “You have 3 ideas” while Build executes. Change the initial count to seven and run again. You are constructing a new view with a new string. In the next event lesson, the click handler explicitly assigns another string after changing state. Later, a binding and notification contract will automate that second step.",
+      "question": "Why would count++ alone not update a previously assigned interpolated string?",
+      "answer": "The interpolation already produced its value. Reassign Text or use an appropriate observable binding relationship; changing an unrelated local variable cannot rewrite an existing string value."
+    },
+    {
+      "explain": "Follow the method boundary last. Lesson.Build must return a Uno UIElement because the host places that result on its preview surface. A StackPanel is useful when several children must share one returned root. Returning a number or a view-model object is not an alternative visual representation; it violates the host’s return contract.",
+      "worked": "Add a second text control inside a panel in a separate experiment and keep the return type unchanged. Before running, trace which values are data, which are references to controls, and which object owns the children. The official counter sample provides a larger project context, but you can understand its ordinary object construction using these same rules.",
+      "question": "Why can Build return a StackPanel but not an ObservableCollection<string>?",
+      "answer": "StackPanel is a UIElement. The collection is data, not a visual root; an items control must present it inside an appropriate UI tree."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Set count to 7 and rerun",
+      "expected": "A newly built title displays seven.",
+      "why": "Interpolation is evaluated during this Build invocation."
+    },
+    {
+      "change": "Assign b = a and mutate a shared class instance",
+      "expected": "Both variables observe the changed field.",
+      "why": "The reference was copied, not the referenced object."
+    }
+  ],
+  "bridge": "The upstream counter material uses C# properties and object construction in a full project. Read the local runnable example first, then identify equivalent initializer assignments in the upstream code. Generated MVVM members require their project package and are not created by this single-file compiler."
+}

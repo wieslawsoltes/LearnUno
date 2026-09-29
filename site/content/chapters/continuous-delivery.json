@@ -1,0 +1,57 @@
+{
+  "id": "continuous-delivery",
+  "scenario": "A green build uploads a folder, but the browser page has missing runtime assets. Continuous delivery should produce evidence about the thing users receive, not simply automate a sequence of commands that return zero. Follow the candidate from source inputs through validation, promotion and the public-host check.",
+  "vocabulary": [
+    {
+      "term": "Candidate artifact",
+      "meaning": "The concrete output being evaluated for release."
+    },
+    {
+      "term": "Gate",
+      "meaning": "A required condition that must pass before promotion."
+    },
+    {
+      "term": "Provenance",
+      "meaning": "Information connecting released bytes to source, dependencies and build configuration."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Pin the source and dependency inputs needed for reproducibility. Build the selected target explicitly and verify required outputs exist. A browser project can produce a managed assembly without producing a complete runnable static site if the wrong target or packaging path is selected. Keep the workflow itself reviewed as part of the codebase.",
+      "worked": "The course checks for embedded.js and actual WebAssembly files before constructing the site artifact. In the atlas, distinguish “build passed” from “artifact exists and matches the intended release.” A dashboard label is useful only when it represents a real check rather than a manually asserted status.",
+      "question": "Why is a DLL in the output folder insufficient?",
+      "answer": "A browser app also needs its bootstrap scripts, runtime assets, configuration and hosting arrangement. Compilation is only one stage of delivery."
+    },
+    {
+      "explain": "Different checks establish different contracts. Unit tests validate isolated rules; runtime tests validate framework behavior; browser journeys validate the published interface. Security audits report known dependency advisories at a point in time. None of these alone proves every aspect of a release, so make essential gates explicit and fail on their failures.",
+      "worked": "Inspect the actual LearnUno workflow sequence and compare it with the gate model. The 120 authored starter/solution variants remain part of runtime validation. New reading content also needs source-provenance, navigation and rendering checks, because a passing compiler test cannot detect a broken chapter link or escaped-code regression.",
+      "question": "What is dangerous about continue-on-error on an essential test step?",
+      "answer": "It can let the pipeline promote an artifact despite failed evidence. Optional diagnostics and mandatory release gates should be clearly separated."
+    },
+    {
+      "explain": "Promote the same verified bytes instead of rebuilding after the tests. Keep deployment permissions restricted to the job and event that need them. Pull-request code should not automatically receive privileged deployment credentials. Release coherence includes assets, content and runtime version assumptions.",
+      "worked": "The atlas lets you compare a tested candidate with the artifact selected for deployment. A mismatch should block the modeled gate even if both have friendly version labels. In the real pipeline, upload the validated static directory and deploy that artifact. Preserve the source commit and build manifest for support.",
+      "question": "Why can an untested rebuild be different even from the same source?",
+      "answer": "Dependencies, environment, configuration or generated outputs can change unless fully controlled. Reusing the verified artifact avoids introducing an unnecessary new candidate."
+    },
+    {
+      "explain": "After deployment, verify the public URL. Base paths, MIME types, CORS, cache state and routing can differ from localhost. A post-deployment failure should be visible and actionable; consider rollback or another safe recovery policy appropriate to the product. Do not claim a deployment is verified while the public job is still running.",
+      "worked": "Open the published course beneath its repository subpath and execute a real Uno action, not only a homepage request. Verify that code snippets and pinned source excerpts load too. Keep local and public evidence separately labeled so a support report can distinguish application defects from hosting or release-transition problems.",
+      "question": "What does a public smoke test add to local validation?",
+      "answer": "It exercises the actual host, URLs and delivered assets. Those environmental boundaries can fail even when the locally served artifact passed."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Select an artifact different from the verified candidate.",
+      "expected": "The modeled promotion gate rejects it.",
+      "why": "Tests establish evidence for specific bytes, not any later rebuild."
+    },
+    {
+      "change": "Pass local tests but break the repository base path.",
+      "expected": "The public journey detects missing assets or navigation failures.",
+      "why": "Hosting is part of the deployed application contract."
+    }
+  ],
+  "bridge": "The Uno publishing guide describes target output and hosting; the course repository’s workflow is its executable delivery process. The atlas is a gate model, not a CI service. Report actual workflow results rather than treating the existence of YAML as proof of success."
+}

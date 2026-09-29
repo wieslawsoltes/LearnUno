@@ -1,0 +1,57 @@
+{
+  "id": "compiled-binding",
+  "scenario": "Your view contains both {Binding} and {x:Bind}, and replacing one with the other looks deceptively mechanical. This lesson explains the different source context, default mode and build pipeline. It also makes the playground boundary explicit: project-time generated binding code cannot be created merely by parsing a string with XamlReader.",
+  "vocabulary": [
+    {
+      "term": "Compiled binding",
+      "meaning": "A binding path represented by code generated during the project build, rather than only by runtime path lookup."
+    },
+    {
+      "term": "OneTime default",
+      "meaning": "The default x:Bind mode, which should not be mistaken for an automatically updating relationship."
+    },
+    {
+      "term": "Generated source",
+      "meaning": "Code produced from project inputs; inspect it to understand behavior but fix its originating inputs rather than editing the output permanently."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start by selecting the source context. Traditional Binding commonly begins at DataContext, while a top-level x:Bind expression normally begins at the owning page or control. A ViewModel property can expose the intended source explicitly. Within a DataTemplate, typed item context introduces another important boundary. Matching property names do not make these source rules interchangeable.",
+      "worked": "Read the upstream examples side by side: {Binding Title} and {x:Bind ViewModel.Title} refer to differently selected roots. Identify where ViewModel is declared before copying the expression. A compiler error may be correctly reporting that the owning page has no such member, rather than indicating a broken binding engine.",
+      "question": "Why can replacing {Binding Title} with {x:Bind Title} fail even when DataContext has Title?",
+      "answer": "The compiled expression may be looking on the owning page/control instead of DataContext. The source context changed along with the syntax."
+    },
+    {
+      "explain": "Compiled access can catch member mistakes at build time and avoid some runtime lookup work, but it still has observable-update semantics. x:Bind defaults to OneTime. A startup value can therefore be correct while later changes are intentionally not tracked. Use an explicit mode when future updates matter, and supply the source notification contract that mode requires.",
+      "worked": "In the live exercise, a slider controls a font size through runtime Binding, making an updating relationship visible without generated code. Compare it with the project-only x:Bind fragment below. Do not judge the binding mode only by the first frame; change the source after the view has been created.",
+      "question": "What test reveals an accidental OneTime relationship?",
+      "answer": "Change the source after initialization and check the target. A startup-only assertion cannot distinguish OneTime from a correctly observed updating binding."
+    },
+    {
+      "explain": "The project XAML pipeline parses markup, resolves types and emits supporting code. Runtime XamlReader instead constructs supported objects from markup while the application is running. It does not run the project’s Roslyn/XAML generators or synthesize the code-behind members those generators would create. This is a tool boundary, not evidence that Uno lacks compiled bindings.",
+      "worked": "The runner rejects x:Bind and x:Class rather than pretending that they executed. Use Export project and a compiled Page to investigate generated behavior. Keep the complete class, properties and package context from the upstream sample. A bare markup fragment is not a complete build input for every feature.",
+      "question": "Why should a teaching tool reject unsupported compiled markup rather than silently turn it into Binding?",
+      "answer": "The replacement could change source context, mode and behavior. Silent emulation would teach the wrong contract while appearing to succeed."
+    },
+    {
+      "explain": "Inspect generated output when the connection between markup and behavior is unclear. Find the initialization and update paths, identify which properties are observed, and compare a failing diagnostic with the originating markup. Do not edit generated files as a durable fix because the next build replaces them. Preserve a small test that exercises a later source change.",
+      "worked": "Build a page with an explicitly typed ViewModel, x:Name and OneWay x:Bind. Rename one referenced member and observe the build diagnostic, then restore it and change the property at runtime. This pairs compile-time evidence with observable behavior instead of claiming that generated code makes every binding automatically correct.",
+      "question": "What should you change after finding a bad reference in generated code?",
+      "answer": "Fix the source markup, source member or generator that produced it. Generated files are diagnostic evidence, not normally the maintained source of truth."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use default x:Bind and change the source later",
+      "expected": "The relationship may retain its initial value.",
+      "why": "OneTime is the default mode."
+    },
+    {
+      "change": "Paste x:Bind into runtime XamlReader",
+      "expected": "The runner rejects the unsupported generation requirement.",
+      "why": "Runtime parsing does not run the project XAML compilation pipeline."
+    }
+  ],
+  "bridge": "The pinned x:Bind architecture document and source sample explain generated bindings in Uno. Preserve their distinction between full project compilation and the runtime Binding exercise; they are connected concepts but not identical execution paths."
+}

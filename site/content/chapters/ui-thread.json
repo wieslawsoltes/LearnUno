@@ -1,0 +1,57 @@
+{
+  "id": "ui-thread",
+  "scenario": "A save button uses async, yet typing still pauses whenever results arrive. The continuation is adding thousands of controls on the UI thread. Scheduling and awaiting do not remove the cost of the work eventually performed on the thread that owns the view.",
+  "vocabulary": [
+    {
+      "term": "Thread affinity",
+      "meaning": "The requirement that an object be accessed from its owning execution thread."
+    },
+    {
+      "term": "Dispatcher queue",
+      "meaning": "A mechanism for scheduling callbacks on the UI’s execution context."
+    },
+    {
+      "term": "Coalescing",
+      "meaning": "Replacing obsolete intermediate updates with the newest sufficient state."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Identify where the data is produced and where UI objects are owned. Marshal the smallest necessary view update to the UI dispatcher. Do not transfer a control to arbitrary background work and assume its methods become thread-safe. Dispatcher availability and shutdown behavior are part of the API contract; TryEnqueue can report that it did not accept the operation.",
+      "worked": "The live example queues a label update and handles a rejected queue request. It intentionally does not claim to run that callback in parallel. In the atlas, add modeled work ahead of input and inspect the order. A queue preserves an execution relationship, not an unlimited performance budget.",
+      "question": "Does a successful enqueue mean the callback has already executed?",
+      "answer": "No. It means the queue accepted the work. Completion and the resulting state need their own observation or awaited contract when required."
+    },
+    {
+      "explain": "A long callback blocks later work on that same queue, including input and rendering-related processing. Async only yields when an awaited operation actually suspends; a large synchronous loop before or after an await still occupies the thread. Task.Yield introduces a scheduling opportunity but does not reduce the total computation or guarantee a presented frame between iterations.",
+      "worked": "The upstream TextBlock update sample changes text and awaits Task.Yield inside a loop. Use it to discuss yielding, not as proof of a production speedup. Compare one long update with a bounded batch in a full project, measuring input latency as well as total completion time.",
+      "question": "Why can await be present in code that still freezes the interface?",
+      "answer": "The surrounding synchronous work may be long, or the awaited operation may already be complete. The keyword does not automatically move computation to another thread."
+    },
+    {
+      "explain": "Input latency includes time spent waiting behind earlier work. An application can feel unresponsive without deadlock or a high average CPU value. Record the task and deadline that matter: responding to a click is different from finishing a background import. Queue length alone does not capture the cost of each callback.",
+      "worked": "Change the atlas callback durations and watch the modeled input wait. The numbers are explicit assumptions rather than runtime measurements. Then instrument a real user journey to find which callback dominates waiting. Avoid logging every micro-operation so heavily that the instrumentation changes the behavior you are measuring.",
+      "question": "Can many short callbacks cause poor responsiveness too?",
+      "answer": "Yes. Their combined queued work can delay useful input, especially if producers enqueue faster than the UI consumes updates."
+    },
+    {
+      "explain": "Batch related changes when doing so preserves observable semantics. Coalesce obsolete progress or preview states, but do not drop commands that represent distinct user actions. Cancellation or generation checks can stop stale results from creating unnecessary UI work. Offloading computation is useful only when the target runtime supports the required threading and the data can cross the boundary safely.",
+      "worked": "For a search result, compute data away from UI objects where supported, then apply the newest result as one intentional update. For progress text, keep the latest percentage rather than scheduling every intermediate value. Test shutdown, cancellation and a superseded result so the queue policy remains correct beyond the happy path.",
+      "question": "Which updates are reasonable candidates for coalescing?",
+      "answer": "Updates where only the latest state is meaningful, such as a current progress percentage. Independent actions such as creating two different records must not be silently collapsed."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Queue several expensive callbacks before input.",
+      "expected": "The modeled input waits behind their combined work.",
+      "why": "The UI queue executes work serially in this simplified model."
+    },
+    {
+      "change": "Coalesce obsolete progress updates.",
+      "expected": "Fewer callbacks can represent the same final progress state.",
+      "why": "Intermediate states may be safely omitted when the task contract permits it."
+    }
+  ],
+  "bridge": "The Uno dispatcher documentation and sample show real API usage, but the atlas queue durations are editable assumptions. The runner does not promise a dedicated worker for arbitrary Task.Run calls. Always verify threading capabilities and user-visible latency for the actual published target."
+}

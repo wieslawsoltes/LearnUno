@@ -1,0 +1,57 @@
+{
+  "id": "events",
+  "scenario": "A user presses a button and expects the count to change immediately. The first implementation uses a local variable and a click handler, which is a good place to learn the event mechanism before introducing commands. The second half asks a different question: who keeps that handler alive? Understanding both behavior and ownership prevents a working interaction from later becoming a retained-view or duplicate-subscription defect.",
+  "vocabulary": [
+    {
+      "term": "Event subscription",
+      "meaning": "A delegate registered with a publisher so that the publisher can invoke it when an event occurs."
+    },
+    {
+      "term": "Closure",
+      "meaning": "The captured variables and environment used by a lambda after the enclosing method has returned."
+    },
+    {
+      "term": "Reachability",
+      "meaning": "Whether an object can still be reached through strong references from a live root, independent of whether it is visible."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A handler connects an event source to an operation. The += operator adds a delegate to the event’s subscription list. The event arguments carry information about the occurrence; the sender identifies its source according to the event contract. In the starter, the lambda ignores both because the relevant state and label are captured from the surrounding method.",
+      "worked": "Trace a single click: count is incremented, interpolation produces the new label text, and Text is assigned. The visible update is not caused by count becoming observable. It occurs because the handler explicitly changes a control property. Keep that causal sequence clear before replacing it with a binding or command in a later lesson.",
+      "question": "Which assignment actually makes the new count visible?",
+      "answer": "The assignment to label.Text. Changing the integer alone would not update the already assigned string in this direct-event example."
+    },
+    {
+      "explain": "A capturing lambda can outlive the method that created it. The button retains its delegate, and the delegate retains what it needs to execute, including the captured label and count storage. This is useful: the handler still works after Build returns. It also creates ownership edges that matter when the publisher outlives the view.",
+      "worked": "The atlas shows a long-lived publisher retaining a delegate and a view instance. Close the modeled view while keeping the subscription. The window reference disappears, but the publisher’s path remains. This diagram models reachability rather than collection timing, so it should not display a claim that a precise number of bytes leaked at a precise instant.",
+      "question": "Does returning from Build make its captured state unavailable to the event handler?",
+      "answer": "No. The closure keeps the required captured state reachable while the handler remains reachable. That is why the event can continue to use those values."
+    },
+    {
+      "explain": "Closing a view changes its presentation lifecycle; it does not remove every reference from every other object. A subscription to a long-lived service should have an explicit owner and an end-of-life action. Simply assigning a local variable to null leaves the publisher’s delegate list unchanged. Conversely, a short-lived button and its handler can often be collected together when their entire graph becomes unreachable.",
+      "worked": "Disable the subscription in the model after closing the view. With both modeled roots removed, the view becomes unreachable. In production, retain the delegate identity you must remove, avoid subscribing twice on repeated Loaded events, and pair subscription and unsubscription with the intended lifecycle rather than with an unrelated destructor.",
+      "question": "Why is publisher.Changed -= another newly written lambda usually not the required cleanup?",
+      "answer": "Unsubscription must identify the registered delegate. A separately created capturing lambda is not a reliable way to refer to that original subscription; store the delegate or use a stable handler method."
+    },
+    {
+      "explain": "Test the interaction as a sequence, not a screenshot. An increment-by-two edit should produce a predictable series after several clicks. Reopen or reattach the view and confirm that one click still invokes one handler. Repeated initialization is a useful boundary case because duplicate subscriptions can make counts jump even when each handler is individually correct.",
+      "worked": "In the live starter, change the increment from one to two and click three times. Expect six. The button caption still says “Add one,” so discuss why a complete product change must update semantics and accessible text as well as arithmetic. The focused exercise proves one behavior; the transfer task asks you to finish the user-facing contract.",
+      "question": "What would three increments per click suggest after opening the view three times?",
+      "answer": "Repeated subscriptions are a likely hypothesis. Count handler registrations and invocations, then verify ownership and cleanup; do not compensate by dividing the result by three."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Increment by two; click three times",
+      "expected": "The count becomes six.",
+      "why": "The same handler performs one two-unit state transition per click."
+    },
+    {
+      "change": "Close a view without ending a singleton subscription",
+      "expected": "The subscriber can remain reachable.",
+      "why": "Visibility and strong-reference ownership are separate concerns."
+    }
+  ],
+  "bridge": "The upstream event documentation explains routing while SamplesApp shows concrete handlers. Identify the publisher, handler and arguments in the excerpt, then compare its lifecycle with the smaller local counter. Routing through a tree is a separate question from whether a long-lived publisher retains a subscriber."
+}

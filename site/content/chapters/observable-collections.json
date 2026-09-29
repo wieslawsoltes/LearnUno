@@ -1,0 +1,57 @@
+{
+  "id": "observable-collections",
+  "scenario": "A task list must react when an item is added, removed or edited. Those are not all the same notification. This lesson separates changes to collection membership from changes inside an existing item and then considers identity, ordering and batching. That distinction prevents a list from appearing to work only when its entire ItemsSource is replaced.",
+  "vocabulary": [
+    {
+      "term": "Collection notification",
+      "meaning": "A report that the sequence changed through operations such as add, remove, move or reset."
+    },
+    {
+      "term": "Item notification",
+      "meaning": "A report that a property on an existing object changed, independent of whether that object remains in the collection."
+    },
+    {
+      "term": "Stable identity",
+      "meaning": "A value that continues to identify the same logical item when position, filtering or presentation changes."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "ItemsSource supplies data to an items control. ObservableCollection reports sequence changes through the collection-notification contract, allowing the control to respond without a full source replacement for each addition. Once ItemsSource is set, keep ownership clear: do not simultaneously treat the control’s direct Items collection as an independent source of truth.",
+      "worked": "The starter creates a string collection and assigns it to ListView.ItemsSource. The Add button changes the collection, not the list’s visual children. That separation lets the control own item containers and selection. Read the upstream sample for the same data-to-items-control boundary before considering a custom visual layer.",
+      "question": "Which object should the Add action modify in the starter?",
+      "answer": "The ObservableCollection supplying ItemsSource. The items control should manage the corresponding visual containers."
+    },
+    {
+      "explain": "A collection event describes a sequence operation; it does not automatically observe every property on every item. If a task stays at index five but its Title changes, the collection membership may be identical. The task object needs its own property-notification contract if its bound representation should update. Replacing the whole collection can hide this missing item behavior without fixing it.",
+      "worked": "The atlas lets you compare membership and item-property signals. Treat them as two separate edges. With string items, replacing a string is a collection operation; with mutable task objects, changing a property can leave the same object in the same position. Write tests for both so the distinction remains visible as the sample grows.",
+      "question": "Does ObservableCollection make an ordinary TaskItem.Title setter observable?",
+      "answer": "No. The collection reports its own structural changes. The item must report relevant property changes through a suitable mechanism such as INotifyPropertyChanged."
+    },
+    {
+      "explain": "Position is not identity. Sorting, filtering or inserting an item before the selection can change an index without changing the selected logical task. Store stable IDs where selection, editing or persistence must survive reordering. A recycled visual container can also represent different items over time, so its identity must not be confused with the item’s identity.",
+      "worked": "Add several items in the starter, select one and consider what an insertion at the beginning should do. A correct result depends on the control and application selection contract, which you should test explicitly. In a full task model, identify the item by ID and resolve its current position rather than persisting an index as if it were permanent.",
+      "question": "Why is index 3 a fragile identifier for a task?",
+      "answer": "An insertion, sort or filter can make index 3 refer to another task. Stable identity and current display position are different values."
+    },
+    {
+      "explain": "Many small notifications can create avoidable work, but replacing them with Reset is not automatically free. A reset can discard container state, affect selection and cause broad re-realization. Choose paging or batching according to the collection and control APIs you actually use. Measure real target behavior with a representative template and bounded viewport.",
+      "worked": "Complete the starter’s text change, then extend the data model with one observable property. Test add, edit, move and remove independently. The upstream sample gives concrete collection wiring; your performance investigation should record data count, visible range and realized containers rather than claiming speed from the collection type alone.",
+      "question": "What should you measure before batching every update into a Reset?",
+      "answer": "Update cost, container reuse, selection preservation and user-visible latency. A coarse reset may reduce event count while increasing total work or breaking continuity."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Append a string to the source collection",
+      "expected": "The list adds its representation.",
+      "why": "Collection membership notification reaches the items control."
+    },
+    {
+      "change": "Mutate a property on a non-observable object item",
+      "expected": "A binding may remain stale.",
+      "why": "Collection notification does not replace item property notification."
+    }
+  ],
+  "bridge": "The source excerpt demonstrates actual ItemsSource or collection-notification wiring. Identify whether each operation changes the sequence or an existing item. The starter’s string collection deliberately keeps the first case simple before you introduce mutable item models."
+}

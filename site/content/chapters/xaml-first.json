@@ -1,0 +1,57 @@
+{
+  "id": "xaml-first",
+  "scenario": "You want a card with a heading and an action, and XAML offers a compact way to describe it. Read the markup as an object-construction recipe rather than as a screenshot. This lesson follows namespace resolution, object creation, child ownership and property assignment. That mental model makes nesting errors, unexpected spacing and namescope confusion much easier to diagnose than repeatedly editing tags until the view looks plausible.",
+  "vocabulary": [
+    {
+      "term": "Presentation namespace",
+      "meaning": "The XML namespace that maps ordinary XAML element names to framework UI types."
+    },
+    {
+      "term": "Content property",
+      "meaning": "A type’s default destination for nested content; a Border accepts one child while a Panel owns a collection."
+    },
+    {
+      "term": "Namescope",
+      "meaning": "The lookup context in which an x:Name identifies an object; it is not a global application variable table."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "An element name identifies a type, and an attribute usually supplies a property value. The presentation namespace makes Grid and TextBlock meaningful to the XAML processor. The x namespace contains XAML language features such as x:Name. A namespace prefix is a mapping used during parsing, not an object that appears in the resulting visual tree.",
+      "worked": "Start with the outer StackPanel and point to the namespace declarations. Then find Text and FontSize on the nested TextBlock. Numeric-looking attributes begin as markup text and must be converted to the property’s type. A misspelled property is therefore a contract error, not an instruction to the browser to invent a new attribute.",
+      "question": "Does adding another xmlns declaration create another visual element?",
+      "answer": "No. It changes how names in markup are resolved. Only the objects constructed from actual elements participate in the resulting tree."
+    },
+    {
+      "explain": "Nesting follows the parent type’s content contract. Border has one child, so a heading and button need a panel inside it. A panel’s Children collection can own both. This is why an XML document can be well formed but still be invalid XAML: XML syntax cannot establish whether the target type accepts two direct children.",
+      "worked": "Use the linked visual-tree model to select Border and then StackPanel. The highlight changes from the card’s outer region to its content container. Now count the children in the starter. The border does not independently own every descendant; it owns the panel, which in turn owns its immediate children.",
+      "question": "Why is a StackPanel useful inside Border when you need two controls?",
+      "answer": "It satisfies the Border’s one-child contract while providing a separate multi-child container. The extra layer has a layout responsibility, not merely syntactic value."
+    },
+    {
+      "explain": "Properties can be expressed as attributes when a text conversion is suitable, or as property elements when the value is more structured. Resources, brushes, templates and collections often use property-element syntax. Do not confuse that syntax with a new visual type: Grid.RowDefinitions assigns a property on the existing Grid rather than creating a control named RowDefinitions.",
+      "worked": "The starter uses simple property attributes so you can isolate CornerRadius. Change the radius while leaving Margin and Padding untouched. The text should remain positioned by the same layout properties even though the card edge changes. This separates appearance from the allocation and content-inset decisions you will study next.",
+      "question": "Does whitespace indentation create space between controls?",
+      "answer": "No. Indentation makes the source readable. Layout spacing comes from the relevant Margin, Padding, Spacing and container rules, not from source formatting."
+    },
+    {
+      "explain": "Regular Uno projects process XAML during a build and may generate named members, event connections and compiled bindings. XamlReader instead loads supported markup at runtime. The distinction explains why a valid full-project example can require more context than the teaching runner provides. A namescope also matters when resolving an object by name, especially inside reusable templates.",
+      "worked": "Read the upstream sample as a full UserControl or Page, including its x:Class and code-behind relationship. Compare only the visual subtree with the runtime starter. Do not paste generated-binding or event-handler declarations into XamlReader and assume a C# member will appear. Export a project when the feature depends on compilation.",
+      "question": "Why can a full project use x:Class while this runtime-XAML lab rejects it?",
+      "answer": "The project build generates and connects a class. Runtime XamlReader does not run that source-generation pipeline, so the host must not pretend the class was compiled."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Put two direct controls in one Border",
+      "expected": "The content contract is violated.",
+      "why": "XML nesting alone does not establish the number of children a XAML type supports."
+    },
+    {
+      "change": "Change indentation without changing properties",
+      "expected": "The layout should be unchanged.",
+      "why": "Source whitespace is not the layout spacing policy."
+    }
+  ],
+  "bridge": "The upstream XAML tutorial and sample are useful because you can identify real namespaces, properties and ownership boundaries. The sample’s outer UserControl and x:Class belong to its project; the runnable lesson intentionally starts with a standalone runtime-loadable subtree."
+}

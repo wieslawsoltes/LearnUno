@@ -1,0 +1,57 @@
+{
+  "id": "visual-regression",
+  "scenario": "A screenshot diff contains hundreds of changed pixels after a browser update, and a genuine clipped label is lost in the noise. Visual testing becomes useful when the environment is controlled and the difference is interpreted, not when every new screenshot is automatically accepted.",
+  "vocabulary": [
+    {
+      "term": "Baseline",
+      "meaning": "The approved reference output for a defined environment and scenario."
+    },
+    {
+      "term": "Difference mask",
+      "meaning": "A representation of which compared pixels or fixture cells changed."
+    },
+    {
+      "term": "Tolerance",
+      "meaning": "A comparison policy allowing specified differences without claiming they are desirable."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A baseline has an environment: renderer, browser/OS, font availability, scale, theme, viewport and settled application state. Record those assumptions. An image without provenance is difficult to interpret because a harmless font fallback and a real layout regression can both change many pixels.",
+      "worked": "The live card provides a stable view for a controlled typography change. Capture its initial state, then change FontSize and compare. Keep the viewport and font environment identical. The atlas uses a small raster fixture so each changed cell can be inspected directly without attributing those cells to a real platform screenshot.",
+      "question": "Why record the font environment with a baseline?",
+      "answer": "Font metrics and rasterization affect wrapping, alignment and pixels. A missing or changed font can alter the output independently of the application change under review."
+    },
+    {
+      "explain": "Capture the candidate under the same conditions and after relevant work settles. Animations, caret blinking, timestamps and nondeterministic data can make images unstable. Disable or control those inputs where appropriate to the scenario rather than adding a broad tolerance that hides everything.",
+      "worked": "Change one modeled shape position in the atlas and inspect the candidate. Then vary the comparison threshold separately. This separates the actual visual change from the acceptance policy. A threshold change should not alter the candidate image; it changes the test’s decision about the difference.",
+      "question": "Does changing a tolerance repair the rendered output?",
+      "answer": "No. It changes the comparison policy. The candidate pixels remain the same, including any genuine defect."
+    },
+    {
+      "explain": "A difference mask shows where the two outputs disagree. It should help a reviewer find the changed region rather than only provide a pass/fail number. Absolute pixel differences, structural regions and platform-specific antialiasing all need appropriate interpretation. A large blank margin changing color is a different problem from a clipped character, even if a simple count treats them similarly.",
+      "worked": "Inspect the atlas mask and locate the exact changed cells. Compare that with the candidate and baseline rather than looking only at the total. For a real failure, retain all three images and useful metadata. A reviewer should be able to explain the change before approving a new baseline.",
+      "question": "Why keep the candidate and baseline in addition to the diff?",
+      "answer": "The mask identifies disagreement but may not explain its meaning. Context from both original images is needed to judge whether the change is expected or harmful."
+    },
+    {
+      "explain": "Approval is a human or explicitly designed policy decision, not an inherent property of a low pixel count. Combine visual checks with semantic assertions for names, focus, state and behavior. A screenshot cannot prove that a button activates once, a screen reader announces a useful name or a hidden error state is reachable.",
+      "worked": "After the controlled font-size change, inspect wrapping and clipping, then test keyboard operation separately. Update the baseline only when the change is intended and understood. Keep representative views per target rather than assuming a browser image is a universal reference for all native renderers.",
+      "question": "What should accompany approval of a new baseline?",
+      "answer": "A reason for the intended change, controlled environment information, and complementary behavior or accessibility checks where pixels cannot establish the contract."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Increase FontSize in the fixed card.",
+      "expected": "Typography and potentially wrapping change.",
+      "why": "Text metrics affect geometry, not just paint color."
+    },
+    {
+      "change": "Raise the diff tolerance without changing code.",
+      "expected": "The acceptance decision can change while the visual output does not.",
+      "why": "Tolerance is a test policy, not a rendering repair."
+    }
+  ],
+  "bridge": "The Uno UI-testing and headless-rendering guides provide actual test contexts. The atlas compares deterministic raster fixtures; it is not a screenshot of the Uno renderer. Use captured target images and semantic checks for production visual-regression evidence."
+}

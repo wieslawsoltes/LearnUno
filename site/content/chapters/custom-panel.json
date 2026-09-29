@@ -1,0 +1,57 @@
+{
+  "id": "custom-panel",
+  "scenario": "You need a panel with a specific vertical spacing policy. A first implementation positions children correctly but reports the wrong height, so its parent clips the last row. Measurement and arrangement must describe the same geometry contract.",
+  "vocabulary": [
+    {
+      "term": "MeasureOverride",
+      "meaning": "The panel’s opportunity to measure children and report its desired extent."
+    },
+    {
+      "term": "ArrangeOverride",
+      "meaning": "The panel’s opportunity to assign final child rectangles."
+    },
+    {
+      "term": "Layout invariant",
+      "meaning": "A relationship that should remain true across changes in children and constraints."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Measure every relevant child with a constraint appropriate to the panel’s policy. A vertical stacking strategy often gives children a finite cross-axis constraint and unbounded main-axis space, but that is a deliberate choice, not a universal rule for every panel. Handle empty children and visibility semantics intentionally.",
+      "worked": "The starter LessonPanel measures its children and reads their DesiredSize. Compare that with the upstream ProportionalPanel implementation: it has its own height policy and cannot be substituted without understanding the difference. The source is an example of overriding layout methods, not an instruction that every custom panel should share one algorithm.",
+      "question": "Why must the child measurement constraint be chosen deliberately?",
+      "answer": "It influences the child’s desired size and wrapping. A constraint appropriate for stacking can be wrong for wrapping, proportional sizing or virtualization."
+    },
+    {
+      "explain": "For a simple vertical stack, desired height is the sum of participating child heights plus gaps between adjacent children. There are n minus one gaps for n positive children, and zero gaps for an empty panel. Desired width follows the maximum participating child width under this policy. Avoid negative gap counts or returning an infinite desired result blindly.",
+      "worked": "Use the atlas to vary child heights and spacing, then compute the total by hand. With three children there are two gaps, not three. The starter uses Math.Max(0, Children.Count - 1) for the gap count; a production panel may additionally need to count only the children participating under its visibility policy.",
+      "question": "Why does adding one gap per child overestimate the extent?",
+      "answer": "It adds an extra trailing gap that is not between children. Measurement and final placement then disagree unless the panel explicitly defines trailing spacing as part of its contract."
+    },
+    {
+      "explain": "Arrange children using final available size and the chosen policy. Track the running main-axis position consistently with measured heights and inter-item gaps. Parent allocation can differ from the requested size, so decide how stretching, overflow and clipping behave rather than assuming desired size was guaranteed.",
+      "worked": "The starter arranges each child at the current Y coordinate and advances by its height plus Gap. Inspect the actual final rectangles in the atlas. The last child’s bottom should explain the occupied extent; the internal position variable may advance past it, but that extra trailing increment should not become a falsely reported occupied height.",
+      "question": "Is the final running Y variable always the occupied extent?",
+      "answer": "Not when the loop advances by a gap after the last child. The occupied extent is determined by the final child bounds and the panel’s explicit outer-spacing policy."
+    },
+    {
+      "explain": "Add regression tests for empty, single-child, multiple-child, changed-size and changed-membership cases. Test finite and unbounded constraints, min/max behavior, collapsed children and fractional scale as relevant. A Gap dependency property should invalidate measurement when its effective value changes; a cached layout must include every input affecting the result.",
+      "worked": "Use the upstream runtime-test pattern to await layout and assert the measured and arranged geometry. Compare your panel with a reference calculation independent from the implementation. Document intentional differences from StackPanel so consumers do not assume unimplemented behavior such as orientation, spacing or virtualization.",
+      "question": "What should be proved before optimizing a custom panel with caching?",
+      "answer": "That its measure/arrange contract is correct across the relevant constraints and mutations, and that the cache invalidates for every input on which that geometry depends."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use zero children.",
+      "expected": "The simple stack reports zero occupied height and no gaps.",
+      "why": "There are no adjacent pairs to separate."
+    },
+    {
+      "change": "Change Gap after initial layout.",
+      "expected": "The panel must be remeasured and rearranged appropriately.",
+      "why": "Spacing affects the desired extent and final child positions."
+    }
+  ],
+  "bridge": "The sample panel is real source with its own sizing policy; the runtime tests show how Uno verifies layout after mutations. The online LessonPanel and atlas deliberately teach a bounded subset. They are not a full replacement for StackPanel or a virtualizing layout."
+}

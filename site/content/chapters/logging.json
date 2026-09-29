@@ -1,0 +1,57 @@
+{
+  "id": "logging",
+  "scenario": "A user reports that a save failed, but the only log says “error.” Useful diagnostics should tell you which operation happened, what its outcome was and which context connects the related events. This lesson separates structured events from decorative console text, then considers severity, privacy and the cost of logging itself. The live example is a small in-memory event viewer, not a configured production telemetry system.",
+  "vocabulary": [
+    {
+      "term": "Structured event",
+      "meaning": "A named event with separately represented values, making later filtering and analysis more reliable than parsing arbitrary prose."
+    },
+    {
+      "term": "Correlation ID",
+      "meaning": "A non-secret identifier linking events that belong to the same logical operation."
+    },
+    {
+      "term": "Log level",
+      "meaning": "A classification of diagnostic significance, such as information, warning or error, chosen according to the event’s meaning."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Name an event by the behavior it describes, such as task.created or lesson.completed. Include useful typed context such as an operation ID and outcome, but avoid duplicating the entire application state. A stable event schema is easier to query and compare across releases than many unrelated concatenated messages.",
+      "worked": "The starter appends a deterministic event line and sequence number to a list. Change the event name as requested and observe the sequence. This shows event identity and order, but the string list is not a substitute for a production structured-logging provider. The upstream logging setup supplies that integration context.",
+      "question": "Why is a stable event name useful when wording changes?",
+      "answer": "Queries and diagnostics can continue to identify the same behavior without depending on an exact human-readable sentence."
+    },
+    {
+      "explain": "Choose severity according to the outcome. A normal successful load is not an error merely because it is interesting. A warning can describe an abnormal condition with recovery, while an error records a failed operation needing attention. The level does not replace useful feedback in the interface; users should not need access to internal logs to understand a failure.",
+      "worked": "Compare the documented Uno logging configuration with the starter’s simplified lines. Identify the category filter and minimum level. Excessive low-value events can hide the important ones, while filtering too aggressively can remove the context needed to diagnose a failure. Tune both intentionally.",
+      "question": "Should a retryable transient problem always be silently omitted from logs?",
+      "answer": "No. Record useful context at an appropriate level without flooding the system. Recovery and diagnostic visibility are separate decisions."
+    },
+    {
+      "explain": "Logs are a data boundary. Access tokens, passwords and unnecessary personal information should not appear in messages, exception dumps or trace artifacts. A correlation identifier should help connect operations without granting authority. Review what a formatted object’s ToString or a full response-body dump might expose before logging it.",
+      "worked": "The atlas lets you inspect a modeled event and its fields. Identify which values are operational metadata and which would be sensitive in a real app. Use redaction or omission by design rather than relying on every developer to remember not to print an entire request object.",
+      "question": "Why is an access token different from a harmless correlation ID?",
+      "answer": "A token can authorize actions if exposed. A well-designed correlation ID links diagnostics without itself being a credential."
+    },
+    {
+      "explain": "Logging has a performance cost, especially in hot layout or input paths. Expensive formatting and high event volume can perturb the behavior being measured. Use configured filtering and avoid constructing large messages when the relevant level is disabled. Keep a reproducible diagnostic mode rather than permanently printing every frame in normal use.",
+      "worked": "In a full project, configure the documented logger and reproduce one failure with a correlation ID, outcome and target version. Verify that no credentials enter the retained report. Compare operation latency with diagnostic logging enabled and disabled before drawing conclusions from a heavily instrumented run.",
+      "question": "Why can logging every layout callback distort a performance investigation?",
+      "answer": "Formatting, allocation and output processing add work to the measured path. Instrumentation can become part of the delay it is supposed to explain."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change the event name to lesson.completed",
+      "expected": "New lines use that event identity.",
+      "why": "The action produces a different diagnostic category without changing the sequence mechanism."
+    },
+    {
+      "change": "Log every frame with large object dumps",
+      "expected": "The diagnostic system can add substantial work and expose data.",
+      "why": "Event volume, formatting and privacy are part of the logging design."
+    }
+  ],
+  "bridge": "The Uno logging document contains the real provider/category setup. Compare it with the intentionally small in-memory event list, and keep the difference between structured production logging and a visible teaching string explicit."
+}

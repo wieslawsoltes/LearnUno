@@ -1,0 +1,57 @@
+{
+  "id": "localization",
+  "scenario": "A price, date and button caption need to work for more than one language. Formatting values and translating text are related but different tasks. This lesson uses an explicit culture for a reproducible number-formatting experiment, then connects it to resources, fallback, text expansion and layout direction. The goal is to avoid treating localization as a late string-replacement pass.",
+  "vocabulary": [
+    {
+      "term": "Culture",
+      "meaning": "Formatting and related conventions used for values such as numbers and dates."
+    },
+    {
+      "term": "Resource key",
+      "meaning": "A stable identifier used to look up a translated or localized value, rather than embedding every visible sentence directly in code."
+    },
+    {
+      "term": "Fallback",
+      "meaning": "The policy used when a requested language or resource is unavailable."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Separate the typed value from the display string. The decimal 1234.56 can be formatted with different separators without changing its numeric meaning. A culture affects that representation; it does not translate arbitrary English sentences. Keep calculations in typed values and format at the presentation boundary.",
+      "worked": "The starter selects en-US explicitly and calls ToString with N2. Switch to pl-PL and inspect the rendered separators and grouping. Because the culture is explicit, the result does not depend on guessing the learner’s device locale. The exercise is formatting, not a complete resource-localization workflow.",
+      "question": "Does changing CultureInfo automatically translate a hard-coded “Save” label?",
+      "answer": "No. Culture-sensitive formatting and translated UI resources are different mechanisms. The label needs an appropriate resource or explicit translation source."
+    },
+    {
+      "explain": "Use complete translatable messages rather than assembling sentences from English-shaped fragments. Word order, plural forms and grammatical agreement can differ. Resource keys should remain stable as wording changes, and placeholders should preserve the meaning of inserted values. A translator should not have to reconstruct an undocumented concatenation rule from code.",
+      "worked": "Read the upstream string-resource example and identify the key, language-specific value and XAML or code lookup. Compare it with a hard-coded Text property in the beginner starter. The resource system supplies text; the control still needs enough layout space and an accessible name consistent with that text.",
+      "question": "Why is “You have ” + count + “ tasks” a weak localization design?",
+      "answer": "It assumes one word order and plural pattern. A complete localized message with defined placeholders can express the grammar of the target language."
+    },
+    {
+      "explain": "Localization changes geometry as well as words. Longer labels, different glyph metrics, larger accessibility text and right-to-left flow can expose fixed widths and positional assumptions. Test meaningful content rather than only checking that a resource file loads. Mirroring a layout may require reviewing icons and directional interactions as well.",
+      "worked": "Use the lesson-specific culture model to compare representations, then open the upstream resource sample. In a full view, substitute a deliberately longer translation and narrow the window. Record which regions wrap, grow or truncate and whether the main action remains understandable and reachable.",
+      "question": "What can fail after a correct translation is loaded?",
+      "answer": "The layout may clip or overlap text, focus order may become awkward, and directional assumptions may no longer make sense. Correct strings do not automatically imply a usable localized interface."
+    },
+    {
+      "explain": "Fallback behavior should be deliberate and testable. Missing keys and unsupported cultures should not produce a blank critical action or a crash. Verify the packaged resource paths on the target, because source files existing in the repository does not prove that the published app contains them. Keep culture selection separate from data-storage formats when interoperable serialization is required.",
+      "worked": "Build a test matrix with two languages, one missing key, narrow width and enlarged text. For stored or exchanged numbers, use an explicit machine-readable contract rather than persisting a localized display string and hoping it parses elsewhere. The live formatting experiment is the starting point for that separation.",
+      "question": "Should a localized price label be used as the authoritative persisted numeric value?",
+      "answer": "No. Store a typed or invariant serialized value according to the data contract, then apply culture-specific formatting when displaying it."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change en-US to pl-PL",
+      "expected": "The number’s presentation changes while its decimal value stays the same.",
+      "why": "Culture affects formatting, not the underlying arithmetic value."
+    },
+    {
+      "change": "Load a longer translation",
+      "expected": "Layout may require more room.",
+      "why": "Text resources and geometry must be validated together."
+    }
+  ],
+  "bridge": "The Uno localization and string-resource documents show actual resource packaging and lookup. The runnable lab isolates CultureInfo formatting; use the source examples to extend it with translated text rather than implying that formatting alone localizes the application."
+}

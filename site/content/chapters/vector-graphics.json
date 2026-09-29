@@ -1,0 +1,57 @@
+{
+  "id": "vector-graphics",
+  "scenario": "A diagram shape rotates correctly but its selection outline and hit testing do not. Geometry, layout allocation and transformed output have been mixed together. Keep the model shape independent from the transform and derive the output and selection behavior from a consistent mapping.",
+  "vocabulary": [
+    {
+      "term": "Model geometry",
+      "meaning": "Points or path commands expressed in the shape’s own coordinate space."
+    },
+    {
+      "term": "Affine transform",
+      "meaning": "A mapping that can combine translation, scale, rotation and skew."
+    },
+    {
+      "term": "Axis-aligned bounds",
+      "meaning": "A rectangle aligned with the target axes that encloses transformed geometry."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Vector geometry describes relationships between points rather than a fixed raster. Path commands define contours; fill and stroke are separate painting choices. A path’s bounds alone do not describe its interior, holes or stroke coverage. Keep units and origin explicit so geometry can be reused at different scales without modifying its underlying points.",
+      "worked": "The starter triangle uses three vertices and a closing path command. Increase StrokeThickness while keeping the vertices unchanged. The model contour is unchanged, but painted coverage can grow outside it. This matters for clipping, damage regions and selection outlines that must include the visible stroke.",
+      "question": "Does increasing stroke thickness change the triangle’s stored vertices?",
+      "answer": "No. It changes how the geometry is painted. Bounds used for painted coverage may need expansion even though the model points remain the same."
+    },
+    {
+      "explain": "A transform maps model coordinates into another space. Composition order matters: rotation around an origin differs from rotation around the shape center, and translation before rotation differs from translation afterward. Use one clearly documented forward transform, then derive the inverse needed by input rather than maintaining unrelated coordinate corrections.",
+      "worked": "In the atlas, rotate the triangle while inspecting its transformed points. Next change the scale. The original vertex list should remain stable while the output coordinates change. This separation makes undo and serialization simpler: you can store a model and transform independently when the application’s editing semantics call for it.",
+      "question": "Why retain model points instead of repeatedly overwriting them with transformed positions?",
+      "answer": "It preserves the original representation and avoids accumulating transformations or losing an easy inverse relationship. Some editing operations intentionally bake transforms, but that should be an explicit command."
+    },
+    {
+      "explain": "The axis-aligned bounds of a rotated shape can be larger than its original layout rectangle. Compute extrema in the space where the bounds will be used. RenderTransform normally does not ask the parent to allocate the transformed visual bounds as a new desired layout size, so output can extend beyond the original slot or be clipped by an ancestor.",
+      "worked": "Compare the atlas triangle at zero degrees and an oblique angle. The transformed bounding rectangle changes even if the model size does not. In a real Uno page, inspect clipping and neighboring controls rather than assuming rotation causes the layout panel to make room. Layout and rendering are coordinated stages, not interchangeable operations.",
+      "question": "Why can rotated content overlap a neighbor despite a correct layout pass?",
+      "answer": "The render transform affects output after the original layout allocation. The parent may still reserve the untransformed slot, and clipping/overlap policy must be handled intentionally."
+    },
+    {
+      "explain": "Hit testing can inverse-transform the pointer into model space and test against the original geometry. A bounding-box test is often an efficient broad phase, but it can accept points outside the filled shape. Include stroke and interaction-tolerance policies where the task requires them, especially at different zoom levels.",
+      "worked": "Test the center, vertices, a point inside the bounding box but outside the triangle, and a point just beyond the stroke. Repeat after rotation and scaling. When the workload grows from a few controls to dense CAD-style drawing, evaluate a custom surface, spatial indexing, text handling and accessibility rather than assuming one XAML Shape per entity will fit every scale.",
+      "question": "What is the role of a broad-phase bounding-box test?",
+      "answer": "It cheaply rejects impossible candidates. A more precise geometry test can then decide which remaining shape is actually hit."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Rotate without changing model vertices.",
+      "expected": "Output points and enclosing bounds change.",
+      "why": "The transform maps stable model geometry into output space."
+    },
+    {
+      "change": "Test a point inside the bounds but outside the triangle.",
+      "expected": "A precise fill hit should reject it.",
+      "why": "Axis-aligned bounds conservatively include space the shape does not occupy."
+    }
+  ],
+  "bridge": "The upstream shapes guide documents XAML geometry and brushes; SKCanvasElement shows a different drawing-surface integration. They are alternative levels of abstraction, not evidence that this small triangle needs a custom renderer. The atlas clarifies transform mathematics; target rendering and input remain independently testable."
+}

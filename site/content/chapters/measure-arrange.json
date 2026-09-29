@@ -1,0 +1,57 @@
+{
+  "id": "measure-arrange",
+  "scenario": "A view updates correctly only after calling UpdateLayout everywhere. Before adding another forced pass, trace what changed, what became invalid, and which parent-child contract should produce the new rectangle. This chapter separates layout correctness from attempts to force the screen to catch up.",
+  "vocabulary": [
+    {
+      "term": "Constraint",
+      "meaning": "The available size offered during measurement; an axis can be unbounded."
+    },
+    {
+      "term": "DesiredSize",
+      "meaning": "The size a child reports after being measured."
+    },
+    {
+      "term": "Arrange rectangle",
+      "meaning": "The final placement and size assigned to a child by its parent."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start at the property change. Some changes affect desired size, some affect placement, and others affect only drawing or composition state. A setter equality check can prevent a redundant invalidation when no effective value changes. The public property name alone does not prove every renderer takes an identical path, so trace its metadata and implementation when investigating a real defect.",
+      "worked": "Compare Text, Width and Opacity in the atlas. The diagram is a dependency model, not a timing trace. In the live example, changing the Border height leads to a new arranged size report. Do not interpret every reported SizeChanged as proof that an entire application tree was remeasured.",
+      "question": "What should be established before optimizing an invalidation?",
+      "answer": "Which input actually changed, what output must change, and which stage depends on that input. Skipping required work is a correctness bug, not an optimization."
+    },
+    {
+      "explain": "Measure gives each child a constraint and obtains a desired size. A panel combines those responses according to its layout policy. Unbounded space is common along a scrolling direction; it is a special constraint to handle, not a finite amount to divide among star tracks. A custom measure implementation must return a meaningful desired result rather than blindly echoing infinity.",
+      "worked": "The upstream StackPanel test measures a child, adds another, waits for relayout and asserts the new height. It demonstrates a causal contract: changing child membership changes the panel’s desired extent. Read the assertions and awaited conditions together; checking before the scheduled layout completes would test the wrong moment.",
+      "question": "Why is a passing assertion after a fixed delay weaker than a relayout-aware assertion?",
+      "answer": "The delay guesses when work finished. A condition tied to the relevant layout state identifies what the test is actually waiting to observe."
+    },
+    {
+      "explain": "Arrange assigns final rectangles using the parent’s actual allocation and the measured child information. A child’s desired width is not a guarantee that the parent can provide that width. Alignment, margins, min/max values and clipping affect how the offered rectangle becomes visible output. Keep the panel’s measure and arrange spacing policies consistent.",
+      "worked": "Inspect a finite-height child inside the example and resize the preview width. The reported arranged width can change while its requested height remains fixed. For a custom panel, record every final child rectangle and compare the occupied extent with the size returned from measurement; unexplained disagreement is a useful diagnostic signal.",
+      "question": "Is DesiredSize always identical to the final arranged size?",
+      "answer": "No. It is the child’s measured request under a constraint. The parent’s final allocation and layout policy determine arrangement."
+    },
+    {
+      "explain": "After layout, rendering still has to present the result. A redraw is not necessarily another measure pass. Conversely, forcing a layout pass does not prove that all asynchronous data or GPU work has completed. Avoid synchronous UpdateLayout calls inside repeated property or child callbacks unless a specific, documented need justifies them.",
+      "worked": "Use the measure-detector sample to observe measure and arrange separately. Keep instrumentation lightweight and scoped: logging every callback can become the performance problem. Once correctness is established, measure a representative release workload and compare the number of passes as well as elapsed time. A smaller count is useful only when the displayed result remains correct.",
+      "question": "What makes a layout optimization convincing?",
+      "answer": "A reproducible scenario, unchanged geometry/behavior, and measured reduction in the relevant work on a stated target. Fewer callbacks alone are not proof of correct output."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Add one fixed-height child to a vertical panel.",
+      "expected": "Its desired vertical extent should increase by that child and any new gap.",
+      "why": "The measurement combines the current children, not a stale cached count."
+    },
+    {
+      "change": "Assign the same effective value again.",
+      "expected": "A well-designed equality guard can avoid unnecessary invalidation.",
+      "why": "No changed dependency means no new output is required in that model."
+    }
+  ],
+  "bridge": "The pinned layout documentation explains platform-specific implementation details; the runtime test and measurement helper provide concrete evidence. Their target and version matter. The atlas simplifies the invalidation graph and does not claim to count actual Uno layout passes."
+}

@@ -1,0 +1,57 @@
+{
+  "id": "xaml-pipeline",
+  "scenario": "A name works on a page but cannot be found inside a repeated item template. The markup looks like one document, yet runtime construction creates multiple scopes and instances. This chapter connects XAML syntax, generated construction and namescope identity.",
+  "vocabulary": [
+    {
+      "term": "Namescope",
+      "meaning": "A context mapping XAML names to instances for a particular constructed scope."
+    },
+    {
+      "term": "Generated construction",
+      "meaning": "Build-produced code that creates objects and connects members, bindings or events."
+    },
+    {
+      "term": "Template instance",
+      "meaning": "A separate constructed visual tree produced from a shared template definition."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "XAML parsing identifies elements, properties, resources and language features. A normal project’s build pipeline can generate code and metadata for named members, events and compiled bindings. Runtime XamlReader follows a different path: it can construct supported runtime markup but does not run all project generators on demand.",
+      "worked": "The current lab constructs objects explicitly in C#. Compare each assignment with the equivalent markup in an introductory lesson. Then inspect generated output from a full XAML project to see how names and initialization become concrete code. Do not paste generated fragments into the runtime editor and assume the entire build context comes with them.",
+      "question": "Why can x:Bind work in a built page but fail in runtime XamlReader?",
+      "answer": "x:Bind depends on generated project code. Runtime parsing alone does not produce that compile-time binding machinery."
+    },
+    {
+      "explain": "A template definition is a recipe; each application creates a distinct instance with its relevant namescope. Reusing x:Name=\"Editor\" inside several independent template instances does not imply one global Editor object. Data context and name lookup are separate relationships that can coincide in simple examples but diverge in templates.",
+      "worked": "The atlas constructs multiple scopes and names, making the same name visible in different instances. Select the scope before resolving a name. The upstream ListView sample’s named CheckBox inside an item template is a useful concrete case: each row’s binding must identify the CheckBox in that row, not an arbitrary global match.",
+      "question": "Why can the same name appear in several item-template instances?",
+      "answer": "They belong to separate constructed scopes. Name uniqueness is evaluated within the relevant scope, not as one global identifier across the application."
+    },
+    {
+      "explain": "Registration associates a name with one instance inside its scope. Duplicate names in the same scope should not be treated as an arbitrary search-order problem. When diagnostics mention duplicates or missing named members, inspect which construction path created the scope and which names were registered there.",
+      "worked": "Create a duplicate in the atlas’s selected scope, then compare it with the same name in another scope. The first is a conflict; the second can be legitimate. In a full project, inspect XAML diagnostics and generated members rather than renaming unrelated controls until the error happens to disappear.",
+      "question": "Is a duplicate-name error fixed by changing visual z-order?",
+      "answer": "No. The conflict is in name registration, not which control is painted on top. The scope and identifiers need a coherent definition."
+    },
+    {
+      "explain": "Lookup begins from a relevant context and is not equivalent to a recursive global visual-tree search. ElementName, template relationships and generated fields have different resolution mechanisms. When lookup fails, verify scope, timing and construction path before assuming the object was never created.",
+      "worked": "Ask the atlas to resolve a name in each scope and compare returned identity. Then inspect the full source of the imported template sample. For a compiled-page failure, use the upstream source-generation troubleshooting guide to find generated diagnostics. Fix the originating markup or generator input rather than editing a transient generated file.",
+      "question": "What should you check when FindName does not find a template child?",
+      "answer": "The lookup scope and template-instance context, whether the template has been applied, and the API appropriate to that relationship. A global name assumption is often the actual defect."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Register the same name twice in one modeled scope.",
+      "expected": "The model reports a conflict.",
+      "why": "One scope must map a name unambiguously."
+    },
+    {
+      "change": "Reuse a name in two separate template instances.",
+      "expected": "Each scope resolves its own object identity.",
+      "why": "A shared recipe produces separate instance scopes."
+    }
+  ],
+  "bridge": "The source-generation and x:Bind architecture guides describe build-time mechanisms. The namescope atlas is a focused model of one consequence of construction, and the item-template excerpt supplies a concrete example. The online runner does not compile arbitrary generated-page features."
+}

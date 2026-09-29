@@ -1,0 +1,57 @@
+{
+  "id": "navigation",
+  "scenario": "A user opens a details page, goes back and expects the selected item and unfinished work to make sense. Navigation is more than replacing one control with another: it changes destination state, ownership and possibly history. This lesson uses Frame to expose the core mechanism, then separates navigation callbacks from visual attachment and discusses parameters, caching and restoration.",
+  "vocabulary": [
+    {
+      "term": "Destination state",
+      "meaning": "The information needed to identify and initialize the screen being opened, often a stable ID rather than a live control."
+    },
+    {
+      "term": "Back stack",
+      "meaning": "The navigation history used to return to earlier destinations under the host’s navigation policy."
+    },
+    {
+      "term": "Visual attachment",
+      "meaning": "An element joining or leaving a visual tree, which is not necessarily the same event as entering or leaving a navigation destination."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Describe the destination before choosing an API. A details page usually needs an item identity, not an entire existing visual tree. Small explicit parameters are easier to validate, restore and serialize. Passing a large mutable view model can be appropriate in a controlled application, but it creates an ownership contract that should not be accidental.",
+      "worked": "The starter calls Frame.Navigate with a page type and no parameter to keep the first transition simple. Identify the Frame that owns the displayed destination. The page constructor creates its content, but it is the navigation host that selects when this destination becomes current.",
+      "question": "Why is an item ID often a better navigation parameter than a TextBlock?",
+      "answer": "The ID describes the task independently of the previous view. A control reference couples navigation to a visual lifetime and cannot serve as a durable restoration contract."
+    },
+    {
+      "explain": "Frame navigation and route-based application navigation can provide different levels of coordination. Uno.Extensions.Navigation can add routes and regions around the underlying UI. Learn the core destination and history behavior first, then adopt the abstraction needed by the application. Do not assume a browser URL automatically mirrors every internal navigation operation.",
+      "worked": "Run the starter and open DetailsPage. Compare the minimal Frame call with the upstream navigation example’s page, parameter and back-handling code. A full app should also define behavior for a failed destination load, an invalid parameter and repeated navigation to the same logical item.",
+      "question": "Does displaying a new Frame page automatically prove that a browser deep link can restore it?",
+      "answer": "No. URL mapping, parameter parsing and restoration require their own integration. A visible internal navigation transition is only part of the contract."
+    },
+    {
+      "explain": "Loaded and Unloaded describe visual-tree attachment; navigation callbacks describe entering or leaving a destination. Caching and host structure can make their sequences differ. Subscribing or starting a task on every Loaded event without accounting for repeated attachment can duplicate work. Decide which lifetime owns each subscription and operation.",
+      "worked": "The lesson-specific model tracks page/history state. Open a destination, leave it and revisit it while comparing retained and recreated state. Then ask which work should be cancelled on departure and which data should remain cached. The correct policy is task-dependent, but its ownership must be explicit.",
+      "question": "Why should a page not treat every Loaded event as a brand-new domain session?",
+      "answer": "A view can be reattached or cached without representing a new user task. Reinitializing blindly can reset state or duplicate subscriptions."
+    },
+    {
+      "explain": "Restoration should recreate meaningful state idempotently. Validate parameters, load required data and handle missing records without assuming the previous process or page instance still exists. Preserve user edits according to an explicit policy. A back action that returns to a visually similar page but loses the task context is not automatically correct.",
+      "worked": "Extend the full-project version with a stable item parameter and a back action. Test a fresh deep link, a missing ID and a return after changing data. The browser runner demonstrates core Frame behavior, but platform back buttons and browser history must be tested through their actual host integrations.",
+      "question": "Which cases belong in a navigation acceptance test beyond “the page appears”?",
+      "answer": "Parameter validity, back behavior, state preservation, failure handling and restoration from a fresh launch. These distinguish a usable workflow from a simple content swap."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Navigate to DetailsPage",
+      "expected": "The Frame displays that page’s content.",
+      "why": "The navigation host selects the destination type."
+    },
+    {
+      "change": "Reattach a cached view",
+      "expected": "Its attachment events may repeat without a new domain task.",
+      "why": "Visual lifetime and navigation lifetime are related but distinct."
+    }
+  ],
+  "bridge": "The upstream Frame/navigation samples contain the page and history context omitted by the tiny starter. Use them to inspect parameters and lifecycle behavior, while keeping browser deep-link and platform-back integration as explicit additional tests."
+}

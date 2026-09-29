@@ -1,0 +1,57 @@
+{
+  "id": "rendering-invalidation",
+  "scenario": "A moving object leaves a ghost at its old location because the renderer repaints only the new bounds. Damage tracking must describe all pixels affected by a change, including what was exposed. The smallest possible region is not useful if it omits required work.",
+  "vocabulary": [
+    {
+      "term": "Damage region",
+      "meaning": "A conservative area whose previous pixels may no longer be correct."
+    },
+    {
+      "term": "Expanded bounds",
+      "meaning": "Geometry bounds enlarged to include a modeled stroke or effect extent."
+    },
+    {
+      "term": "Tile classification",
+      "meaning": "Marking fixed regions that intersect the affected geometry."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Retain enough previous state to identify where old output existed. When an object moves or disappears, those pixels may need clearing or reconstruction from the scene behind it. Tracking only the current object bounds loses that information. The required work depends on retained scene and compositing policy, not merely the object’s new position.",
+      "worked": "In the atlas, compare the outlined previous rectangle with the current draggable object. Tiles intersecting only the old expanded bounds are still marked. They represent exposed output that must be repaired even though the moved object no longer occupies that region.",
+      "question": "Why are old-only tiles dirty?",
+      "answer": "Their pixels may still contain the object’s previous appearance. The scene at those positions must be reconstructed or cleared according to the renderer’s policy."
+    },
+    {
+      "explain": "The new position contributes another region. A single bounding union is conservative but can include a large empty area when old and new positions are far apart. Tracking disjoint regions or tiles can reduce unnecessary work while remaining correct. More regions also have bookkeeping costs, so measure the actual workload.",
+      "worked": "Move the object to the separated preset and compare affected-tile count with bounding-union tile count. The numbers are calculated from the fixture geometry, not frame-time measurements. A lower tile count identifies a possible reduction in work, but does not alone prove a GPU speedup.",
+      "question": "Does fewer dirty tiles automatically mean faster frames?",
+      "answer": "No. Submission overhead, dependencies, bandwidth, rendering cost and hardware behavior also matter. Tile count is a geometry result, not a benchmark."
+    },
+    {
+      "explain": "Stroke, antialiasing, shadows, filters and transformed clips can extend affected output beyond raw object bounds. Expand conservatively for the effect being modeled. Real compositing effects can require more than a uniform rectangular expansion, so document the simplification and compare against a full-redraw reference before trusting a damage optimization.",
+      "worked": "Increase effect expansion in the atlas without moving the object. More tiles can become affected because painted coverage grows. Test near the surface edge, where bounds extend outside the visible canvas. The model clips tile coverage to the surface; a production renderer must also handle its actual clip and effect dependencies.",
+      "question": "Why is a stroke-width change a damage event even when vertices stay fixed?",
+      "answer": "The set of painted pixels can change around the same geometry. Raw vertex bounds do not fully describe visible stroke coverage."
+    },
+    {
+      "explain": "The GPU experiment classifies tiles against both expanded rectangles, renders the computed flags and reads them back to compare every flag with an independent CPU model. Revision checks prevent an old readback from replacing newer evidence. This readback is for teaching and validation, not a recommended production per-frame design.",
+      "worked": "Change tile size and inspect the verification message. Smaller tiles refine the spatial classification while increasing the number of cells. In the source sample, a property callback calls Invalidate on a custom drawing element, connecting changed state to another draw. That sample does not implement the atlas’s tile engine or prove whole-framework partial redraw.",
+      "question": "What does an exact GPU/CPU match establish here?",
+      "answer": "Agreement for the modeled tile-intersection algorithm and current inputs on the tested adapter. It does not certify all effects, an entire renderer, or physical-device performance."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Move the object far from its previous position.",
+      "expected": "The bounding union can cover more tiles than the two disjoint regions.",
+      "why": "The union includes unaffected space between the positions."
+    },
+    {
+      "change": "Increase effect expansion while keeping geometry fixed.",
+      "expected": "Additional neighboring tiles can become dirty.",
+      "why": "Painted coverage extends beyond the unexpanded bounds."
+    }
+  ],
+  "bridge": "The composition guide and SKCanvasElement source show real drawing/invalidation APIs. The atlas implements its own explicitly bounded GPU experiment and keeps SVG/CPU results available without WebGPU. Treat the model’s validation and Uno’s renderer behavior as separate evidence."
+}

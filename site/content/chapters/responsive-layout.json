@@ -1,0 +1,57 @@
+{
+  "id": "responsive-layout",
+  "scenario": "A dashboard has enough space for a horizontal action row on a wide window but needs a vertical arrangement in a narrow pane. Device names are a poor predictor because the same desktop window can be resized and the same browser app can be embedded. This lesson derives responsive behavior from available space, then checks that rearrangement preserves the user’s task and state.",
+  "vocabulary": [
+    {
+      "term": "Breakpoint",
+      "meaning": "A threshold chosen because the content needs a different arrangement, not merely because a device category has a familiar name."
+    },
+    {
+      "term": "Logical unit",
+      "meaning": "The coordinate unit used by the UI layout system, which need not correspond to one physical display pixel."
+    },
+    {
+      "term": "Visual state",
+      "meaning": "A named collection of property changes representing a UI condition, often used for responsive layouts."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Measure the actual constraint received by the view. Available width can differ from total screen width because of window borders, split panes, sidebars or embedding. Design a breakpoint around the point where content becomes awkward, not around a presumed phone resolution. The same input may legitimately produce different layouts in two regions of one window.",
+      "worked": "The starter observes the root Grid’s SizeChanged event and uses e.NewSize.Width. It does not inspect a browser user-agent string. Read that value in the live preview while resizing it. The displayed number is evidence about the view’s actual arranged width, not a guess about the physical device.",
+      "question": "Which width should an embedded settings panel normally use for its own breakpoint?",
+      "answer": "The width offered to that panel. The whole screen width can be much larger and would describe the wrong constraint."
+    },
+    {
+      "explain": "A breakpoint is a design decision with boundary cases. Choose behavior for just below, exactly at and just above the threshold. If several properties change together, named visual states can express the condition more clearly than scattered event-handler assignments. Keep the fallback state intentional so the view has a valid initial arrangement.",
+      "worked": "The starter uses a simple >= 600 condition. Before editing it, predict the orientation at widths 599, 600 and 601. Move the threshold to 480 and repeat the reasoning. In a full project, compare this imperative form with AdaptiveTrigger and VisualStateManager in the upstream documentation.",
+      "question": "At exactly 480 after the exercise edit, which orientation is selected?",
+      "answer": "Horizontal, because the condition is greater than or equal to 480. Boundary operators are part of the behavior, not incidental syntax."
+    },
+    {
+      "explain": "Responsive layout should rearrange a task without destroying its state. Recreating the entire page on every size change can lose input, selection, subscriptions or focus. Prefer changing the necessary layout properties on the existing logical view where possible. Expensive secondary computations can be scheduled separately from essential visual feedback.",
+      "worked": "The starter retains the same label and buttons while changing the StackPanel orientation. Add a text input in a separate experiment, type into it and cross the breakpoint repeatedly. The text should survive because a layout transition is not a request to reset application data. Verify keyboard focus as well as appearance.",
+      "question": "Why is rebuilding the view model on every resize usually the wrong response?",
+      "answer": "A geometry change does not imply a new user task. Recreating state can discard edits and create unnecessary work or duplicate subscriptions."
+    },
+    {
+      "explain": "Test content-driven variation, not only viewport variation. Longer translations, larger text, validation messages and different item counts can expose breakpoints that were tuned only for one screenshot. A narrow layout should preserve the most important actions, explain overflow and remain operable by keyboard and touch.",
+      "worked": "Use the upstream adaptive sample as a pattern, then make a small test matrix: narrow and wide, short and long text, default and enlarged typography. Write what changes and what must remain invariant. The atlas helps explain the threshold, while real target tests establish focus, input and accessibility behavior.",
+      "question": "What invariant should survive a layout-state transition?",
+      "answer": "The user’s meaningful state: entered data, selected item and current task. Focus should also remain predictable unless the design intentionally moves it to an equivalent visible control."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Width equals the >= threshold",
+      "expected": "The wide arrangement is selected.",
+      "why": "The boundary operator includes equality."
+    },
+    {
+      "change": "Resize after entering text",
+      "expected": "The text should remain.",
+      "why": "Changing layout geometry should not recreate or reset unrelated state."
+    }
+  ],
+  "bridge": "The AdaptiveTrigger documentation and sample show declarative responsive states in project XAML. The runner’s imperative example exposes the same width-based decision directly; it does not claim to compile every project trigger or visual-state resource automatically."
+}

@@ -1,0 +1,57 @@
+{
+  "id": "target-matrix",
+  "scenario": "A shared project builds for the browser, so the team marks every platform as supported. A native file picker then fails during a customer demonstration. Shared source reduces duplication, but each target remains an integration contract with its own build, permissions and behavioral evidence.",
+  "vocabulary": [
+    {
+      "term": "Target framework",
+      "meaning": "The selected .NET platform/API build context."
+    },
+    {
+      "term": "Capability",
+      "meaning": "An operation that may be available, denied or unsupported on a target."
+    },
+    {
+      "term": "Evidence matrix",
+      "meaning": "A record of which build and behavior checks were actually completed."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "List the targets you intend to support and the scenarios users need on each. Desktop, mobile and browser hosts differ in lifecycle, windowing, permissions, deployment and available APIs. A target label is too broad without the relevant version and configuration. Use a matrix to keep an untested scenario visibly unknown rather than silently treating it as supported.",
+      "worked": "The atlas separates target names from build and behavior evidence. Mark one browser scenario as tested while leaving a native target unknown. The resulting status should not invent a native success. In the live lesson, capability statements are illustrative labels, not device probes or permission requests.",
+      "question": "What should an empty verification cell mean?",
+      "answer": "Unknown or not yet tested. It is neither evidence of success nor necessarily evidence of a defect."
+    },
+    {
+      "explain": "Build verification proves that the selected source, references and tooling produced an artifact. Conditional source files and compile symbols can choose different implementations on each target, so compiling one target does not validate another branch. Keep platform-specific behavior at a capability boundary instead of distributing conditional checks through unrelated domain logic.",
+      "worked": "Inspect the pinned platform-specific C# guide for how source is selected. Identify one platform-specific implementation and the shared interface it satisfies. Build the intended target explicitly. A portable view model should not need to know whether the implementation uses a browser dialog or a native API just to express the task.",
+      "question": "Why keep platform conditionals near the integration boundary?",
+      "answer": "It keeps shared rules testable and prevents platform selection from leaking throughout the application. Each implementation can then document and test its own contract."
+    },
+    {
+      "explain": "Behavior verification requires running the task: input, expected result, cancellation, failure and recovery. An API declaration can exist while an implementation is unavailable or behaves differently on a target. Check supported-status documentation and relevant tests, but still verify the exact user journey your application depends on.",
+      "worked": "Take a file-choice capability. Test success, cancellation and denied/unavailable access. Record whether the returned identity is a path, stream or platform-specific handle and how long it remains usable. This reveals portability assumptions that a compiler cannot detect, such as expecting an unrestricted filesystem path in a browser.",
+      "question": "Does a method appearing in IntelliSense prove it works on every target?",
+      "answer": "No. The projected API surface and actual implementation support are different kinds of evidence. Documentation, source and target execution must be considered together."
+    },
+    {
+      "explain": "Publish the matrix with enough context to reproduce the checks. Separate build success, automated behavior tests, manual target tests and performance measurements. When a feature is absent, design a usable fallback or clear explanation. Do not claim complete parity merely because the same screenshot can be produced on two hosts.",
+      "worked": "Update the atlas cells and explain which claim is justified by each one. Then write a real project support note containing target versions, scenarios tested, known differences and unresolved gaps. Revisit the matrix when dependencies or deployment configurations change; previously valid evidence has a scope, not an unlimited lifetime.",
+      "question": "What makes a platform support statement professional?",
+      "answer": "It states the supported scenarios and versions, cites actual validation, and makes limitations or unknowns explicit instead of implying universal equivalence."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Build only the browser target.",
+      "expected": "Only that build result becomes known.",
+      "why": "Shared source does not execute unselected platform branches."
+    },
+    {
+      "change": "Test successful file selection but not cancellation.",
+      "expected": "The cancellation cell remains unverified.",
+      "why": "One happy-path journey does not establish the whole capability contract."
+    }
+  ],
+  "bridge": "The platform-specific C#/XAML guides and not-implemented-type documentation describe real Uno boundaries. The atlas is an evidence organizer, not an automated target test runner. Keep its modeled selections distinct from checks you actually run."
+}

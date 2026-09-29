@@ -1,0 +1,57 @@
+{
+  "id": "persistence",
+  "scenario": "A task workspace should survive a reload without saving the entire visual tree. Persistence starts with a durable data contract, then adds serialization, storage and recovery. This lesson keeps those stages distinct and introduces schema versions so that tomorrow’s app can still understand yesterday’s saved state. The live code performs a JSON round trip in memory; it deliberately does not claim that serialization is a durable write.",
+  "vocabulary": [
+    {
+      "term": "Serialization",
+      "meaning": "Converting data into a representation such as JSON; it is separate from storing that representation durably."
+    },
+    {
+      "term": "Schema version",
+      "meaning": "An explicit identifier for the shape and meaning of saved data, used to select validation and migration rules."
+    },
+    {
+      "term": "Atomic replacement",
+      "meaning": "A storage strategy that avoids exposing a partially written new snapshot as if it were complete, where the storage system supports it."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Choose what should outlive the process. Stable IDs, user-entered values and domain status belong in a snapshot. Controls, delegates, native handles and transient hover states generally do not. A durable contract should be understandable without the old visual tree and should not depend on a particular control instance still existing.",
+      "worked": "Read the SavedTask record in the starter. It contains a version, title and completion flag, all meaningful data values. The TextBlock that displays the JSON is not part of the record. This separation makes the same snapshot useful for a browser or native host even though each host may store it differently.",
+      "question": "Why should a persisted task use an ID and data rather than a reference to its current item container?",
+      "answer": "The container belongs to a UI lifetime and may be recycled or destroyed. Durable data must identify the logical task independently of that visual object."
+    },
+    {
+      "explain": "Serialization validates only part of the pipeline. A value can serialize successfully and still fail to reach storage because of quota, permissions, interrupted writes or unavailable browser persistence. After deserialization, validate required fields and ranges before admitting the result into application state. A syntactically valid JSON document can still describe an invalid domain object.",
+      "worked": "The live example serializes SavedTask and deserializes it immediately. Change the completion flag and confirm that the restored record preserves it. This is evidence for that JSON contract, not for persistence across reload. In the online sandbox, settings are deliberately ephemeral per frame; the course’s saved notes use a separate storage context.",
+      "question": "What does the successful in-memory round trip prove?",
+      "answer": "The chosen data can be represented and reconstructed by this serializer configuration. It does not prove durable storage, recovery after interruption or compatibility with older schemas."
+    },
+    {
+      "explain": "Versioned data lets migrations be explicit and testable. Load a known old fixture, transform it into the current representation, validate the result and keep unsupported future versions distinguishable from corrupt input. Do not silently guess missing semantics merely because a field has a convenient default value.",
+      "worked": "The atlas models schema migration with a visible before/after shape. Identify which values are preserved, transformed or introduced. In a real project, store old-version fixtures in tests and run migrations without a UI. The version of the application binary and the version of the persisted schema need not be the same number.",
+      "question": "Why keep an old saved-data fixture in the test suite?",
+      "answer": "It provides concrete evidence that a later release still understands the previous contract. Testing only newly written data misses migration defects."
+    },
+    {
+      "explain": "Storage design includes recovery and ownership. Native files may need temporary-write-and-replace behavior; browser stores have their own transaction and quota rules. Do not depend on a final shutdown callback always running. Save meaningful state at appropriate boundaries and restore idempotently so replaying recovery does not duplicate records.",
+      "worked": "Use the upstream ApplicationData and file examples to identify the actual storage API and platform caveats. Then write a test plan for missing data, corrupt JSON, old schema, failed write and successful reload. Preserve a last known-good snapshot where the storage design permits, and make a failed save visible to the user.",
+      "question": "Can a final window-close handler guarantee that every edit is saved before process loss?",
+      "answer": "No. Processes and tabs can end abruptly. Persistence and recovery should tolerate interruption rather than rely on one guaranteed final callback."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change Done to true and round-trip",
+      "expected": "The restored record remains completed.",
+      "why": "The serializer preserves the represented field value."
+    },
+    {
+      "change": "Serialization succeeds but storage rejects a write",
+      "expected": "Report the save failure and preserve recoverable state.",
+      "why": "Representation and durability are separate contracts."
+    }
+  ],
+  "bridge": "The Uno storage documentation explains where application data can be written on actual targets. Compare those APIs with the intentionally in-memory JSON exercise, and retain the sandbox’s ephemeral-storage boundary when discussing reload behavior."
+}

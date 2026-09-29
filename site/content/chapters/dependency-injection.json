@@ -1,0 +1,57 @@
+{
+  "id": "dependency-injection",
+  "scenario": "A presenter needs a greeting today and a network-backed profile tomorrow. If it constructs a specific service internally, changing or testing that behavior becomes harder. Dependency injection makes the required capability an explicit input. This lesson begins with manual constructor injection, then examines how lifetimes and disposal affect a real application container. A container automates construction; it does not replace sound ownership decisions.",
+  "vocabulary": [
+    {
+      "term": "Dependency contract",
+      "meaning": "The capability a consumer requires, ideally stated without exposing unnecessary implementation details."
+    },
+    {
+      "term": "Lifetime",
+      "meaning": "The period over which an instance is shared and who is responsible for ending its use."
+    },
+    {
+      "term": "Composition root",
+      "meaning": "The part of the application that selects implementations and assembles the object graph."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "An interface is useful when it describes a real substitution boundary. Presenter needs a greeting capability, not necessarily a concrete FriendlyGreeting implementation. Passing that collaborator into the constructor states the requirement directly and prevents a hidden service lookup from appearing deep inside a method.",
+      "worked": "Read Presenter’s constructor and then its use in Build. The caller chooses FriendlyGreeting. A test can supply another IGreeting without modifying Presenter or constructing a UI. This is dependency injection even though there is no container, registration method or framework attribute in the starter.",
+      "question": "Is a DI container required for constructor injection?",
+      "answer": "No. Passing the dependency explicitly already provides injection. A container can automate the object construction and lifetime management in a larger application."
+    },
+    {
+      "explain": "Lifetime determines sharing. A singleton is reused for the relevant container lifetime; a transient is created for a resolution; a scoped service is shared within a defined scope. In a client application, the scope boundary must be designed rather than copied automatically from an HTTP-request model. A long-lived service can accidentally retain short-lived views.",
+      "worked": "Use the atlas to compare instance identities under different lifetime choices. Ask whether two consumers should share cached state or have independent operations. The answer depends on semantics, not on a universal preference for singleton. A singleton holding mutable per-document state can couple otherwise independent documents.",
+      "question": "Why can a singleton be wrong for state that belongs to one open document?",
+      "answer": "It can make multiple documents share state that should be independent. Lifetime should match the owning task or scope, not merely minimize allocation count."
+    },
+    {
+      "explain": "The owner of a dependency also needs a disposal policy. A service may own sockets, subscriptions, native resources or asynchronous work. Disposing too early can invalidate another consumer; never disposing can retain resources. Avoid injecting a short-lived object into a longer-lived consumer without deliberately handling that mismatch.",
+      "worked": "The upstream service-registration example gives a concrete composition context. Identify which services are registered as shared and which objects consume them. Read a registration as an ownership claim, not just a syntax requirement. In tests, use deterministic doubles that implement the same outcome and cancellation contract as the real dependency.",
+      "question": "What is a captive dependency?",
+      "answer": "A shorter-lived dependency retained by a longer-lived consumer, effectively extending its lifetime beyond the intended scope. It can cause stale state, resource retention or invalid sharing."
+    },
+    {
+      "explain": "Keep service location at the composition boundary rather than scattering global container access through ordinary domain methods. Explicit constructor parameters make dependencies visible during review and testing. They also make it easier to understand startup failure when a required capability is missing.",
+      "worked": "Change the greeting implementation while leaving Presenter untouched. Then write a non-UI test asserting its Title from a known fake. For a full Uno.Extensions.Hosting project, move the same selection into documented registrations and test the resulting application graph. The interface alone does not verify correct lifetime or correct behavior.",
+      "question": "What is the practical benefit of replacing FriendlyGreeting in the test?",
+      "answer": "The test controls an explicit input and can verify the consumer deterministically without invoking the real external service or changing its implementation."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Replace the injected greeting",
+      "expected": "Presenter’s result changes without editing its logic.",
+      "why": "The composition root chooses the collaborator."
+    },
+    {
+      "change": "Share document-specific state as a singleton",
+      "expected": "Independent documents can interfere.",
+      "why": "The lifetime may be broader than the state’s semantic owner."
+    }
+  ],
+  "bridge": "The pinned Uno service examples show registrations in a full application. The manual injection lab strips away the hosting setup so the dependency contract is visible first; use the source example to study composition and lifetime rather than as an instruction to install every package."
+}

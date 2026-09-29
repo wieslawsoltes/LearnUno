@@ -1,0 +1,57 @@
+{
+  "id": "value-precedence",
+  "scenario": "A style says FontSize is 24, but the title still displays at 40. The style is not necessarily broken: another value source can be active. Debug the effective value and its source rather than repeatedly assigning the same setter.",
+  "vocabulary": [
+    {
+      "term": "Effective value",
+      "meaning": "The value selected by the property system from competing sources."
+    },
+    {
+      "term": "Local value",
+      "meaning": "A value or expression supplied at the instance’s local precedence level."
+    },
+    {
+      "term": "ClearValue",
+      "meaning": "Removal of a local entry, allowing another source to become effective."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A dependency property can have more than one candidate source: metadata defaults, styles, local values, bindings and animation-related values, among others. The full framework has a richer precedence system than the atlas’s four-layer subset. Identify which candidates actually exist before reasoning about which one wins.",
+      "worked": "The live lesson creates a TextBlock style with size 24 and a local size 40. Both assignments are present, but the visible result follows the active precedence. Read the code as a list of candidate sources, not a last-write-wins dictionary of unrelated values.",
+      "question": "Does the presence of a style setter guarantee it controls the property?",
+      "answer": "No. A higher-precedence active source can override it. The setter may be valid but not effective for this instance."
+    },
+    {
+      "explain": "Precedence is a contract, not simply chronological assignment order. A lower-priority source does not necessarily override a higher-priority one because it was assigned later. Bindings and theme/resource changes add lifetimes and reevaluation behavior, so inspect the actual source rather than relying only on the CLR getter’s final number.",
+      "worked": "In the atlas, enable the local value and change the style value. The style candidate changes while the effective preview can remain unchanged. Disable the local entry and see the style become effective. This controlled experiment makes an apparently ignored update understandable without inventing a rendering delay.",
+      "question": "Why might changing the style update no visible pixels?",
+      "answer": "The style may not be the active value source. The effective value can remain unchanged even though a lower-priority candidate changed."
+    },
+    {
+      "explain": "The control renders the effective value and reacts to effective changes according to its property metadata and implementation. It should not independently choose whichever source its template author happens to prefer. A custom property inspector benefits from showing both the value and its provenance so users can understand why an edit is overridden.",
+      "worked": "Activate the atlas’s animation layer and inspect the winning source. The preview uses the currently modeled animation contribution, not a measured Storyboard trace. Compare this with the real lab’s report after clearing the local value. One demonstrates a precedence subset; the other executes the actual property system for the style/local case.",
+      "question": "Why display the winning source alongside the value?",
+      "answer": "The same number can come from different sources and respond differently to later edits. Provenance explains behavior that the numeric value alone cannot."
+    },
+    {
+      "explain": "ClearValue removes the local entry. Assigning the metadata-default-looking number still supplies a local value and can continue overriding a style. This distinction matters in reusable controls, property editors and theme-aware applications. Do not use repeated default assignments as a substitute for removing an override.",
+      "worked": "Set local FontSize to the same number as the default in the atlas, then change the style. The local entry still wins. Now clear it and observe the style value. In the real lesson, click Clear local FontSize and inspect both text size and reported value. Add a regression for this difference before implementing a reset-property command in your own designer.",
+      "question": "Is assigning 14 equivalent to ClearValue when 14 is the default?",
+      "answer": "No. The assignment creates or retains a local entry with value 14. ClearValue removes the entry, allowing a style or another lower-priority source to supply the result."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Assign a local value equal to the metadata default.",
+      "expected": "The local source still exists.",
+      "why": "Equality of numbers does not imply equality of precedence state."
+    },
+    {
+      "change": "Clear the local entry while a style setter exists.",
+      "expected": "The style can become effective.",
+      "why": "Clearing changes the set of active value sources."
+    }
+  ],
+  "bridge": "The theme-resource internals guide and source samples provide context for effective values and lookup. The atlas deliberately models four selected layers only. Its animation switch is not the full WinUI/Uno precedence specification, while the live style/ClearValue experiment executes a concrete supported case."
+}

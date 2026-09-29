@@ -1,0 +1,57 @@
+{
+  "id": "debug-loop",
+  "scenario": "A field accepts a number, but one input yields no result and another yields the wrong result. Rather than guessing at framework configuration, separate the failure into compile, runtime and behavioral layers. This lesson builds a repeatable investigation loop: preserve the input, name the expected output, locate the first failing boundary, and reduce unrelated code without deleting the condition that caused the failure.",
+  "vocabulary": [
+    {
+      "term": "Diagnostic",
+      "meaning": "A compiler or runtime report that points to a violated contract; the first relevant report is often more informative than later consequences."
+    },
+    {
+      "term": "Minimal reproduction",
+      "meaning": "The smallest runnable scenario that still exhibits the observed failure, with its input and environment recorded."
+    },
+    {
+      "term": "Regression test",
+      "meaning": "A check that distinguishes the original defect from the intended corrected behavior."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "The compiler validates the language and references before an assembly can run. Assigning a string where an integer is required is therefore different from parsing a string at runtime. Fixing syntax or type compatibility does not guarantee that every input will be valid. Treat compiler errors as precise evidence: location, code and message should guide the next small edit.",
+      "worked": "In the atlas, select Wrong type and observe that later gates do not run. In the real editor, intentionally assign an incompatible value and inspect Roslyn’s diagnostic. Restore a compilable state before investigating a later runtime branch; otherwise you may be discussing code that never actually executed.",
+      "question": "Why is a disabled Run result after a type error not proof of a rendering bug?",
+      "answer": "The program never reached rendering. The first failing boundary is source compilation, so investigating the visual tree would be downstream of the actual defect."
+    },
+    {
+      "explain": "Valid code can still encounter invalid data. int.Parse can throw for an unsuitable input, whereas int.TryParse expresses ordinary input failure as a Boolean result. Choose a failure mechanism according to whether invalid input is expected, and present useful feedback. Catching every exception and returning an empty string hides the difference between bad input and a programming defect.",
+      "worked": "The starter uses TryParse and a conditional expression to show either a result or a clear prompt. Enter empty text, a negative integer and a nonnumeric word. Record which branch executes. Then consider overflow in later arithmetic: successful parsing establishes only that the input fit the integer type, not that every subsequent multiplication is safe.",
+      "question": "Does successful TryParse prove that multiplying its result cannot overflow?",
+      "answer": "No. Parsing and arithmetic have separate ranges and contracts. Choose checked arithmetic, wider types or explicit bounds when overflow matters to the application."
+    },
+    {
+      "explain": "An operation can complete normally and still return the wrong value. Assertions compare actual behavior with a specified expectation. A wrong expectation is also possible, so derive the expected value independently rather than copying the implementation into the test. Small boundary tables expose whether the disagreement belongs to the requirement, the code or the test.",
+      "worked": "Choose Wrong expectation in the model. Compilation and execution remain successful while the assertion fails. In the live exercise, triple eight and expect twenty-four. Keep invalid-input behavior unchanged. This controlled edit isolates arithmetic from validation and makes it possible to explain why one branch changed while the other did not.",
+      "question": "What does a failing assertion establish?",
+      "answer": "It establishes a mismatch between an observed result and an expectation. Investigate which side is wrong using the intended contract; do not assume every failed test proves the implementation is defective."
+    },
+    {
+      "explain": "A useful reproduction records the target, SDK/package versions, input, expected result and actual result. Remove unrelated navigation, services and styling gradually, rerunning after each reduction. When the failure disappears, the last removed dependency may be part of the cause. Preserve a regression test and the original evidence before attempting a broad refactor.",
+      "worked": "Use the upstream repro guide to organize a small issue report. Include exact steps rather than “sometimes broken.” Attach logs that contain the relevant exception, not credentials or unrelated personal data. A repaired example should pass both the original failing case and nearby cases; a screenshot of one successful run is a weaker claim.",
+      "question": "What must a minimal repro preserve even after most application code is removed?",
+      "answer": "The observable failure and the conditions needed to trigger it. A tiny program that no longer fails is not a reproduction of the original problem."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Enter a nonnumeric word",
+      "expected": "A validation prompt is shown.",
+      "why": "The ordinary input failure follows the TryParse false branch."
+    },
+    {
+      "change": "Change multiplication to three and input eight",
+      "expected": "The result is twenty-four.",
+      "why": "The arithmetic expectation is independent of the UI’s successful construction."
+    }
+  ],
+  "bridge": "The Uno repro and troubleshooting guides supply an issue-reporting workflow. The selected sample/test illustrates a concrete assertion or handler boundary. Read its setup and expected outcome before treating it as a recipe for your own failure."
+}

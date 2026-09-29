@@ -1,0 +1,57 @@
+{
+  "id": "ecosystem",
+  "scenario": "An application template offers markup, presentation, hosting, theme and toolkit options. Installing everything may feel comprehensive, but it increases the API surface you must understand and maintain. This lesson separates package roles and authoring syntax so you can select capabilities intentionally. XAML and C# Markup can describe similar object graphs; neither choice automatically determines good state ownership or performance.",
+  "vocabulary": [
+    {
+      "term": "Core UI layer",
+      "meaning": "The framework APIs and implementations used to construct, arrange and interact with controls."
+    },
+    {
+      "term": "Extension package",
+      "meaning": "A library adding a capability such as hosting, navigation or reactive state beyond the core UI surface."
+    },
+    {
+      "term": "Authoring syntax",
+      "meaning": "The notation used to describe a UI, such as XAML, ordinary C# construction or fluent C# Markup."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with a requirement rather than a package list. A view may need an items control, navigation and a persistence service, but not authentication or every theme. Identify which requirement belongs to core UI, which belongs to application architecture and which is a design-system concern. This makes package decisions explainable during review.",
+      "worked": "The starter constructs ordinary Uno controls in C#. It needs no fluent-markup extensions to set Padding or add a child. Compare that with the official UI Markup overview, which distinguishes XAML and C# Markup while retaining the underlying object model.",
+      "question": "Does using C# instead of XAML automatically mean the fluent C# Markup package is involved?",
+      "answer": "No. Ordinary constructors and property assignments can create the same framework objects. Fluent authoring extensions are an additional convenience layer."
+    },
+    {
+      "explain": "Template features can select packages and generated infrastructure, so inspect the resulting project rather than treating the wizard as opaque. Uno.Extensions, toolkit controls and theme packages solve different problems. A package can be appropriate without being necessary for every application, and adding it may affect startup, deployment size and upgrade work.",
+      "worked": "Read the pinned Uno SDK feature documentation and locate the feature-to-project relationship. Use the atlas to compare selected capabilities with their intended roles. The model is a dependency explanation, not an actual NuGet resolver or a claim that every package combination has been built.",
+      "question": "Why inspect the generated project after selecting template features?",
+      "answer": "The project is the maintained build contract. Seeing its references and features makes dependencies, target behavior and later upgrades easier to understand."
+    },
+    {
+      "explain": "Authoring syntax and architecture are independent choices. A XAML view can use MVVM or another state pattern; a C#-authored view can still use bindings, resources and templates. Choose the form your team can review and debug, and keep domain logic independent of a fluent chain or markup file wherever that improves clarity.",
+      "worked": "Increase the starter’s Spacing value and observe that it changes a normal StackPanel property. Then locate an equivalent XAML or fluent example in the official documentation. Compare the resulting objects and values rather than assuming different syntax implies a different rendering engine.",
+      "question": "Does switching a view from XAML to C# Markup inherently change its renderer?",
+      "answer": "No. Renderer selection and UI authoring syntax are separate configuration and implementation concerns. The same object model can be expressed through different notation."
+    },
+    {
+      "explain": "Match documentation to the actual package version and target. An editor snippet that names a newer API does not establish that it exists in the pinned runner. Keep package-dependent examples labelled, and use the full project for generators or registration flows unavailable in the single-file host. Upgrade deliberately with tests rather than silently mixing versions.",
+      "worked": "Write a small capability table for your own app: requirement, chosen package, owner and proving test. Remove a feature you cannot justify and note what build or startup behavior changes. The goal is an intentional platform, not maximal package count.",
+      "question": "What should accompany the decision to add a package?",
+      "answer": "A concrete requirement, version/target compatibility check, ownership boundary and a test demonstrating the capability you are adding."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change ordinary StackPanel.Spacing",
+      "expected": "The same property affects the layout regardless of authoring style.",
+      "why": "Syntax convenience is separate from the underlying object model."
+    },
+    {
+      "change": "Copy a generator-dependent example into the runner",
+      "expected": "Required generated members may be absent.",
+      "why": "The single-file host does not recreate arbitrary package build pipelines."
+    }
+  ],
+  "bridge": "The Uno SDK and markup documents are the source for package and authoring roles. The live lab intentionally uses ordinary C# construction; project-only fluent or generator examples should retain their actual dependency context."
+}

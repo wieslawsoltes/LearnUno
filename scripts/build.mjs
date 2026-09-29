@@ -1,4 +1,5 @@
 import {build} from 'esbuild';
+import {buildFeatureSurvey} from './feature-survey.mjs';
 import {mkdir, cp, writeFile, readFile, readdir} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import path from 'node:path';
@@ -26,6 +27,7 @@ await cp('THIRD_PARTY_NOTICES.md', 'dist/THIRD_PARTY_NOTICES.md');
 await mkdir('dist/third-party', {recursive: true});
 await cp('node_modules/highlight.js/LICENSE', 'dist/third-party/highlight.js-LICENSE.txt');
 await buildCatalog();
+const featureSurvey=await buildFeatureSurvey();
 const study = await buildStudyMaterial();
 
 async function findEmbedded(directory) {
@@ -54,6 +56,7 @@ const source = JSON.parse(await readFile('sources.lock.json', 'utf8'));
 const {labs}=await import('../site/src/atlas/catalog.mjs');
 const {guides}=await import('../site/src/learning/guides.mjs');
 const manifest = {
+  dataWorkshops: 6, designLessons: 8, independentWorkshopSteps: 56, sourceFeatureTypes: featureSurvey?.features.length || 0,
   version: JSON.parse(await readFile('package.json', 'utf8')).version, builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
   runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, visualLabs:labs.length, foundationGuides:guides.length, studyChapters:study.lessons.length, guidedSteps:study.steps, studyWords:study.authoredWords, sourceExcerpts:study.documentExcerpts+study.codeExcerpts, source
 };

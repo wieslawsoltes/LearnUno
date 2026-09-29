@@ -1,6 +1,5 @@
 @import url('./design/syntax.css');
 @import url('./design/learning.css');
-/* Visual edition styles are ordered: shell, labs, then responsive overrides. */
 @import url('./design/shell.css');
 @import url('./design/labs.css');
 @import url('./design/responsive.css');
@@ -8,5 +7,11 @@
 @import url('./design/playback.css');
 @import url('./design/study.css');
 
-/* Damage cells represent rectangular tiles even at the smallest grid size. */
 .tile-clean,.tile-old,.tile-new,.tile-overlap{rx:1px}
+/* Keep direct step navigation available on narrow screens, not only headings. */
+@media(max-width:980px){
+  .study-outline nav>div:has(ol){flex-basis:100%}
+  .study-outline nav ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 14px;margin:7px 0 12px 18px;padding-left:15px}
+  .study-outline nav ol button{font-size:11px;line-height:1.6;min-height:42px;padding:8px 7px}
+}
+@media(max-width:420px){.study-outline nav ol{grid-template-columns:1fr}}

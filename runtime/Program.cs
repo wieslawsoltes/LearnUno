@@ -29,8 +29,10 @@ public static class Program
         AppDomain.CurrentDomain.UnhandledException += (_, error) => Console.Error.WriteLine(error.ExceptionObject);
         TaskScheduler.UnobservedTaskException += (_, error) => Console.Error.WriteLine(error.Exception);
 
+        // Enable the actual framework semantic tree before constructing any view.
+        // A teaching playground must not require a hidden activation step for roles.
+        Uno.UI.FeatureConfiguration.AutomationPeer.AutoEnableAccessibility = true;
         // NativeRenderer resolves HtmlElementAttribute by scanning loaded assemblies.
-        // This hand-authored host has no generated App.xaml reference to force that load.
         Assembly.Load("Uno.UI.Runtime.WebAssembly");
         Report("Browser renderer assembly loaded");
         Application.Start(_ =>
@@ -90,10 +92,8 @@ public sealed class App : Application
 public static partial class Bridge
 {
     private static readonly Lazy<LanguageEngine> Engine = new(() => new LanguageEngine());
-
     [JSImport("globalThis.learnUnoRuntimeReady")]
     internal static partial void Ready();
-
     [JSImport("globalThis.learnUnoBootError")]
     internal static partial void BootFailed(string message);
 

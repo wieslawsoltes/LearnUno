@@ -1,0 +1,46 @@
+name: Correct reviewed Toolkit pin
+on:
+  push:
+    branches: [feat/learning-refinement]
+    paths: ['.github/workflows/correct-toolkit-pin.yml']
+permissions:
+  contents: write
+jobs:
+  correct:
+    if: github.repository == 'wieslawsoltes/LearnUno'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/learning-refinement
+      - name: Replace only the unavailable Toolkit version in tracked source
+        shell: python
+        run: |
+          import pathlib, subprocess
+          changed = []
+          for filename in subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0'):
+              if not filename or filename.startswith('.github/'):
+                  continue
+              p = pathlib.Path(filename)
+              if p.suffix not in ('.md', '.json', '.mjs', '.csproj'):
+                  continue
+              text = p.read_text()
+              if '8.4.2' not in text:
+                  continue
+              if 'CommunityToolkit.Mvvm' not in text:
+                  raise RuntimeError('Ambiguous version in ' + filename)
+              p.write_text(text.replace('8.4.2', '8.4.0'))
+              changed.append(filename)
+          required = {'runtime/LearnUnoRunner.csproj', 'site/src/runtime-dependencies.mjs', 'site/src/course/mvvm-patterns.mjs'}
+          if not required.issubset(changed):
+              raise RuntimeError('Unexpected source revision: ' + repr(changed))
+          subprocess.run(['git', 'add', '--', *changed], check=True)
+          print('\n'.join(changed))
+      - name: Commit the corrected source without workflow modifications
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git diff --cached --check
+          git commit -m 'fix: use published CommunityToolkit.Mvvm 8.4.0 throughout the curriculum and runtime'
+          git push origin HEAD:feat/learning-refinement

@@ -1,0 +1,61 @@
+name: Refine reviewed reading boundaries
+on:
+  push:
+    branches: [feat/learning-refinement]
+    paths: ['.github/workflows/refine-reading-boundaries.yml']
+permissions:
+  contents: write
+jobs:
+  refine:
+    if: github.repository == 'wieslawsoltes/LearnUno'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/learning-refinement
+      - name: Apply exact reviewed edits
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess
+          changed=[]
+          def write(path, source):
+              Path(path).write_text(source)
+              changed.append(path)
+          def exact(source, before, after):
+              if source.count(before) != 1:
+                  raise RuntimeError('Unexpected source anchor: '+before)
+              return source.replace(before, after)
+          path='site/design/fundamental-comparisons.css'
+          source=Path(path).read_text()
+          source='.guide-prose{min-width:0;max-width:100%}\n'+source
+          source=exact(source, '.gc-figure{overflow:auto;', '.gc-figure{min-width:0;max-width:100%;overflow:auto;')
+          write(path, source)
+          path='site/src/learning/guide-comparisons.mjs'
+          source=Path(path).read_text()
+          source=exact(source, "label(440,167,'Title changed')", "label(440,167,alternate?'Unchanged value':'Title changed')")
+          source=exact(source, "label(366,95,'Current keyboard target')", "label(366,95,alternate?'Current keyboard target':'No focus request')")
+          source=exact(source, "'28 pt'", "'28 u'")
+          source=exact(source, "'32 pt'", "'32 u'")
+          write(path, source)
+          for path in ['site/src/atlas/catalog.mjs','site/src/atlas/scenes.mjs','tests/browser/atlas.spec.mjs']:
+              source=Path(path).read_text()
+              updated=source.replace("'pt'", "'u'").replace(' pt', ' u')
+              if updated == source:
+                  raise RuntimeError('Expected FontSize unit labels: '+path)
+              write(path, updated)
+          subprocess.run(['git','add','--',*changed],check=True)
+          print('\n'.join(changed))
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+      - name: Commit only the reviewed source files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git diff --cached --check
+          git commit -m 'fix: keep mobile comparisons inside the reader and label XAML sizes as logical units'
+          git push origin HEAD:feat/learning-refinement

@@ -1,6 +1,6 @@
 /** Reviewed runtime package contract, shared with project export and build tests. */
 export const runtimePackages=Object.freeze({
-  'CommunityToolkit.Mvvm':'8.4.2',
+  'CommunityToolkit.Mvvm':'8.4.0',
   'Microsoft.Extensions.DependencyInjection':'10.0.12',
   'Microsoft.Extensions.Options':'10.0.12'
 });

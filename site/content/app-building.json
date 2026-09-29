@@ -46,7 +46,7 @@
   "documentExcerpts": 191,
   "codeExcerpts": 117,
   "runtimePackages": {
-    "CommunityToolkit.Mvvm": "8.4.2",
+    "CommunityToolkit.Mvvm": "8.4.0",
     "Microsoft.Extensions.DependencyInjection": "10.0.12",
     "Microsoft.Extensions.Options": "10.0.12"
   }

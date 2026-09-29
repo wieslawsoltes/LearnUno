@@ -122,7 +122,7 @@ Examples of primary contracts reviewed:
 - Options: https://learn.microsoft.com/en-us/dotnet/core/extensions/options
 - Uno routes: https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Navigation/HowTo-DefineRoutes.html
 
-The package references are pinned to CommunityToolkit.Mvvm 8.4.2,
+The package references are pinned to CommunityToolkit.Mvvm 8.4.0,
 Microsoft.Extensions.DependencyInjection 10.0.12 and Microsoft.Extensions.Options
 10.0.12. `runtime-dependencies.mjs` validates per-lesson declarations and generates
 matching project exports. Arbitrary package names or version changes are rejected;

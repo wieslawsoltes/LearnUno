@@ -55,13 +55,13 @@ export default [
     "transfer": "Extract the counter model into a test project and assert value changes and notification names. Then implement a Quantity/Price/Total model in both handwritten and generated forms. Keep the same tests and inspect the generated output rather than attributing correctness to syntax alone.",
     "pitfall": "ObservableProperty attributes require a compatible partial type and a project build that runs the source generator. The browser compiler does not generate members from those attributes, so its runnable example uses explicit properties.",
     "packages": {
-      "CommunityToolkit.Mvvm": "8.4.2"
+      "CommunityToolkit.Mvvm": "8.4.0"
     },
     "references": [
       "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/observableobject"
     ],
     "projectCode": "using CommunityToolkit.Mvvm.ComponentModel;\n\npublic partial class GeneratedCounterViewModel : ObservableObject\n{\n    [ObservableProperty]\n    [NotifyPropertyChangedFor(nameof(Summary))]\n    private int count;\n\n    public string Summary => $\"Count {Count}; doubled {Count * 2}\";\n}",
-    "projectNote": "Complete model class for a project with CommunityToolkit.Mvvm 8.4.2 and its source generator enabled. The dynamic playground uses the explicit-property version above.",
+    "projectNote": "Complete model class for a project with CommunityToolkit.Mvvm 8.4.0 and its source generator enabled. The dynamic playground uses the explicit-property version above.",
     "introducedIn": "0.4.0",
     "prerequisiteLessons": [
       "change-notification"
@@ -122,7 +122,7 @@ export default [
     "transfer": "Expose Create from a tested view model and bind it to two controls. Assert command identity, preconditions, notification behavior, and the exact service request. Then compare the generated RelayCommand form in a complete Uno project; do not replace async operations with blocking calls.",
     "pitfall": "Do not put an async lambda into an ordinary void-returning RelayCommand and lose its completion Task. Use an asynchronous command abstraction with an explicit concurrency and error policy.",
     "packages": {
-      "CommunityToolkit.Mvvm": "8.4.2"
+      "CommunityToolkit.Mvvm": "8.4.0"
     },
     "references": [
       "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/relaycommand"
@@ -189,7 +189,7 @@ export default [
     "transfer": "Replace the delay with an injected repository call, propagate cancellation, and test every outcome by awaiting the command’s Task. Add a generation guard for replaceable searches and an idempotency policy for writes. Keep command error handling explicit instead of relying on a global unhandled-exception hook.",
     "pitfall": "Cancellation is cooperative, not a forced thread abort. After cancellation or failure, verify both the displayed outcome and whether the command can execute again without stale completion state.",
     "packages": {
-      "CommunityToolkit.Mvvm": "8.4.2"
+      "CommunityToolkit.Mvvm": "8.4.0"
     },
     "references": [
       "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/asyncrelaycommand"
@@ -254,7 +254,7 @@ export default [
     "transfer": "Add validation to the task editor, including initial validation and a cross-property rule. Connect errors to accessible field feedback, test annotation semantics, and keep remote validation asynchronous and cancellable. The source sample explains MVVM wiring; Microsoft’s ObservableValidator contract supplies the validation-specific API details.",
     "pitfall": "Data annotations do not choose your normalization policy. Required, minimum length, trimming and accepted whitespace must describe the same domain value and produce consistent feedback.",
     "packages": {
-      "CommunityToolkit.Mvvm": "8.4.2"
+      "CommunityToolkit.Mvvm": "8.4.0"
     },
     "references": [
       "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/observablevalidator"
@@ -319,7 +319,7 @@ export default [
     "transfer": "Add task-change notifications between two view models using an injected IMessenger instance, explicit activation, and a typed payload. Keep state reload separate from notification delivery. Test active, inactive, reactivated, and background-publisher cases without relying on forced garbage collection for correctness.",
     "pitfall": "A transient message is not durable state. Keep authoritative values in an owned model or service, and unregister inactive recipients when semantic inactivity matters even if the messenger uses weak references.",
     "packages": {
-      "CommunityToolkit.Mvvm": "8.4.2"
+      "CommunityToolkit.Mvvm": "8.4.0"
     },
     "references": [
       "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/messenger"
@@ -384,7 +384,7 @@ export default [
     "transfer": "Add a repository, a versioned baseline, and an asynchronous Save command. Test failed saves, concurrent typing, cancel, and guarded navigation. Keep UI focus behavior in the view while the model owns draft state, validation, and the accepted transaction result.",
     "pitfall": "A Save command is intent; persisted acceptance is a later outcome. Do not clear a dirty flag or discard the baseline before an asynchronous save actually succeeds.",
     "packages": {
-      "CommunityToolkit.Mvvm": "8.4.2"
+      "CommunityToolkit.Mvvm": "8.4.0"
     },
     "references": [
       "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/observableobject"

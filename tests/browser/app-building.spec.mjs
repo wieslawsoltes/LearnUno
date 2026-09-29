@@ -34,7 +34,7 @@ test('app-building roadmap exposes five ordered paths without changing progress'
   }
   await page.locator('[data-app-lesson="toolkit-validation"]').click();
   await expect(page.locator('[data-chapter="toolkit-validation"]')).toBeVisible();
-  await expect(page.locator('.study-package-contract')).toContainText('CommunityToolkit.Mvvm 8.4.2');
+  await expect(page.locator('.study-package-contract')).toContainText('CommunityToolkit.Mvvm 8.4.0');
   await page.goto('./#/lesson/dependency-injection/learn');
   await expect(page.locator('.study-continue-with')).toContainText('composition root');
 });

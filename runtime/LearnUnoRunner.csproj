@@ -6,6 +6,8 @@
     <RootNamespace>LearnUnoRunner</RootNamespace>
     <UnoSingleProject>true</UnoSingleProject>
     <UnoFeatures>NativeRenderer</UnoFeatures>
+    <!-- This static, isolated compiler host does not use Studio design tooling. -->
+    <UnoDisableHotDesign>true</UnoDisableHotDesign>
     <WasmShellMode>BrowserEmbedded</WasmShellMode>
     <WasmShellILLinkerEnabled>false</WasmShellILLinkerEnabled>
     <PublishTrimmed>false</PublishTrimmed>

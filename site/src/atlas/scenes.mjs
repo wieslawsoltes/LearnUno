@@ -159,11 +159,11 @@ export function scene(lab,s,step=0) {
  if(lab.id==='precedence') {
   const m=effectiveValue({...s,defaultValue:14});
   svg=text(34,30,'EFFECTIVE VALUE STACK','eyebrow-svg')+text(503,30,'LINKED PREVIEW · MODEL','eyebrow-svg');
-  m.layers.forEach((l,i)=>{const y=59+i*72;svg+=rect(35,y,376,58,l.id===m.winner.id?'tone-1 selected-node':'surface-stroke')+text(52,y+23,l.label,'node-title')+text(52,y+44,!l.enabled?'Not active':l.id===m.winner.id?'Effective source':'Overridden','tiny muted')+text(390,y+36,l.value+' pt','mono','text-anchor="end"');});
-  svg+=rect(479,105,286,196,'tone-3')+text(503,139,'THE WINNING VALUE','eyebrow-svg')+text(503,202,'Hello, Uno.','serif',`style="font-size:${m.winner.value}px"`)+text(503,257,`${m.winner.label} → ${m.winner.value} pt`,'tiny muted');
+  m.layers.forEach((l,i)=>{const y=59+i*72;svg+=rect(35,y,376,58,l.id===m.winner.id?'tone-1 selected-node':'surface-stroke')+text(52,y+23,l.label,'node-title')+text(52,y+44,!l.enabled?'Not active':l.id===m.winner.id?'Effective source':'Overridden','tiny muted')+text(390,y+36,l.value+' u','mono','text-anchor="end"');});
+  svg+=rect(479,105,286,196,'tone-3')+text(503,139,'THE WINNING VALUE','eyebrow-svg')+text(503,202,'Hello, Uno.','serif',`style="font-size:${m.winner.value}px"`)+text(503,257,`${m.winner.label} → ${m.winner.value} u`,'tiny muted');
   svg+=text(35,376,'Priority is not assignment order. Clear removes a local entry.','tiny muted');
-  metrics=[metric('Effective FontSize',m.winner.value,'pt'),metric('Winning layer',m.winner.id),metric('Local entry',s.hasLocal?'Present':'Cleared')];
-  code=`style.Setters.Add(new Setter(TextBlock.FontSizeProperty, ${s.styleValue}.0));\n${s.hasLocal?`title.FontSize = ${s.localValue};`:'title.ClearValue(TextBlock.FontSizeProperty);'}\n${s.animated?`// Active animation currently contributes ${s.animationValue} pt.`:'// No active animation.'}\n// Effective value in this subset: ${m.winner.value} pt`;
+  metrics=[metric('Effective FontSize',m.winner.value,'u'),metric('Winning layer',m.winner.id),metric('Local entry',s.hasLocal?'Present':'Cleared')];
+  code=`style.Setters.Add(new Setter(TextBlock.FontSizeProperty, ${s.styleValue}.0));\n${s.hasLocal?`title.FontSize = ${s.localValue};`:'title.ClearValue(TextBlock.FontSizeProperty);'}\n${s.animated?`// Active animation currently contributes ${s.animationValue} u.`:'// No active animation.'}\n// Effective value in this subset: ${m.winner.value} u`;
   readout='A local value equal to the metadata default is still a local value. ClearValue removes that precedence layer.';
  }
  return {svg,metrics,code,readout,trace,segments};

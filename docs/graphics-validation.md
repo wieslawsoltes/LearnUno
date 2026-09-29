@@ -1,9 +1,11 @@
 # Graphics validation
 
-The explanatory canvas has two implementations. Its WebGPU path builds real WGSL compute and render pipelines, updates a storage buffer, and submits instanced rendering commands. The Canvas 2D path preserves the same teaching role when no adapter is available. Labels and interaction remain HTML in both cases.
+The visual atlas separates inspectable SVG/HTML teaching models from the real Uno preview. The dirty-region lab additionally executes WGSL compute and rendering. The compute pass classifies each tile against expanded old and current bounds; an instanced draw renders its flags. A staging-buffer readback compares every GPU flag against the independent CPU calculation in `atlas/models.mjs`.
 
-The ordinary interface test runs with the browser's default graphics configuration and accepts the supported fallback. A separate test launches trusted local course content with Chromium's software graphics options, requires the WebGPU backend label, observes successful compute/render pipeline creation and queue submission, and fails on uncaptured GPU validation errors.
+The ordinary interface tests exercise all eleven labs with the browser's default graphics configuration. The SVG reference, numerical readouts, generated code and explanation remain available when WebGPU is unavailable. There is no decorative Canvas 2D substitution presented as actual GPU output.
 
-This software-adapter test validates shader and API execution. It is **not a physical GPU benchmark**, a measurement of the Uno renderer, or proof of performance on a particular learner's hardware. Public-site checks use the browser's normal configuration; no learner is asked to enable unsafe browser flags.
+A separate test launches trusted course content with Chromium's software graphics options. It requires successful compute and render pipeline creation, queue submission and exact CPU parity at 32- and 16-unit tile sizes. After changing the scene, it waits for a newer verified revision rather than accepting an old success label. It fails on uncaptured GPU validation errors.
 
-Inspect the workflow result and attached evidence for the current revision before asserting that either path passed. A configured test is not itself a passing test.
+The software-adapter test validates shader/API execution and classification correctness. It is **not a physical GPU benchmark**, a measurement of the Uno renderer, or proof of performance on a particular learner's hardware. Readback exists for teaching and validation, not as a recommended production frame-loop design. Public-site checks use normal browser configuration; learners are not asked to enable experimental flags.
+
+Screenshots, per-test attachments and the workflow result identify the exact revision tested. A configured test is not itself a passing test. See [visual-edition.md](visual-edition.md) for the scope of each explanatory model.

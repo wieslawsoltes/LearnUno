@@ -21,12 +21,12 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - name: Commit integrated source and remove this one-time helper
+      - name: Commit source only; workflow changes are handled separately
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git rm scripts/integrate-visual-edition.mjs .github/workflows/integrate-visual-edition.yml
-          git add site/src/app.mjs site/src/atlas/lab.mjs site/index.html scripts/build.mjs tests/browser/studio.spec.mjs tests/browser/webgpu.spec.mjs .github/workflows/studio.yml README.md
+          git restore .github/workflows/studio.yml
+          git add site/src/app.mjs site/src/atlas/lab.mjs site/index.html scripts/build.mjs tests/browser/studio.spec.mjs tests/browser/webgpu.spec.mjs README.md
           git diff --cached --stat
           git commit -m 'feat: integrate visual atlas routes, editorial design and regression coverage'
           git push origin HEAD:design/visual-edition

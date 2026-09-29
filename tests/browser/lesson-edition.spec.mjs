@@ -8,9 +8,9 @@ test('lesson edition maps every lesson to a different authored visualization',as
  for(const lesson of lessons){await page.goto('./#/lesson/'+lesson.id+'/visualize');await expect(page.locator('.visual-lab')).toHaveAttribute('data-lab',labForLesson(lesson));observed.push(await page.locator('.visual-lab').getAttribute('data-lab'));}
  expect(new Set(observed).size).toBe(90);
 });
-test('lesson edition exposes deeper reading and twelve foundation chapters',async({page})=>{
+test('lesson edition exposes deeper reading and eighteen foundation chapters',async({page})=>{
  await page.goto('./#/lesson/events/learn');await expect(page.locator('.lesson-depth')).toContainText('Who retains the event subscriber');await expect(page.locator('.lesson-depth .depth-steps article')).toHaveCount(4);
- await page.goto('./#/fundamentals');await expect(page.locator('.guide-card')).toHaveCount(12);await page.getByRole('button',{name:'C#',exact:true}).click();await expect(page.locator('.guide-card')).toHaveCount(5);
+ await page.goto('./#/fundamentals');await expect(page.locator('.guide-card')).toHaveCount(18);await page.getByRole('button',{name:'C#',exact:true}).click();await expect(page.locator('.guide-card')).toHaveCount(6);
  for(const guide of guides){await page.goto('./#/fundamentals/'+guide.id);await expect(page.getByRole('heading',{name:guide.title,exact:true})).toBeVisible();await expect(page.locator('.guide-prose pre code')).toHaveAttribute('data-colored',guide.language,{timeout:20000});await page.getByRole('textbox',{name:'Your explanation'}).fill('My prediction');await page.getByText('Compare the reasoning',{exact:true}).click();await expect(page.locator('.guide-recall details p')).toHaveText(guide.answer);}
 });
 test('lesson edition code coloring covers dynamic models, inline code, dialogs and reference fences',async({page})=>{

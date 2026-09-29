@@ -28,8 +28,8 @@ test('all ninety deep dives have concrete lesson-specific content',()=>{
  for(const lesson of lessons){const html=renderLessonDepth(lesson);assert(html.includes(labMap.get(labForLesson(lesson)).challenge.replaceAll('&','&amp;').replaceAll('>','&gt;').replaceAll('<','&lt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')));assert(html.includes('#/lesson/'+lesson.id+'/visualize'));}
 });
 test('fundamentals chapters have distinct substance, code and primary references',()=>{
- assert.equal(guides.length,12);assert.equal(new Set(guides.map(g=>g.id)).size,12);
- for(const g of guides){assert(g.sections.length===3);assert(g.sections.every(s=>s[1].length>160));assert(g.code.length>100);assert(g.answer.length>70);assert(g.source.startsWith('https://learn.microsoft.com/'));assert(lessons.some(l=>l.id===g.lesson));}
+ assert.equal(guides.length,18);assert.equal(new Set(guides.map(g=>g.id)).size,18);
+ for(const g of guides){assert(g.sections.length>=3);assert(g.sections.every(s=>s[1].length>160));assert(g.code.length>100);assert(g.answer.length>70);assert(g.source.startsWith('https://learn.microsoft.com/'));assert(lessons.some(l=>l.id===g.lesson));}
 });
 test('reference/value assignments and captured subscriber reachability',()=>{
  assert.equal(run('csharp-essentials',{kind:'Reference object',value:7}).data.a,7);

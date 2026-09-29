@@ -1,0 +1,57 @@
+{
+  "id": "browser-interop",
+  "scenario": "A browser host receives messages from several frames while a learner resets a preview. Without identity and lifetime checks, a late reply can update the wrong editor or an unrelated message can be treated as a command. An interop boundary needs a protocol, not just a convenient global function.",
+  "vocabulary": [
+    {
+      "term": "Envelope",
+      "meaning": "Protocol metadata identifying sender context, version, channel and request."
+    },
+    {
+      "term": "Correlation ID",
+      "meaning": "An identifier matching a response to the pending operation that owns it."
+    },
+    {
+      "term": "Marshaling contract",
+      "meaning": "The supported representation used to move values across the boundary."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Identify the sender before interpreting its payload. For frame messaging, check the expected window and origin policy. An opaque sandbox origin needs a carefully defined rule; it is not a reason to trust every message whose origin is null. The course also checks the exact frame window and a per-instance channel.",
+      "worked": "The atlas models accepting or rejecting an envelope before dispatching an operation. Change the sender identity and leave a valid-looking method name. The message should still be rejected. This separates sender validation from application behavior so a convincing payload does not bypass the boundary.",
+      "question": "Is checking only a method name sufficient?",
+      "answer": "No. Any unrelated sender can construct similar text. Validate the sender and protocol context before considering which operation to run."
+    },
+    {
+      "explain": "A version and channel distinguish conversations and compatibility expectations. Resetting a runtime creates a new lifetime; replies from the old lifetime should not become valid merely because their method names match. Treat missing or malformed fields as invalid input rather than filling them with privileged defaults.",
+      "worked": "Change the atlas channel or protocol version and inspect the decision. In the real course, a reset disposes outstanding requests and creates a fresh channel for the replacement frame. The sandbox remains opaque; the solution is protocol validation, not granting same-origin access to make communication easier.",
+      "question": "Why is a new channel useful after resetting the preview?",
+      "answer": "It identifies a new conversation lifetime. Messages from the previous instance can be rejected even when they contain otherwise plausible request or response fields."
+    },
+    {
+      "explain": "After the envelope is accepted, validate method names, parameter types and size limits. Serialized JSON does not guarantee that a value is meaningful. Prefer task-oriented batched operations over crossing the boundary for every pixel or collection item, and document which side owns memory, callbacks and cancellation.",
+      "worked": "The live lab serializes a small request envelope, while the actual runner bridge implements messaging and exports. GeneratedJSImport/JSExport methods require a project build; declaring their attributes in dynamically compiled lesson code does not run the project generator. Keep that execution boundary visible to learners.",
+      "question": "Does valid JSON imply a valid resize request?",
+      "answer": "No. The width can still be missing, nonnumeric or outside supported bounds, and the method or envelope can still be invalid."
+    },
+    {
+      "explain": "Responses must match the current pending request by identity. A timeout removes the waiter but does not necessarily stop underlying work; a late response needs a safe discard path. Disposal should reject outstanding promises, clear timers and remove listeners. Avoid assuming requests always complete in send order.",
+      "worked": "Issue two modeled requests and consider replies arriving in reverse order. Each result belongs to its own caller, not the most recently displayed editor state. In a full project, test a response after timeout, after reset and after navigation. These tests expose bugs that a single successful round trip cannot reveal.",
+      "question": "What should happen to an unmatched late response?",
+      "answer": "It should not mutate unrelated current state. A bounded diagnostic may be useful, but the obsolete request no longer owns an active result slot."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Send a valid-looking payload on the wrong channel.",
+      "expected": "The receiver rejects the envelope.",
+      "why": "Method validity does not establish conversation identity."
+    },
+    {
+      "change": "Receive a reply after its request timed out.",
+      "expected": "The disposed waiter is not revived.",
+      "why": "Request ownership and response correlation have explicit lifetimes."
+    }
+  ],
+  "bridge": "The official JavaScript interop pages explain project-level boundary mechanisms and may include APIs newer than the pinned runner. The course bridge is the executable reference for this sandbox. The atlas is a protocol model; it does not send arbitrary messages or grant capabilities."
+}

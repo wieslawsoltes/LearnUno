@@ -1,0 +1,57 @@
+{
+  "id": "capstone-app",
+  "scenario": "A task workspace seems complete until sorting changes which task an edit modifies. The action used a row index instead of a stable identity. This capstone integrates state, validation, collections and persistence around one coherent domain model rather than assembling unrelated demonstrations.",
+  "vocabulary": [
+    {
+      "term": "Stable identity",
+      "meaning": "An identifier that continues to identify an entity when its presentation order changes."
+    },
+    {
+      "term": "Projection",
+      "meaning": "A derived view such as a sorted or filtered sequence."
+    },
+    {
+      "term": "Draft",
+      "meaning": "Editable user input that has not yet been accepted as a domain change."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Define a task by the data the application must preserve: an ID, title, completion state and any versioning needed for persistence. A displayed row number is not a durable ID. Keep transient loading, hover and draft values separate unless the domain explicitly includes them. Validation should enforce the task rule independently of the visual control.",
+      "worked": "The starter uses a simple string collection to establish input-to-list behavior. Extend it into identified task records in an independent project. Keep the first milestone small: trim input, reject blank/short titles, add a stable ID and display the new task. Verify the rule without creating a Window before testing the full interaction.",
+      "question": "Why is a row index not a stable task identity?",
+      "answer": "Sorting, filtering, insertion and removal change indices. An index describes a position in one projection, not the enduring entity the user intended to edit."
+    },
+    {
+      "explain": "An edit should target the task ID and apply a validated change. Keep a draft so cancelling an edit does not mutate committed state accidentally. Commands can expose whether saving is currently allowed, but the underlying domain or application service should still validate meaningful preconditions.",
+      "worked": "In the atlas, choose a task, change the displayed order and observe whether the selected identity survives. In the project, test editing after sorting and while a filter hides other tasks. Use the record’s ID when invoking update/delete rather than assuming the selected visual container still represents the original object.",
+      "question": "What should Cancel do to an editing draft?",
+      "answer": "It should abandon the uncommitted changes according to the editing policy while leaving the committed task unchanged. A directly mutated shared object cannot provide that behavior without an explicit undo/draft strategy."
+    },
+    {
+      "explain": "Sorting and filtering derive a view of domain data; they should not rewrite IDs or confuse selection. Observable collection membership and item-property notification remain separate. A completed task can disappear from an “outstanding” filter without being deleted from storage. That distinction matters for undo, persistence and user feedback.",
+      "worked": "Change completion state in the atlas and inspect the projected rows. Then compare a filtered-out task with a deleted one in your project. Preserve the source collection or repository as the authority and derive the visible sequence. Avoid two independently mutable collections representing the same tasks without a synchronization policy.",
+      "question": "Is an item disappearing from a filter equivalent to deletion?",
+      "answer": "No. It may still exist in the domain but no longer satisfy the view predicate. Deletion changes the domain; filtering changes its presentation."
+    },
+    {
+      "explain": "Finish the vertical slice with versioned persistence, recovery, responsive layout, accessible actions and tests. Test migrated data, invalid snapshots, save failure and restoration without duplicating tasks. Preserve user input through recoverable failures. Document which browser and native targets were actually exercised.",
+      "worked": "Your final evidence should include a runnable project, model ownership diagram, main journey, validation tests, migration fixture and failure demonstration. Use the provided capstone seed and official examples as references, not a claim that this small online exercise already implements the whole product. A complete slice that can be explained and tested is the goal.",
+      "question": "What distinguishes a finished capstone from a feature checklist?",
+      "answer": "Working end-to-end behavior with coherent ownership, testable rules, recovery and explicit target evidence. Intended features and screenshots alone do not establish that integration."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Sort the view before editing a selected task.",
+      "expected": "The same task ID receives the edit.",
+      "why": "Actions target domain identity rather than a transient row position."
+    },
+    {
+      "change": "Complete a task under an outstanding-only filter.",
+      "expected": "It leaves that view but remains in the underlying data.",
+      "why": "Projection membership and domain existence are different states."
+    }
+  ],
+  "bridge": "The MVVM, application-data and ListView samples supply real building blocks, but the capstone requires integrating their ownership and failure contracts. The online seed is deliberately smaller than the independent project. Keep that difference visible in your completion evidence."
+}

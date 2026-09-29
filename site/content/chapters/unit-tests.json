@@ -1,0 +1,57 @@
+{
+  "id": "unit-tests",
+  "scenario": "A clamp function passes a test for an ordinary input, but fails exactly at the boundary. The test did not describe enough of the contract to distinguish a plausible implementation from the correct one. Start with independent expectations and meaningful cases before constructing UI.",
+  "vocabulary": [
+    {
+      "term": "Contract",
+      "meaning": "The observable behavior the implementation must satisfy."
+    },
+    {
+      "term": "Boundary case",
+      "meaning": "An input at or near a transition in the required behavior."
+    },
+    {
+      "term": "Regression test",
+      "meaning": "A test that distinguishes the original defect from the intended repair."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Describe the rule without copying the implementation. A clamp maps inputs into a specified closed interval: values below the lower limit become the lower limit, values above the upper limit become the upper limit, and interior values remain unchanged. Decide how invalid limits or unsupported numeric values should be handled instead of leaving them accidental.",
+      "worked": "The live lesson uses an intentionally small total calculation and an expected result. Changing the expectation makes the test fail, showing that the assertion is active. The atlas uses a boundary function to expose more cases. These are two ways to practice the same habit: state an outcome independently of the code producing it.",
+      "question": "Why not compute expected by calling the implementation again?",
+      "answer": "That repeats the same possible defect on both sides of the assertion. The expectation should come from the contract or an independent reference."
+    },
+    {
+      "explain": "Choose inputs below, at, inside and above the boundaries. Add cases representing previous defects and domain-specific invalid inputs. Test names should explain the scenario and outcome, not merely the method name. Keep unrelated clocks, network calls and UI construction out of a pure rule test so failures stay deterministic.",
+      "worked": "In the atlas, introduce a boundary defect and inspect which cases detect it. A typical interior value may still pass. Write down why each case exists and which mistaken implementation it rules out. This produces a small purposeful suite rather than hundreds of redundant inputs with no explanation.",
+      "question": "Why is testing only the middle of an interval insufficient?",
+      "answer": "An implementation can behave correctly in the interior while mishandling equality or one limit. Boundary-specific cases discriminate those errors."
+    },
+    {
+      "explain": "An assertion compares actual behavior with the independent expectation and produces useful failure information. Verify relevant state changes, not just that a constructor returned. Asynchronous tests must observe completion; starting work without awaiting the tested outcome can let a test pass before the failure occurs.",
+      "worked": "The imported Uno runtime test uses UI-thread setup and waits for layout before asserting geometry. It is a framework integration test, not a pure unit test. Compare that with the no-UI calculation lab. Both are valuable, but they answer different questions and have different environmental requirements.",
+      "question": "Why label the upstream example as a runtime test?",
+      "answer": "It constructs real framework objects and depends on UI lifecycle or scheduling. Calling it a pure unit test would hide those dependencies and mislead learners about where it can run."
+    },
+    {
+      "explain": "A regression should fail against the broken behavior and pass with the repair. Confirming this red/green distinction prevents a test from merely exercising code without detecting the defect. Preserve the smallest relevant test and add a broader integration case only when another boundary needs verification.",
+      "worked": "After restoring the correct expectation in the live lab, make one deliberate implementation error and verify the test fails. For a real contribution, record the failing input, expected result, actual result and relevant target. Keep test data readable and explain unusual fixtures rather than embedding unexplained constants.",
+      "question": "What is the strongest evidence that a new regression protects a fix?",
+      "answer": "It demonstrably fails for the original defect and succeeds for the corrected contract, with a clear assertion tied to the behavior users need."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Test only an interior clamp input.",
+      "expected": "Some incorrect boundary implementations still pass.",
+      "why": "The selected case does not exercise the transition where the defect occurs."
+    },
+    {
+      "change": "Run the regression against the intentionally broken implementation.",
+      "expected": "The assertion should fail with a useful expected/actual result.",
+      "why": "A test that cannot detect the defect cannot protect its repair."
+    }
+  ],
+  "bridge": "The official testing guides explain Uno’s unit, mocked and runtime test contexts. The included framework test is labeled with its actual context. The lesson keeps the original runnable assertion small so you can see the contract before adopting a test framework."
+}

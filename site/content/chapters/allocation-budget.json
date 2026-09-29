@@ -1,0 +1,57 @@
+{
+  "id": "allocation-budget",
+  "scenario": "Formatting the same rows repeatedly is expensive, so you add a cache. Scrolling becomes faster at first, but memory keeps growing. Caching is a trade between repeated work and retained state; it needs keys, invalidation and an explicit size policy, not just a dictionary.",
+  "vocabulary": [
+    {
+      "term": "Cache hit",
+      "meaning": "A request that reuses an already stored result."
+    },
+    {
+      "term": "LRU eviction",
+      "meaning": "Removing the least-recently used retained entry when capacity is needed."
+    },
+    {
+      "term": "Invalidation",
+      "meaning": "Removing or changing cached results when an input to their meaning changes."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Define the operation and all inputs that determine its result. A label may depend on item identity, culture, theme, zoom or formatting options. A key that omits a relevant input can return stale output even with a high hit rate. Optimize a measured hot path rather than an infrequent operation that merely looks repetitive.",
+      "worked": "The live lab repeatedly requests labels from a small key set and counts misses. The atlas adds a capacity limit and a request trace. Read the trace first and predict which keys repeat. These are deterministic operation counts, not a fabricated percentage improvement in application speed.",
+      "question": "Can a cache with a 100% hit rate be incorrect?",
+      "answer": "Yes. If the key ignores a changed input, every hit may return a stale result. Correct key semantics precede performance benefits."
+    },
+    {
+      "explain": "A hit should return the cached value without reconstructing it, then update recency if the chosen policy is LRU. Cache bookkeeping has its own cost, so the value of caching depends on how expensive the avoided operation is. Avoid retaining entire views when a small immutable data result would satisfy the need.",
+      "worked": "Step through repeated keys and inspect their positions in the recency ordering. A hit does not increase the number of retained entries, but it can change which entry will be evicted next. Test repeated access separately from first-time insertion so the two code paths are both observable.",
+      "question": "Why update recency on a hit?",
+      "answer": "Under LRU, recent use is evidence that an entry should remain ahead of entries not used for longer. Without that update, the policy becomes closer to insertion-order eviction."
+    },
+    {
+      "explain": "When capacity is exhausted, remove the chosen victim and release resources owned by that cached entry. A cache of disposable images needs a more careful ownership contract than a cache of strings. Do not dispose a resource still in use elsewhere; reference sharing and leases must be designed rather than guessed.",
+      "worked": "Set a capacity smaller than the working key set and follow the evictions. A later request for an evicted key becomes a miss again. This is expected behavior, not necessarily a bug. Compare the retained count with the configured capacity after every operation, including replacement and failed construction.",
+      "question": "What invariant should hold after inserting into a bounded cache?",
+      "answer": "The retained entry count or resource budget must remain within the configured limit, and any removed owned resources must follow their disposal policy."
+    },
+    {
+      "explain": "Choose a budget in the units that matter. Entry count is a useful simple model, but real images or geometries vary in byte size. Track invalidation generations and separate cache lifetime from page lifetime when shared services own the cache. A global cache can accidentally keep entire application object graphs alive through its values.",
+      "worked": "After tuning the atlas, use the upstream performance and memory guidance to profile an actual workload. Record allocations, retained memory, collection pauses and user-visible latency. Compare identical outputs with and without the optimization. A bounded cache that thrashes may need a different workload strategy rather than an ever-larger limit.",
+      "question": "When might increasing capacity be the wrong solution?",
+      "answer": "When the key or access pattern prevents useful reuse, values retain too much unrelated state, or the real bottleneck is elsewhere. More retained memory can hide rather than solve the design problem."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use fewer distinct keys than capacity.",
+      "expected": "After warm-up, repeated requests are hits.",
+      "why": "The working set can remain retained."
+    },
+    {
+      "change": "Use a capacity below a cyclic working set.",
+      "expected": "Evicted keys can miss again on later cycles.",
+      "why": "Bounded retention necessarily trades memory for recomputation."
+    }
+  ],
+  "bridge": "The lesson’s cache is a transparent teaching algorithm. Uno’s performance and memory documents explain measurement and ownership concerns, not a claim that a particular cache size is universally optimal. The original lab counts real misses while the atlas exposes a bounded eviction policy."
+}

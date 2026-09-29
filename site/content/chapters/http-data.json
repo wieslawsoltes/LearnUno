@@ -1,0 +1,57 @@
+{
+  "id": "http-data",
+  "scenario": "A task list receives data from a service, but “the request completed” does not tell you whether the status was successful, the body was valid, or the user still wants the result. This lesson follows transport, HTTP status, deserialization and domain validation as separate boundaries. A custom message handler makes the browser experiment deterministic while the Uno documentation supplies the real target-specific networking context.",
+  "vocabulary": [
+    {
+      "term": "HTTP status",
+      "meaning": "The server’s protocol-level outcome, which is distinct from the request merely completing."
+    },
+    {
+      "term": "DTO",
+      "meaning": "A data-transfer shape used at an external boundary; validate it before treating it as trusted domain state."
+    },
+    {
+      "term": "Fixture handler",
+      "meaning": "A controlled HttpMessageHandler that returns known responses without contacting the supplied URL."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Put request construction behind a capability the view can use. A button should express “load tasks,” not duplicate URI construction, headers and JSON parsing throughout the application. Manage HttpClient lifetime deliberately and pass cancellation through supported operations. In a browser, .NET networking still participates in browser policies such as CORS; a managed API does not bypass the host’s security model.",
+      "worked": "The starter creates HttpClient with FixtureHandler. The URL identifies the modeled request, but the handler supplies the response locally. This lets the test control status and body without relying on an external server. Read the upstream networking notes to distinguish this test seam from the platform’s actual transport and permissions.",
+      "question": "Does requesting lesson.invalid in this lab require a real server at that address?",
+      "answer": "No. The custom handler intercepts the operation and returns the fixture. The example exercises HttpClient response handling without making that network request."
+    },
+    {
+      "explain": "A completed request can return a failure status. Decide how your service layer maps relevant statuses into application outcomes rather than assuming every response contains valid data. Empty success responses also need a policy: a 204 does not imply a JSON array body. Avoid turning every failure into an indistinguishable empty list.",
+      "worked": "Change the fixture from OK to ServiceUnavailable. The live handler displays the numeric status through the failure branch. In the atlas, compare successful data, an empty response and an unsuccessful response. Their presentation states should remain distinguishable so the user knows whether there is no data or whether loading failed.",
+      "question": "Why is an empty list a misleading universal fallback for every HTTP failure?",
+      "answer": "It makes transport or authorization errors look like valid absence of data. The user and retry logic lose the information needed to recover."
+    },
+    {
+      "explain": "Deserialization checks representation, not all business meaning. A body can be syntactically valid JSON but omit a required ID, contain a negative quantity or use an unsupported schema. Treat external data as input: validate its contract and map it into domain state deliberately. Keep secrets out of error messages and avoid dumping entire sensitive response bodies into logs.",
+      "worked": "Follow the upstream web-service example from response text to its typed result. Identify which assumptions are enforced by the serializer and which need application validation. A small fixture suite can cover malformed JSON, missing fields, empty content and valid data without requiring browser UI construction.",
+      "question": "Does a successful JSON parse prove that every task record is valid?",
+      "answer": "No. Parsing establishes a representation that could be reconstructed. Domain constraints and required semantic fields still need validation."
+    },
+    {
+      "explain": "An asynchronous response must still be relevant when it arrives. Cancellation, timeouts and stale-result rejection belong to the operation’s lifecycle. Retry only with an explicit policy, especially for mutations that may not be safe to repeat. A transient read failure and an invalid write should not automatically receive the same retry behavior.",
+      "worked": "Add a service boundary to a full project and test success, cancellation, timeout and failure separately. Pair deterministic handler tests with one real target integration test for transport configuration. The offline fixture is valuable evidence about your mapping logic, but it cannot prove a deployment’s CORS or authentication settings.",
+      "question": "What does the fixture not validate about production hosting?",
+      "answer": "Actual network reachability, browser CORS behavior, credentials, server authorization and deployment configuration. Those require separate integration evidence."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Return ServiceUnavailable",
+      "expected": "The failure branch reports HTTP 503.",
+      "why": "Request completion is not the same as successful application data."
+    },
+    {
+      "change": "Return a success status with an invalid domain record",
+      "expected": "Reject or surface validation failure.",
+      "why": "Transport and JSON parsing do not establish domain correctness."
+    }
+  ],
+  "bridge": "The Uno web-service documentation provides actual client setup and browser caveats. The fixture code is deliberately local and should be compared with that transport context, not advertised as a production network or authentication test."
+}

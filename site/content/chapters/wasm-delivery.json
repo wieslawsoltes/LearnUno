@@ -1,0 +1,57 @@
+{
+  "id": "wasm-delivery",
+  "scenario": "The first page of a learning app is mostly text, but it waits for an editor, compiler and UI runtime before showing anything useful. The fastest feature is sometimes the one removed from the initial dependency path. This chapter separates transfer, initialization and optional work.",
+  "vocabulary": [
+    {
+      "term": "Cold start",
+      "meaning": "Startup without assuming the relevant assets or runtime state are already cached."
+    },
+    {
+      "term": "Critical path",
+      "meaning": "The dependencies that must finish before the first useful interaction."
+    },
+    {
+      "term": "Deferred feature",
+      "meaning": "A capability loaded when needed instead of before unrelated content becomes usable."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Transfer cost depends on payload size, network conditions, compression, latency and caching. A bytes-divided-by-rate equation is only a lower-bound model under its assumptions. File count, connection behavior and cache misses add other costs. Inspect the published artifact rather than assuming the development-server payload matches production.",
+      "worked": "The live lab labels its payload and transfer rate as assumptions. Reduce the modeled size and observe the lower bound. For the course itself, open a reading page without starting Uno: the large runtime should not be required merely to read a chapter. The optional runtime remains a substantial download when you choose to execute code.",
+      "question": "Why is a transfer estimate not the same as measured startup time?",
+      "answer": "It excludes or simplifies latency, request scheduling, parsing, runtime initialization, application work and presentation. Those stages can overlap or dominate the user-visible result."
+    },
+    {
+      "explain": "After bytes arrive, the browser and .NET runtime still initialize modules, assemblies and application state. Trimming and ahead-of-time compilation change tradeoffs across build time, payload and execution. Reflection-heavy code may need preservation metadata; successful debug execution does not prove a trimmed published build retains everything required.",
+      "worked": "The playground deliberately preserves reference metadata for Roslyn, runtime XAML and dynamically loaded lesson assemblies. That choice differs from a small production app with known static features. Inspect both the source/runtime configuration and the generated browser assets before applying a blanket recommendation such as always enable or always disable trimming.",
+      "question": "Why does this playground retain more metadata than a typical small app?",
+      "answer": "Its core purpose includes runtime parsing, semantic compilation and dynamic assembly loading. Those dynamic requirements need information a narrower application may safely remove."
+    },
+    {
+      "explain": "Defer optional capabilities behind explicit user intent or a meaningful prefetch policy. Lazy loading only helps when the initial module graph does not still pull the expensive dependency in indirectly. Keep a useful loading state, a failure path and a retry/reset mechanism; deferral should not create an unexplained blank region.",
+      "worked": "Compare the atlas budget with the editor included and deferred. The first useful reading path can shrink even though the total eventual bytes do not. In the real course, syntax coloring uses a smaller worker rather than importing Monaco into every article. Starting a playground then loads the actual compiler and Uno host on demand.",
+      "question": "Does lazy loading necessarily reduce total bytes for a learner who uses every feature?",
+      "answer": "No. It changes when dependencies are paid for and which tasks need them. A full-session total can be similar while the initial reading experience improves."
+    },
+    {
+      "explain": "Measure cold and warm starts separately, define first useful interaction, and verify the published URL under its real base path. A cache can hide broken or missing asset references during local testing. Deployment coherence matters: the shell and runtime must agree about their package URLs and version assumptions.",
+      "worked": "Use the upstream WebAssembly publishing guidance to inspect output and hosting requirements. Record network and startup evidence for a fresh browser context, then a warm repeat. Include asset failures and retries in the investigation. Do not replace a failed request with a same-origin sandbox permission that changes the security boundary merely to make startup appear successful.",
+      "question": "What should a deployment check exercise beyond a successful build?",
+      "answer": "The actual published assets, base path, MIME/CORS behavior where relevant, runtime readiness and a real user interaction. A DLL alone is not proof of a working browser app."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Defer the compiler/editor from the first reading path.",
+      "expected": "Reading can become useful before those assets initialize.",
+      "why": "An optional dependency is removed from the initial task’s critical path."
+    },
+    {
+      "change": "Test only a warm cached browser.",
+      "expected": "A missing asset or cold-start regression may remain hidden.",
+      "why": "Cache state changes the dependencies actually fetched and initialized."
+    }
+  ],
+  "bridge": "The pinned publishing and trimming guides are the primary context for deployment choices. Their examples may describe features beyond the runner’s pinned SDK. The atlas expresses budgets and sequencing, while actual cold/warm measurements must come from the deployed application."
+}

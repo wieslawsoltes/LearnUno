@@ -1,0 +1,57 @@
+{
+  "id": "change-notification",
+  "scenario": "A counter view model has a Value property and several controls display it. Directly assigning a number changes the object, but observers need to know that they should read it again. This lesson follows a property setter through equality checking, assignment and PropertyChanged. It then considers dependent properties so that a view can remain consistent without unrelated full-screen refreshes.",
+  "vocabulary": [
+    {
+      "term": "INotifyPropertyChanged",
+      "meaning": "A .NET contract that reports named property changes to interested observers."
+    },
+    {
+      "term": "Equality guard",
+      "meaning": "A check that avoids reporting a change when the new value is equivalent under the property’s intended equality policy."
+    },
+    {
+      "term": "Dependent property",
+      "meaning": "A value computed from another property, such as Total from Quantity and UnitPrice, which may need its own change notification."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A CLR property is code, not automatically observable state. Its getter reads a value and its setter decides how an assignment is handled. Implementing INotifyPropertyChanged gives observers a standard event to subscribe to, but the interface alone does not raise that event. The setter or another controlled mutation path must actually report a meaningful change.",
+      "worked": "Read the Counter class below the starter’s Build method. Find the backing field, getter, setter and event separately. The label binds to Value rather than to the field. If another method wrote directly to the backing field without reporting a change, it could bypass the observable contract even though the class implements the interface.",
+      "question": "Does declaring INotifyPropertyChanged make every field assignment observable?",
+      "answer": "No. The application still has to raise PropertyChanged on the appropriate mutation paths. Direct field writes can bypass that behavior."
+    },
+    {
+      "explain": "Check equality before performing work that should only happen for a real change. The correct equality policy depends on the property’s meaning, but blindly notifying on every identical assignment can cause redundant binding work or amplify feedback loops. Assign the new value before raising the event so observers reading the property see the updated state.",
+      "worked": "The starter returns early when _value already equals value. For a controlled variation, assign the same number twice and count notifications in a test. Expect one event for a transition from a different value, not two events merely because the setter was entered twice. Do not confuse setter calls with state changes.",
+      "question": "Why should observers usually read the new value after receiving PropertyChanged?",
+      "answer": "The event announces that the property’s observable value has changed. Raising it before updating the field can make an observer read stale state."
+    },
+    {
+      "explain": "A notification names a property, not an arbitrary label. nameof(Value) keeps the event name connected to the symbol during refactoring. When a computed property depends on Value, its observers may need notification too. The framework cannot infer every dependency in arbitrary C# code, so the view-model contract must describe the affected observable values.",
+      "worked": "The atlas isolates direct and dependent notifications. Compare updating Quantity alone with updating both Quantity and Total. In a full MVVM Toolkit project, generated properties can reduce boilerplate, but generated code still expresses a specific notification policy. Inspect it when behavior differs from your expectation.",
+      "question": "If Total is computed from Quantity, is notifying Quantity always enough for a separate Total binding?",
+      "answer": "Not necessarily. A binding to Total needs to know that Total changed. Raise its notification or use a framework mechanism that explicitly models the dependency."
+    },
+    {
+      "explain": "The view should observe presentation state rather than duplicating the mutation rule. In the starter, the button increments state.Value and the binding updates the label. That separation makes the state object testable without a Window. It also makes multiple observers possible without adding a label assignment to every command.",
+      "worked": "Change the increment from one to five and click three times. The state should be fifteen, and the label should reflect the same property. Then write a unit test for the event name and event count independently of the UI. Keep threading ownership explicit when state can also change from asynchronous work.",
+      "question": "What test separates correct state mutation from correct UI binding?",
+      "answer": "A non-UI test can verify the Value and PropertyChanged contract. A separate UI test verifies that the intended source and target are connected."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Assign the existing value again",
+      "expected": "The equality-guarded setter raises no redundant event.",
+      "why": "No observable transition occurred under the property’s equality policy."
+    },
+    {
+      "change": "Increment by five three times",
+      "expected": "State and bound text reach fifteen.",
+      "why": "The button changes the observable source rather than manually updating the label."
+    }
+  ],
+  "bridge": "The official counter tutorial demonstrates generated observable properties; the runner shows the underlying interface explicitly. Compare assignment, equality and event emission in both forms. Toolkit attributes require their generator-enabled project and should not be pasted into the runtime compiler as if generation happened automatically."
+}

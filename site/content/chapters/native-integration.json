@@ -1,0 +1,57 @@
+{
+  "id": "native-integration",
+  "scenario": "A file picker, camera or native view seems easy to call, until the owning page closes while the platform callback is still pending. Native integration is as much about ownership and late results as it is about the first successful API call.",
+  "vocabulary": [
+    {
+      "term": "Capability adapter",
+      "meaning": "A platform-specific implementation behind a shared task-oriented contract."
+    },
+    {
+      "term": "Resource owner",
+      "meaning": "The component responsible for ending use and releasing a resource."
+    },
+    {
+      "term": "Late callback",
+      "meaning": "A callback arriving after its original operation or view is no longer current."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Define the shared capability in terms of the task and its possible outcomes. A file-choice operation can succeed, be cancelled, fail or be unavailable. Do not leak a platform handle into every view model when a stream or domain identifier is the actual need. Acquisition should establish who owns any returned disposable resource.",
+      "worked": "The lesson’s IFileChoice implementation returns a deterministic name; it is explicitly a test double, not an OS picker. Replace it in a full project with a supported platform adapter. Keep the shared caller’s cancellation and error behavior testable without opening real dialogs in every unit test.",
+      "question": "Why does the sample use an interface instead of directly calling an OS API?",
+      "answer": "It exposes a replaceable boundary and lets the lesson test outcomes deterministically. The real platform adapter still needs separate integration validation."
+    },
+    {
+      "explain": "Using a native resource may require a particular thread, a valid window association or a permission state. A managed reference does not prove the native object remains usable. Define whether callbacks can occur concurrently, whether access is borrowed or owned, and which operations remain valid after cancellation.",
+      "worked": "Inspect the native-hosting documentation for lifecycle and supported-host restrictions. In the atlas, acquire a resource and attach a callback relationship. Treat the relationship itself as state to clean up, not as a hidden side effect that will disappear when the view is no longer visible.",
+      "question": "Can a visible native handle be assumed valid because a C# object still references it?",
+      "answer": "No. Native lifetime and managed reachability are different. The adapter must respect the underlying resource contract and its owner’s state."
+    },
+    {
+      "explain": "The page or operation can end before a callback arrives. Cancellation often expresses intent rather than immediate termination. Use ownership, generation or disposed-state checks so a late success cannot update a replacement view or resurrect a closed operation. Do not silently convert all cancellations into errors.",
+      "worked": "In the atlas, end the owner while the callback remains pending. Compare behavior with and without the lifetime check. The appropriate result is not necessarily to destroy every resource immediately; borrowed/shared resources may have another owner. The key is to enforce the explicit contract rather than equating page visibility with ownership.",
+      "question": "What should a callback check before updating a page that may have closed?",
+      "answer": "That the owning operation and destination are still current and permitted to receive the result. Otherwise the result must follow the defined discard or cleanup path."
+    },
+    {
+      "explain": "Release subscriptions and owned native resources exactly according to their contract. Make cleanup idempotent where repeated disposal is possible. A callback can race with cleanup, so merely setting a field to null does not automatically make the whole operation safe. Keep shared resources alive for their actual owner and dispose only owned instances.",
+      "worked": "Test success, denial, cancellation, unavailable capability, owner closure and late callback. Record the target OS and API behavior. The browser, mobile and desktop implementations may expose different result identities, and a portability layer should make those differences explicit instead of promising an unrestricted filesystem path everywhere.",
+      "question": "What is the most useful native-adapter test matrix?",
+      "answer": "The normal result plus permission, cancellation, failure and lifetime boundaries on every supported target—not only one successful acquisition."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Return cancellation from the file-choice test double.",
+      "expected": "The shared caller shows a cancelled outcome.",
+      "why": "Cancellation is a supported result, not a fabricated successful file path."
+    },
+    {
+      "change": "End the owner before a callback completes.",
+      "expected": "The obsolete destination must not be updated.",
+      "why": "Platform callbacks can outlive the UI operation that requested them."
+    }
+  ],
+  "bridge": "The imported native-view/hosting guides provide platform-specific context. They do not make the deterministic lesson service a real picker. Use the atlas for ownership reasoning and full target projects for actual permission, threading and native-lifetime behavior."
+}

@@ -1,0 +1,57 @@
+{
+  "id": "one-codebase",
+  "scenario": "Imagine a task board that must run in a desktop window and in a browser. The title, task state and button behavior should not be rewritten for each platform. The useful first question is not “Which HTML element looks like a Button?” but “Which layer owns this behavior?” This lesson follows one shared object graph through its host and renderer. By the end, you should be able to identify what is portable, what must be configured per target, and what a successful browser experiment does not prove.",
+  "vocabulary": [
+    {
+      "term": "API surface",
+      "meaning": "The types, members and contracts application code can call; a declared API does not by itself prove complete target support."
+    },
+    {
+      "term": "Host",
+      "meaning": "The platform-specific entry point and integration that create an application, window and runtime environment."
+    },
+    {
+      "term": "Renderer",
+      "meaning": "The implementation that turns the shared UI state into platform output, distinct from the C# API used to describe it."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start at the layer you control: application state and a shared visual tree. A TextBlock stores text-related properties, a Button exposes content and interaction, and a panel owns children. These objects can be described with XAML or constructed in C#. Neither syntax is itself a platform host. Keeping that distinction clear prevents browser markup, framework controls and application data from becoming one undifferentiated concept.",
+      "worked": "Read the first TextBlock in the starter. Its Text property receives a string during object construction. Change only that string, run the lesson, and confirm that the output changes without adding browser DOM code. The surrounding course page is HTML, but the preview object is created by Uno. The interactive model shows shared ownership; the runnable example verifies this small object graph.",
+      "question": "Which part of the starter would you keep when adding a second platform?",
+      "answer": "The shared UI description and its ordinary application behavior remain reusable. The host, target configuration, packaging and any unsupported capabilities still need a platform-specific implementation or validation."
+    },
+    {
+      "explain": "A shared assembly is a way to distribute behavior, not a guarantee that every dependency can run everywhere. Separate portable domain decisions from filesystem paths, permissions, native windows and other platform boundaries. A capability-oriented interface lets the shared layer ask for a result without assuming how an operating system obtains it. Do not introduce an abstraction for every property; create boundaries where ownership or platform behavior actually differs.",
+      "worked": "In the visual model, increase the target count while keeping shared code enabled. The diagram represents one logical definition used by several targets. Disable sharing and compare the modeled copies. This is a maintenance illustration, not a measurement of binary size: real packages may still contain target-specific assemblies, native libraries and assets even when source is shared.",
+      "question": "Does one source file imply one identical binary for every target?",
+      "answer": "No. Build inputs, target frameworks, native assets and packaging can differ. The shared source reduces duplicated behavior; it does not erase the target build graph."
+    },
+    {
+      "explain": "The renderer is downstream of the API. Native rendering and Skia rendering can expose familiar controls while using different paths for drawing, input and native integration. The official architecture document is useful here because it distinguishes runtime implementation from build-time XAML processing. Read claims about supported behavior against the selected renderer and version instead of inferring the backend from a Fluent-looking screenshot.",
+      "worked": "The lab identifies its preview as Uno NativeRenderer on WebAssembly. The atlas diagram is a teaching model and its GPU experiments belong to the course shell, not this renderer. That explicit label prevents a common misunderstanding: a site using WebGPU for a diagram has not thereby converted every embedded Uno control into a WebGPU control.",
+      "question": "Can the appearance of a button establish which rendering backend drew it?",
+      "answer": "No. Inspect the project configuration and runtime evidence. Similar styling can be produced through different implementations, with different input, text and accessibility behavior."
+    },
+    {
+      "explain": "Finish with a small evidence matrix: compilation, artifact generation and actual interaction are separate checks. A browser preview establishes that this sample ran in this browser runtime. It does not establish native packaging, device permissions, keyboard behavior on another host or every WinUI API. Treat an unsupported-API warning as information about a contract boundary rather than something to suppress automatically.",
+      "worked": "Run the title change, resize the preview, and describe what remains shared. Then write a three-row validation plan for browser, one desktop target and one mobile target. For each row, name the artifact to launch and one interaction to test. This is the beginning of cross-platform engineering: consistent intent paired with target-specific evidence.",
+      "question": "What is the smallest honest statement after the browser exercise succeeds?",
+      "answer": "This object graph rendered and behaved as observed in the tested browser host. Broader target support requires additional builds and interaction tests; it is not inferred from source reuse alone."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change Text only",
+      "expected": "The visible title changes.",
+      "why": "The control receives a different property value without requiring browser-specific UI code."
+    },
+    {
+      "change": "Choose an API absent on a target",
+      "expected": "Compilation may warn or runtime behavior may be unavailable.",
+      "why": "API projection and implementation coverage are different checks."
+    }
+  ],
+  "bridge": "The upstream architecture document establishes the API/host/renderer vocabulary. The tutorial markup is a project example; compare its controls and properties with the smaller runnable StackPanel here. Keep its project context separate from the runner’s runtime-XAML path."
+}

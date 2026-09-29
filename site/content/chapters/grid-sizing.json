@@ -1,0 +1,57 @@
+{
+  "id": "grid-sizing",
+  "scenario": "Build a view with a fixed tool strip, a content-sized label and two flexible regions. The question is not merely how to write ColumnDefinitions, but how much space is left after every reservation. This lesson turns star sizing into an equation, tests what happens when the container gets too small, and connects the model to a real Uno Grid sample. Treat the equation as a deliberately simple finite case before adding min/max constraints or spanning children.",
+  "vocabulary": [
+    {
+      "term": "Pixel track",
+      "meaning": "A Grid row or column that requests a fixed logical size rather than a share of the flexible remainder."
+    },
+    {
+      "term": "Auto track",
+      "meaning": "A track whose size is driven by the desired size of its content under the layout algorithm."
+    },
+    {
+      "term": "Star weight",
+      "meaning": "A relative allocation weight applied to flexible space; 2* is neither two pixels nor necessarily two thirds of the total container."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Write the budget before assigning flexible sizes. Start with container width, subtract left and right padding, reserve fixed and content-driven tracks, then account for the gaps between tracks. Only the remaining width belongs to the star tracks in this simplified case. If a real child has min/max constraints or spans tracks, additional negotiation may be necessary.",
+      "worked": "With the atlas defaults, an 800-unit container loses 48 units to padding, 120 to the fixed track, 104 to the assumed Auto request and 36 to three gaps. The flexible remainder is 492 units. Calculate that independently before looking at the displayed value. This is an assumed layout model, not a reported runtime measurement.",
+      "question": "Why do three gaps appear in a four-column Grid?",
+      "answer": "ColumnSpacing is applied between neighboring columns. Four columns have three internal boundaries, not four exterior gaps."
+    },
+    {
+      "explain": "Fixed and Auto are different contracts even when they happen to produce the same width. A fixed track stays tied to its requested size; an Auto track can respond to different text, font metrics or content. This makes localization and dynamic content important test cases. Avoid changing Auto to a pixel width merely to match one screenshot.",
+      "worked": "Read the selected upstream Grid sample and identify which child contributes content-driven demand. In the live starter, both columns are stars so the ratio is easy to isolate. Compare that small live example with the four-track atlas rather than assuming they are identical configurations. The source sample adds the project context and neighboring layout cases.",
+      "question": "What can make an Auto track wider without changing its ColumnDefinition?",
+      "answer": "A child’s desired size can change, for example after a longer translation or different font metrics. The track definition expresses content-driven sizing, not a fixed numeric request."
+    },
+    {
+      "explain": "For weights 1 and 2, divide the 492-unit remainder by three. The first star receives 164 units and the second receives 328. Changing the first weight to two makes the weights equal, so each receives half of the flexible remainder. This reasoning is about the remaining space, not the full width including reserved tracks and padding.",
+      "worked": "Drag the model’s right edge and inspect the track ledger. Then use the live exercise to change the first column from * to 2*. Keep the second column at 2* and observe equal flexible regions. Write the ratio before running and compare it with the actual arranged view at two different viewport widths.",
+      "question": "Does changing * to 2* necessarily double the first column’s old width?",
+      "answer": "No. It also changes the total weight in the denominator. The new allocation depends on every star weight and the available remainder."
+    },
+    {
+      "explain": "An over-constrained layout is a behavior to explain, not a negative width to display. In the atlas, reserved space exceeding the finite budget clamps star space to zero and reports overflow. The full Grid algorithm has additional rules, so use a small actual sample to test the boundary you need. Never silently treat a toy equation as complete framework parity.",
+      "worked": "Choose the Narrow preset and account for its 68-unit modeled overflow. Then create a production test with long text, minimum widths and a small window. Decide whether the interface should reflow, scroll, truncate or refuse the size. The layout policy should communicate that decision to the user instead of simply clipping important controls.",
+      "question": "What should you do when reserved content is wider than the usable viewport?",
+      "answer": "Choose and test a responsive or scrolling policy. A zero star remainder explains the constraint conflict; it does not automatically produce a usable application layout."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Weights become 2* and 2*",
+      "expected": "Flexible regions become equal in the simplified finite case.",
+      "why": "Both receive the same share of the remaining budget."
+    },
+    {
+      "change": "Use width 360 with a 240-unit fixed track",
+      "expected": "The model reports 68 units of overflow and zero star remainder.",
+      "why": "Padding, fixed/Auto reservations and spacing exceed the available width."
+    }
+  ],
+  "bridge": "The Grid source sample supplies real definitions and child constraints. Use it to compare fixed, Auto and star requests with the atlas equation. The course’s runtime example isolates two star columns; full min/max and spanning behavior must be verified in a corresponding actual Grid test."
+}

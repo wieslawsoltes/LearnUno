@@ -1,0 +1,1460 @@
+{
+  "one-codebase": {
+    "documents": [
+      {
+        "path": "doc/articles/how-uno-works.md",
+        "expectedHash": "734cb952c850dd1dbf4ba9c4e7d5e5e72bc215ca9bd2af0faa83af0219d624cc"
+      },
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-xaml.md",
+        "expectedHash": "82f6cdcaf3f7478f1e4110e4c1e7b4f787a0d33b866eff427f93bb6e99eaa674"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-xaml.md",
+        "fence": 0,
+        "expectedHash": "d83ed03e18e9239e47ec770bd7579e52057c3d5cb1fde5a69a7da108b0e00d2d",
+        "caption": "The official counter tutorial starts from a compiled Page. Identify the namespaces and Content tree; x:Class belongs to that project, not the runtime-XAML editor."
+      }
+    ]
+  },
+  "csharp-essentials": {
+    "documents": [
+      {
+        "path": "doc/articles/features/using-markup.md",
+        "expectedHash": "9186224b49ff59770281110e08f1c97a85e5fb66e1ffb9b2326fc81a93905012"
+      },
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-csharp.md",
+        "expectedHash": "3a16061889e70aab7a818b287e940c6e2f1591c5483eb94a39facc9597099c72"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-csharp.md",
+        "fence": 0,
+        "expectedHash": "032287daafff6aaf732aa8907c3487919df3fb568aaa7bf6616debae9f2c0ae2",
+        "caption": "This official tutorial uses C# Markup construction. Compare object creation and property configuration with the plain-C# starter; the fluent helpers require their project packages."
+      }
+    ]
+  },
+  "project-setup": {
+    "documents": [
+      {
+        "path": "doc/articles/features/using-the-uno-sdk.md",
+        "expectedHash": "03198af84c43361f87840d5ca5d7ed3e71048c39358350e4ede86c3a14375421"
+      },
+      {
+        "path": "doc/articles/uno-app-solution-structure.md",
+        "expectedHash": "0c1180d55118db71095bb29f8cc0dbc5020922b1154b539c476715d6f3ff3925"
+      },
+      {
+        "path": "doc/articles/get-started-dotnet-new.md",
+        "expectedHash": "362fcafce81d18c37e45dd56d93270cdba604549247b6120e26145ae987eb091"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/using-the-uno-sdk.md",
+        "fence": 4,
+        "expectedHash": "37978ff47477e81da49131dbfc98de6df50e9cbfaa2590a74f5f2e6226d02606",
+        "caption": "Read the project SDK and feature declarations. Ellipses mark omitted project context; this is not a complete project file to paste unchanged."
+      }
+    ]
+  },
+  "xaml-first": {
+    "documents": [
+      {
+        "path": "doc/articles/features/using-markup.md",
+        "expectedHash": "9186224b49ff59770281110e08f1c97a85e5fb66e1ffb9b2326fc81a93905012"
+      },
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-elements-xaml.md",
+        "expectedHash": "2501cb3d7e52effb8111a9a5459d9c1cca1cb45001a75521fdcf4956a124419a"
+      },
+      {
+        "path": "doc/articles/uno-development/debugging-inspect-visual-tree.md",
+        "expectedHash": "f7673726db1a7d93bb883b31e04c30354514d783cbfe4184ece10d25f76622f3"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-elements-xaml.md",
+        "fence": 3,
+        "expectedHash": "231cc2f54a3ee62bcb5239a8ab2e2bf42a6d40c4866a787a4267f63e35aad7b5",
+        "caption": "Each attribute configures a property on a constructed TextBlock. Compare whitespace in the source with explicit layout properties."
+      },
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-xaml.md",
+        "fence": 0,
+        "expectedHash": "d83ed03e18e9239e47ec770bd7579e52057c3d5cb1fde5a69a7da108b0e00d2d",
+        "caption": "The enclosing Page supplies project and namespace context. Compare this built-page example with the smaller StackPanel root accepted by the playground."
+      }
+    ]
+  },
+  "events": {
+    "documents": [
+      {
+        "path": "doc/articles/features/routed-events.md",
+        "expectedHash": "925737637acd32520ee9f05d9aaaa22121fcf4aa70cb1f5437b0927d85cccfea"
+      },
+      {
+        "path": "doc/articles/features/pointers-keyboard-and-other-user-inputs.md",
+        "expectedHash": "1eb67bc0ad504001c8c0a666d188e8898072d38e1d41b9b0ca5e79e4ba8fd01f"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListViewItem_Click_Focus.xaml.cs",
+        "startLine": 1,
+        "endLine": 20,
+        "expectedHash": "dcb1b26c2cee102ce9ac73702c59f60cb598e925273ad9fe4ac4fa360c7a3993",
+        "caption": "The constructor registers Click and GettingFocus handlers on named controls created by InitializeComponent. Notice the captured output control and the source objects holding the delegates.",
+        "kind": "Uno sample excerpt"
+      },
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 28,
+        "endLine": 46,
+        "expectedHash": "66f948955c19759b33b5036ff1b828c340848eab075195d26d96b476bb4c0750",
+        "caption": "The same sample pairs Loaded subscription with Unloaded unsubscription. Read both sides of the ownership boundary, not just the += line.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "debug-loop": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-howto-create-a-repro.md",
+        "expectedHash": "11d0b7f871f3db08f47bf9b70aab533e12951d35ff6844c0cfb8e2ee942ada08"
+      },
+      {
+        "path": "doc/articles/features/debugging-troubleshooting.md",
+        "expectedHash": "1ec05e46287c0171832602703fe636a3bcd299e9030304fa641bc7e6e7f97c90"
+      },
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "expectedHash": "05fb888de3f3aa50f6d959f1469cb44d5692e44b5cde86c89f7cf3196d03af18"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "fence": 0,
+        "expectedHash": "b869ce498712ad7b6152ea1e545f556c3b6d97aa0600d9e42ae2cde547a058bd",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/uno-howto-create-a-repro.md",
+        "fence": 3,
+        "expectedHash": "56a0dd7b3e1ca598f5076eb92bcbcb6dac11b2af226d4d60fe9c4e1bdcd284be",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "layout-panels": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-change-layout.md",
+        "expectedHash": "4559b1f449726228a5f3e37e3ecae67d891078828abd7e2cd45331b00efacf12"
+      },
+      {
+        "path": "doc/articles/controls/ScrollViewer.md",
+        "expectedHash": "d82f635c67d859ce45d95d42263c27f69fd78111c5b5b6a967a41efe3b64a854"
+      },
+      {
+        "path": "doc/articles/uno-development/Uno-UI-Layouting-iOS.md",
+        "expectedHash": "76c50b9c821b8a25a24bab6162636994540a3fdb310814753252396210facd17"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/Uno.UI.RuntimeTests/Microsoft/UI/Xaml/Controls/Given_StackPanel.cs",
+        "startLine": 44,
+        "endLine": 81,
+        "expectedHash": "3eaec8abfc574c87e447365321f12737e5f999a733679517e391a9ba21af0cb9",
+        "caption": "A UI-thread runtime test adds a second child, waits for relayout and checks height changes from 50 to 100. The helper class and test host remain in the enclosing file.",
+        "kind": "Uno runtime-test excerpt"
+      }
+    ]
+  },
+  "grid-sizing": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-layout.md",
+        "expectedHash": "4e1880f94d7dd2a97256c0185dee36e00a7e682a50c5df0ea834753a2ac998e6"
+      },
+      {
+        "path": "doc/articles/uno-development/Uno-UI-Layouting-iOS.md",
+        "expectedHash": "76c50b9c821b8a25a24bab6162636994540a3fdb310814753252396210facd17"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/GridTestsControl/Grid_Spacing_Adjustable.xaml",
+        "startLine": 27,
+        "endLine": 68,
+        "expectedHash": "fac1885cb29919474391eb412e55abe0b15c2eabc02b3f279f10310b36e9ad9d",
+        "caption": "This adjustable Grid uses fixed child dimensions, Auto and star tracks, spacing bindings and spans. Compare these additional constraints with the simpler four-track equation in the atlas.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "spacing-alignment": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mainpage-change-layout.md",
+        "expectedHash": "4559b1f449726228a5f3e37e3ecae67d891078828abd7e2cd45331b00efacf12"
+      },
+      {
+        "path": "doc/articles/features/VisibleBoundsPadding.md",
+        "expectedHash": "3033c29a1b24ee0f80056645a51c98a967ee410293a2243df84363e9136beca0"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/GridTestsControl/Grid_Spacing_Adjustable.xaml",
+        "startLine": 15,
+        "endLine": 44,
+        "expectedHash": "e695f7486a05c6b3cd9ccdfbc1a11cf3710c26d7f3d602de85cc4f2bfeaf3709",
+        "caption": "The sample’s controls expose spacing and show a Margin around the Grid. Distinguish the external Margin from ColumnSpacing and RowSpacing inside it.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "resources": {
+    "documents": [
+      {
+        "path": "doc/articles/features/working-with-themes.md",
+        "expectedHash": "94b43258df19ef129e63c592c2a27071df1632f5644ce22f00231094ee2db82d"
+      },
+      {
+        "path": "doc/articles/uno-development/themeresource-internals.md",
+        "expectedHash": "57e89f575f848b02d545ef8d26eb0b64d9ee901e01c849adcc1b7a869e252590"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/TextBlockControl/TextBlock_Style_Inheritance.xaml",
+        "startLine": 1,
+        "endLine": 31,
+        "expectedHash": "21bf25fdb244f859bc716a582b40771b3f8610836a7f95d267f4c03f2a81a667",
+        "caption": "Button and TextBlock styles deliberately supply different foreground values. The expected green text demonstrates style/inheritance context; it is not merely a global color variable.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "data-templates": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/ListViewBase.md",
+        "expectedHash": "aced5af09bfd15c280e76ba8557fae4808a49c559bdb0eb877b899ecc4b8e060"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_Changing_Text.xaml",
+        "startLine": 1,
+        "endLine": 23,
+        "expectedHash": "fc581120143440ea08b15131c9ef98e3764afb9105e258a987d6288c2990edb2",
+        "caption": "A shared item template contains a named CheckBox and a binding to that row’s IsChecked. Each template instance has its own objects and context; the surrounding sample supplies the item collection.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "responsive-layout": {
+    "documents": [
+      {
+        "path": "doc/articles/features/AdaptiveTrigger.md",
+        "expectedHash": "59eb2e38ce7eae9c7fababac631821339bb743fb9d7efec9d000ba6c3eb74fba"
+      },
+      {
+        "path": "doc/articles/platform-specific-xaml.md",
+        "expectedHash": "2be33502be9095f576578b154507bff0b60c60d14a8a6e17f791c2c3b954196d"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/VisualStateTests/VisualState_AdaptiveTrigger_UsingOneStateOnly.xaml",
+        "startLine": 1,
+        "endLine": 34,
+        "expectedHash": "7fc5dd51b86835c74e373d23822c547c3a0e503b4046bc1fe9211eae99c02a6d",
+        "caption": "The actual sample declares a width-driven adaptive state. Identify the trigger condition and setter target, then compare with the imperative SizeChanged starter.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "binding-flow": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      },
+      {
+        "path": "doc/articles/controls/TextBox.md",
+        "expectedHash": "74501382902f4c32ca356c8aea04b3be7b4c85d3f8a00e39ce189b521f3a65e6"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/TextBox/TextBox_Bindings.xaml",
+        "startLine": 1,
+        "endLine": 24,
+        "expectedHash": "ebf1e6d991121064efe971f10c9cdee987ad774c67bf5201392b125606841301",
+        "caption": "The sample binds TextBoxes in TwoWay, OneWay and default modes to the same named property. Read its code-behind for the source object and compare directions before typing.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "change-notification": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The official MVVM tutorial uses ObservableObject and generated ObservableProperty members. Compare those generated notifications with the manual INotifyPropertyChanged setter in the runnable lesson."
+      }
+    ]
+  },
+  "two-way": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/TextBox.md",
+        "expectedHash": "74501382902f4c32ca356c8aea04b3be7b4c85d3f8a00e39ce189b521f3a65e6"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/TextBox/TextBox_Bindings.xaml",
+        "startLine": 1,
+        "endLine": 24,
+        "expectedHash": "ebf1e6d991121064efe971f10c9cdee987ad774c67bf5201392b125606841301",
+        "caption": "Changing binding mode changes allowed value flow, not persistence. The backing property and its notifications are defined in this sample’s paired code-behind.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "compiled-binding": {
+    "documents": [
+      {
+        "path": "doc/articles/features/windows-ui-xaml-xbind.md",
+        "expectedHash": "c8e0fb8dae06f3893698e002c822011d668d273e7ce0ba1cefaed08f60beb39c"
+      },
+      {
+        "path": "doc/articles/uno-development/Uno-UI-xBind-architecture.md",
+        "expectedHash": "fcafd0e2a357b0bcf4065e40c0df670c0cae24ec0b56ce065bc3fa1075c5a36e"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/windows-ui-xaml-xbind.md",
+        "fence": 3,
+        "expectedHash": "d7b04da4eed2b32d30bfb7195de31dd8598ab50913f391a48c63ae18d73f380e",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/features/windows-ui-xaml-xbind.md",
+        "fence": 9,
+        "expectedHash": "032a813a12b0d1a072e7da0d0a95fa6ec0b1ab5c54663650b89eaebce6e80253",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "observable-collections": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/ListViewBase.md",
+        "expectedHash": "aced5af09bfd15c280e76ba8557fae4808a49c559bdb0eb877b899ecc4b8e060"
+      },
+      {
+        "path": "doc/articles/uno-development/listviewbase-internals.md",
+        "expectedHash": "fba8754a3bad662028f1d757dcebb7de990ac44d94badf63cf4a88d6263c8acd"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 28,
+        "endLine": 55,
+        "expectedHash": "2ad575837dd91189e5b00c01b80de8e324263c7821fbb4c49a9dec5410ae566e",
+        "caption": "ItemsSource refers to one ObservableCollection and the UI offers Add, Remove and Replace operations. A collection notification is different from a property change inside an item.",
+        "kind": "Uno sample excerpt"
+      },
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 127,
+        "endLine": 139,
+        "expectedHash": "4174ba5cf0cad1039ffdd933b6c075ca0f53031601ed20c1fa651f84d30ff774",
+        "caption": "Replacement, removal and insertion mutate collection membership or identity. The helper methods depend on surrounding sample data and are not standalone functions.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "commands-validation": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The complete tutorial view-model fragment combines observable properties and a generated Increment command. This is project-generator code; the online starter demonstrates the validation rule directly."
+      }
+    ]
+  },
+  "mvvm": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/getting-started/counterapp/get-started-counter-xaml-mvvm.md",
+        "expectedHash": "30b952cc152d90e6cc64dde835fcf92909c5de656086a51e93ee5aec7abb42f2"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "Read state and action as one small view-model contract. The generator removes boilerplate but does not decide domain boundaries, persistence or validation policy."
+      }
+    ]
+  },
+  "mvux": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvux.md",
+        "expectedHash": "3d448a3c878790491b9d73c6e7181c3ff9992715131bf81a7c217ce9d42b70c7"
+      },
+      {
+        "path": "doc/articles/getting-started/counterapp/get-started-counter-csharp-mvux.md",
+        "expectedHash": "f9d2ff2fa4579734b5601f27c9132bc3ff52d2fdc7ae39fac37a5ef2d2e60ecb"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvux.md",
+        "fence": 6,
+        "expectedHash": "6c9da620c89df94d3d014c59d0a1913e706bfd64d84a90e84af168dd96035764",
+        "caption": "The official example makes Countable state explicit and connects it to Uno reactive state. Compare the record transition with the ordinary immutable-record lab before adopting package-generated binding adapters."
+      }
+    ]
+  },
+  "dependency-injection": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 31,
+        "expectedHash": "d0990579126ee13eb985a61b5fe6f6748c976bbcaa7db24ebde386ef350ec9d0",
+        "caption": "A navigation collaborator enters through a view-model constructor. The surrounding migration guide defines the interface and command helper; inspect the replaceable dependency, not just the command syntax."
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 21,
+        "expectedHash": "03af4da3c02387477909ba0067411ca6462d3f9681a244fba9202f77dc0db2d1",
+        "caption": "This short route-registration example shows an explicit singleton lifetime in the guide’s navigation context. It is not a complete hosting setup or a recommendation to make every service a singleton."
+      }
+    ]
+  },
+  "navigation": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/Frame.md",
+        "expectedHash": "2b52d1a49d76586af942f62bba1893edd2fce2b500a04a1a799e0803e610a27c"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 8,
+        "expectedHash": "c06952d44eb5b291f84f25cff37b8782e33c9e1d1bb3314f195ec5e8c7ff5c3a",
+        "caption": "The destination reads a typed parameter during OnNavigatedTo. The parameter identifies state rather than passing a live visual tree."
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 30,
+        "expectedHash": "1ccbc347b2eaed3fa9afae8eb31cc6213ee1d805eb35be96318ca2d106762a78",
+        "caption": "Navigation and visual attachment have distinct callbacks. Read the comments and compare navigation lifetime with Loaded/Unloaded ownership."
+      }
+    ]
+  },
+  "async-cancellation": {
+    "documents": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "expectedHash": "81e8729efb31ce125535c0fa89666724ad215ad58306405b1798f45019582c0d"
+      },
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "expectedHash": "05fb888de3f3aa50f6d959f1469cb44d5692e44b5cde86c89f7cf3196d03af18"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "fence": 45,
+        "expectedHash": "8b5080ce3dbbb75343ef0630ead3c470e1c0b31642b56a2fcfe2abe92c436a5f",
+        "caption": "The HTTP tutorial coordinates IsBusy with try/finally around loading. It does not pass cancellation in this fragment: identify that boundary and compare with the token-aware runnable lesson."
+      }
+    ]
+  },
+  "persistence": {
+    "documents": [
+      {
+        "path": "doc/articles/features/applicationdata.md",
+        "expectedHash": "0ae7314e067580728f085e63e7831deb492432c46937757f348aaad3a38024dd"
+      },
+      {
+        "path": "doc/articles/features/file-management.md",
+        "expectedHash": "0b8b4be13a1554cd9f8d5d87a2ffbc1e5fe1e6c27680359420f5135f7a3c8cb5"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/applicationdata.md",
+        "fence": 0,
+        "expectedHash": "a17d1567bdab657db236c7741891e35225f5554bd74d00adf35133b34afa610e",
+        "caption": "Actual ApplicationData file creation and read/write operations illustrate storage, distinct from JSON serialization. These APIs run under the host’s storage policy; the course iframe has only ephemeral settings."
+      },
+      {
+        "path": "doc/articles/features/applicationdata.md",
+        "fence": 1,
+        "expectedHash": "91f968bc20ab9b133719391917fa9b5d9f46be03b4eb916ee4d56fcad4cdbf96",
+        "caption": "This small settings example stores and reads a value. It demonstrates the API, not schema validation, encryption, quotas or a crash-safe multi-file transaction."
+      }
+    ]
+  },
+  "http-data": {
+    "documents": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "expectedHash": "81e8729efb31ce125535c0fa89666724ad215ad58306405b1798f45019582c0d"
+      },
+      {
+        "path": "doc/articles/features/windows-networking.md",
+        "expectedHash": "e2b2d3fbc3ea56ab0a97a35ad7bec864b5c666d53d56fe090bd464e2c4eb01de"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "fence": 9,
+        "expectedHash": "fb284cd81ce6cd83ecd34d516263820c9d8e32a7025618690b609bfbefd8f4ab",
+        "caption": "The tutorial checks HTTP status before reading successful content. Examine disposal, cancellation and error policy in the full application; the course starter replaces transport with a deterministic handler."
+      }
+    ]
+  },
+  "configuration": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/silverlight-migration/08-data-access-overview.md",
+        "expectedHash": "b310648774bab1a968cf3e67a1fd0cee01e7c834112438c7dffd3c133f70db87"
+      },
+      {
+        "path": "doc/articles/guides/using-the-server-project.md",
+        "expectedHash": "a62f7cddfc06cbe8aa199ddcfa7aa8484357d7711ed316fff9f4742915e27308"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/using-the-server-project.md",
+        "fence": 1,
+        "expectedHash": "7c6038026c5860c53aa4188fe853a539d10078cb19913ab328d5081b43cd8715",
+        "caption": "This launch-settings fragment supplies development addresses for the server host. It is public configuration, not a place to hide browser-client secrets or an entire appsettings contract."
+      }
+    ]
+  },
+  "localization": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/localization.md",
+        "expectedHash": "4e7d1424b81cf3edd1ebc915d7a2a5bd4779494f623d898f712ce2a84d8fa32a"
+      },
+      {
+        "path": "doc/articles/features/working-with-strings.md",
+        "expectedHash": "23952914421d76054c8da7632f6b8a1fdfafb6434f67e2916972f6d30dd288b3"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/localization.md",
+        "fence": 0,
+        "expectedHash": "301afeb912c4a66652e2417de1b3d3bd3b19c03a6a27d1d98000b9ec70b4dc3c",
+        "caption": "The page uses resource identifiers on UI elements. Resource lookup translates text; CultureInfo formatting in the starter is a separate operation."
+      },
+      {
+        "path": "doc/articles/guides/localization.md",
+        "fence": 1,
+        "expectedHash": "24e7f4179330e882bc86d03b6f4d0932ab5d0a9ec11f6becd2afe9718aa9cc42",
+        "caption": "The code-behind obtains a resource string in the guide’s project context. Observe the key lookup and do not confuse it with automatic translation of arbitrary literals."
+      }
+    ]
+  },
+  "authentication": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/open-id-connect.md",
+        "expectedHash": "e7aa47bcebdccd097cfb010c7b6b92c336e3bb4596c8f2bffb4365c1c4581c7d"
+      },
+      {
+        "path": "doc/articles/features/web-authentication-broker.md",
+        "expectedHash": "10dc2e4f9c5c68e71ccf1e0b16509349e1c1bb9d47e8f7573b2cee06e74d8daf"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/open-id-connect.md",
+        "fence": 4,
+        "expectedHash": "f716f9482e578778fe6a52e597b3182796b250423a3f9ead509adf0b7b2dabc4",
+        "caption": "A provider-specific sign-in callback processes an OIDC response using initialized project fields. This is a contextual guide excerpt, not a standalone or universal login implementation; authorization still belongs to the trusted service."
+      }
+    ]
+  },
+  "logging": {
+    "documents": [
+      {
+        "path": "doc/articles/logging.md",
+        "expectedHash": "b9f8fba62ff489399125d6c399fc04307fc9a3ee8a6958a4300b899a182e6a8f"
+      },
+      {
+        "path": "doc/articles/guides/profiling-applications.md",
+        "expectedHash": "1ae028cb701df328f6967db12a947a9c80649b434a2d1104e8ca2406f4bf13bb"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/logging.md",
+        "fence": 3,
+        "expectedHash": "291fe2110238297293e1644f7034295854555e00efb0eea010f7713281761314",
+        "caption": "The example records an error through the configured logging abstraction. Review what the error contains before logging it; never assume upstream error text cannot include sensitive data."
+      },
+      {
+        "path": "doc/articles/logging.md",
+        "fence": 5,
+        "expectedHash": "cd98d0b393776fe4dd1ddd0f02547083f87708de37f82641e61b4cb905bfe707",
+        "caption": "Uno exposes a log-level choice for not-implemented API diagnostics. A diagnostic category and severity are policies, not user-facing error recovery."
+      }
+    ]
+  },
+  "ecosystem": {
+    "documents": [
+      {
+        "path": "doc/articles/features/using-the-uno-sdk.md",
+        "expectedHash": "03198af84c43361f87840d5ca5d7ed3e71048c39358350e4ede86c3a14375421"
+      },
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/features/using-markup.md",
+        "expectedHash": "9186224b49ff59770281110e08f1c97a85e5fb66e1ffb9b2326fc81a93905012"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/using-the-uno-sdk.md",
+        "fence": 3,
+        "expectedHash": "0fc96e46135ec2e3e4acf4c0df17ab2b2543d2e3c6bcdf6246994630ab5edbf0",
+        "caption": "The feature list declares optional capabilities. Read it as an example of feature selection, not a prescription to install every listed feature for a small application."
+      }
+    ]
+  },
+  "dependency-properties": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/creating-custom-controls.md",
+        "expectedHash": "de3588be605944e16cc42dc2d53d31c57c0e8836dc298c352bb3c7d56b5d66fa"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/custom-controls.md",
+        "expectedHash": "47bbf5440b564f43ea936a141eb95368d13f9d61305cc2339f49cd5cc96e2d6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/custom-controls.md",
+        "fence": 1,
+        "expectedHash": "24466b16d930fb9272971f18be43d4d442bb7be4b1a5de8122d060c31d123eb0",
+        "caption": "This WinUI-style registration names the property, type, owner and metadata. The guide contrasts it with Xamarin.Forms; the excerpt is the Uno/WinUI side."
+      },
+      {
+        "path": "src/Uno.UI.RuntimeTests/Microsoft/UI/Xaml/Given_DependencyProperty.cs",
+        "startLine": 28,
+        "endLine": 39,
+        "expectedHash": "53d19a4b752234e47830622df68b698901d074c0a55d8d23db08545a176159dc",
+        "caption": "The runtime regression registers a property-changed callback, unregisters its token, changes the property and asserts no notification. Token ownership matters independently of the CLR wrapper.",
+        "kind": "Uno runtime-test excerpt"
+      }
+    ]
+  },
+  "control-templates": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/debugging-templates.md",
+        "expectedHash": "bc945fa40427ce580bb1435eadf713e11290d9658f2519d3f9b01d7310690f97"
+      },
+      {
+        "path": "doc/articles/guides/creating-custom-controls.md",
+        "expectedHash": "de3588be605944e16cc42dc2d53d31c57c0e8836dc298c352bb3c7d56b5d66fa"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/DelayedImagePresenter/DelayedImagePresenter.xaml",
+        "startLine": 1,
+        "endLine": 28,
+        "expectedHash": "c38670ea34973c5318a205467efe1dff909d6d9aaeed713122397dc42f6014b0",
+        "caption": "The named Image part reads Source from the templated parent. The custom presenter class supplies the behavior; this resource dictionary alone is not a complete control.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "pointer-input": {
+    "documents": [
+      {
+        "path": "doc/articles/features/pointers-keyboard-and-other-user-inputs.md",
+        "expectedHash": "1eb67bc0ad504001c8c0a666d188e8898072d38e1d41b9b0ca5e79e4ba8fd01f"
+      },
+      {
+        "path": "doc/articles/features/routed-events.md",
+        "expectedHash": "925737637acd32520ee9f05d9aaaa22121fcf4aa70cb1f5437b0927d85cccfea"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Windows/UI/Input/PointersTests/Pointer_Coordinates.xaml.cs",
+        "startLine": 1,
+        "endLine": 22,
+        "expectedHash": "39b7341cec2b8de0a3ab06bfb727d581b869ad97849925cb95e023730aba30e7",
+        "caption": "This manual coordinate sample uses GetCurrentPoint(null). Compare that coordinate context with GetCurrentPoint(surface) in the starter; do not combine points from different spaces.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "accessibility": {
+    "documents": [
+      {
+        "path": "doc/articles/features/accessibility/automation-properties.md",
+        "expectedHash": "9747ff393c5a6260cbb4aae0a4489ddaa446764abc42746a89e4f05ba134915b"
+      },
+      {
+        "path": "doc/articles/features/accessibility/testing-with-screen-readers.md",
+        "expectedHash": "9fda6c0a917959bb9dae1575d0a4accc1e88599d6c75075457d05db1b2580604"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Automation/AutomationProperties_Name.xaml",
+        "startLine": 17,
+        "endLine": 26,
+        "expectedHash": "2dcff8d5bf93f6463d576f07201aedce7808c50507efd98b466cd60c8e109a01",
+        "caption": "The sample assigns names to different visual elements. Inspect the actual resulting role, name and state; setting Name alone does not make an arbitrary Border an operable button.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "animation": {
+    "documents": [
+      {
+        "path": "doc/articles/features/working-with-animations.md",
+        "expectedHash": "c7f13059d43911bda41bc9df1cc990900c2b22597fd19d3e5a141b35817aef70"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/animations.md",
+        "expectedHash": "9b69071955fa94e964b9416a3b230a18c4450f0b1859e925b845cf01046f4c73"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/animations.md",
+        "fence": 4,
+        "expectedHash": "8b139b6552c4adee2545b4ff57415bbaa3a3ad0d46a7244db2b2d142fe8d91d1",
+        "caption": "The Uno/WinUI side declares a Storyboard and target property. Named targets and surrounding transforms belong to the enclosing XAML project; the isolated fragment is not a standalone root."
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/animations.md",
+        "fence": 11,
+        "expectedHash": "d7904fc0aa170b1cf23a2777f14670b8c620f929642fccbf3e52c8135e70f217",
+        "caption": "The named element owns a CompositeTransform and a Storyboard targets its translation. Compare timing, endpoints and transform ownership with the opacity starter."
+      }
+    ]
+  },
+  "vector-graphics": {
+    "documents": [
+      {
+        "path": "doc/articles/features/shapes-and-brushes.md",
+        "expectedHash": "dfe3f29a55d44ed26469a8b029e18960c9f2a08c029be6cfd26346a866272c85"
+      },
+      {
+        "path": "doc/articles/controls/SKCanvasElement.md",
+        "expectedHash": "133a3a24e12d71ddc968667dd94123d167863899f8c97447295f39964571c778"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/shapes-and-brushes.md",
+        "fence": 0,
+        "expectedHash": "b4551fb48af7e03e8aa3457816bc53ec64f6d922b9853f046de76f2e6bfac48b",
+        "caption": "This actual shapes/brushes example separates geometry elements from their brushes. Inspect the complete resource and layout context before adapting it."
+      }
+    ]
+  },
+  "measure-arrange": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/Uno-UI-Layouting-iOS.md",
+        "expectedHash": "76c50b9c821b8a25a24bab6162636994540a3fdb310814753252396210facd17"
+      },
+      {
+        "path": "doc/articles/uno-development/Uno-UI-Layouting-Android.md",
+        "expectedHash": "1c7679dffd92a6f730b9255a5bc19360ef041aa05ad81ab08472f94a042008d0"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/MeasureDetectorControl/MeasureDetectorInner.cs",
+        "startLine": 1,
+        "endLine": 27,
+        "expectedHash": "1a858d107603c8e8ea1ab6d4092797e86335107a95960b51b7b28a29aed6ec2b",
+        "caption": "The helper observes MeasureOverride and ArrangeOverride independently while delegating real work to the base class. Observation counts are not elapsed-time measurements.",
+        "kind": "Uno sample excerpt"
+      },
+      {
+        "path": "src/Uno.UI.RuntimeTests/Microsoft/UI/Xaml/Controls/Given_StackPanel.cs",
+        "startLine": 71,
+        "endLine": 89,
+        "expectedHash": "356b1d25082f67aba2acd41d01fcac64e55592f33fdc476dc6b186024ddde6a0",
+        "caption": "The runtime test adds/removes a child, awaits relayout and checks both measured and arranged height. Those assertions connect the mutation to observable geometry.",
+        "kind": "Uno runtime-test excerpt"
+      }
+    ]
+  },
+  "virtualization": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/ListViewBase.md",
+        "expectedHash": "aced5af09bfd15c280e76ba8557fae4808a49c559bdb0eb877b899ecc4b8e060"
+      },
+      {
+        "path": "doc/articles/uno-development/listviewbase-internals.md",
+        "expectedHash": "fba8754a3bad662028f1d757dcebb7de990ac44d94badf63cf4a88d6263c8acd"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 69,
+        "endLine": 95,
+        "expectedHash": "4a6bdb18a49060934291d13762332729ef140796e4f5061524c05c86e99f1b5e",
+        "caption": "The sample’s deterministic flow scrolls and modifies items above the viewport. It is a concrete scenario for inspecting container behavior and maintaining identity, not a universal fixed-height recycling algorithm.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "allocation-budget": {
+    "documents": [
+      {
+        "path": "doc/articles/Uno-UI-Performance.md",
+        "expectedHash": "9eb18ca3b935f60e831d5940b92c00026ab0344fa59527cb48fa6612e21f244f"
+      },
+      {
+        "path": "doc/articles/uno-development/troubleshooting-memory-issues.md",
+        "expectedHash": "4734be0c3a81dab0bd5c351dedb26ce204ef0f37b2289df51b3f8a45994e9cc3"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/uno-development/troubleshooting-memory-issues.md",
+        "fence": 0,
+        "expectedHash": "eea1647b3d482bab66984273843a6d317ec1a6ea89aeabd01561a41cd9ccd9af",
+        "caption": "The diagnostic example follows live-object lifetime. It is investigative code in a memory-troubleshooting guide, not a production cache implementation; compare it with the bounded cache model."
+      }
+    ]
+  },
+  "ui-thread": {
+    "documents": [
+      {
+        "path": "doc/articles/wpf-winui-equivalents.md",
+        "expectedHash": "40169ee14bd8a89a6bfd1ca66a3705c386b231e3bda7927b9bba0eed230bca1d"
+      },
+      {
+        "path": "doc/articles/features/windows-system.md",
+        "expectedHash": "2742c6d39480002ed01351742581a3539a8d8156d357e4e7b9f911e2f655a514"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/wpf-winui-equivalents.md",
+        "fence": 7,
+        "expectedHash": "e74ad4aa9c03eb1eae97d5c821d9987a569da2d8077df6447e7aa4df4c86b462",
+        "caption": "This guide fragment converts TryEnqueue into an awaitable completion with a TaskCompletionSource. Queue acceptance, execution and exception completion are distinct outcomes."
+      },
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/TextBlockControl/TextBlock_UpdatePerformance.xaml.cs",
+        "startLine": 1,
+        "endLine": 25,
+        "expectedHash": "9d3995f1cfce57ace577c1c4ec2ece5988a3c609d7716595f14aab3c4287875d",
+        "caption": "The sample updates text and awaits Task.Yield in a loop. Yielding creates a scheduling opportunity; it does not remove total work or prove a new frame is presented every iteration.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "profiling": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/profiling-applications.md",
+        "expectedHash": "1ae028cb701df328f6967db12a947a9c80649b434a2d1104e8ca2406f4bf13bb"
+      },
+      {
+        "path": "doc/articles/Uno-UI-Performance.md",
+        "expectedHash": "9eb18ca3b935f60e831d5940b92c00026ab0344fa59527cb48fa6612e21f244f"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/profiling-applications.md",
+        "fence": 12,
+        "expectedHash": "74f915acdd57677b1f5ffa0566776a7d922c4201bc244f327dc7eca908a4fd7c",
+        "caption": "Collecting a trace by process ID is an actual tooling step. Replace PID with the intended target process and record workload/build context; this command is not executed by the browser lesson."
+      },
+      {
+        "path": "doc/articles/guides/profiling-applications.md",
+        "fence": 8,
+        "expectedHash": "f3de2888fa2450265619379181f48e161874975566121990bcf6cc0e03080b88",
+        "caption": "The guide shows a platform-specific trace collection route. Platform prerequisites and tool versions remain in the source; do not generalize one host’s trace to all renderers."
+      }
+    ]
+  },
+  "wasm-delivery": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-publishing-webassembly.md",
+        "expectedHash": "47192bbeedb26303d6e92c2780a897f40cbf88804f83306130ec08ea39f93c60"
+      },
+      {
+        "path": "doc/articles/features/using-il-linker-webassembly.md",
+        "expectedHash": "fe6869eb79cbbff558cbcd3361a9e5f98d78800585d7006e4f8e32c692363236"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/uno-publishing-webassembly.md",
+        "fence": 0,
+        "expectedHash": "56aeee16571e4ae45b28ef65d485be60e12c985d8d19f690e6255fdc8def0147",
+        "caption": "Publish the explicit browser target and inspect its generated assets. A successful command is followed by runtime and hosting checks."
+      },
+      {
+        "path": "doc/articles/features/using-il-linker-webassembly.md",
+        "fence": 2,
+        "expectedHash": "9f7527d794b99e76dede41fc34fcafb1d6067286063b6fd1743961f0050dd6b7",
+        "caption": "This linker-descriptor fragment preserves dynamically used members in its example assembly. It illustrates why reflection needs explicit consideration, not a blanket instruction to disable all trimming."
+      }
+    ]
+  },
+  "target-matrix": {
+    "documents": [
+      {
+        "path": "doc/articles/platform-specific-csharp.md",
+        "expectedHash": "80c0c7e353cbb093bcb4ab3d315ef302762615b903fea71d21eb14006dd4ce6e"
+      },
+      {
+        "path": "doc/articles/platform-specific-xaml.md",
+        "expectedHash": "2be33502be9095f576578b154507bff0b60c60d14a8a6e17f791c2c3b954196d"
+      },
+      {
+        "path": "doc/articles/uno-notimplemented-types.md",
+        "expectedHash": "bb8c754dcbb657ae47d0f37767c2d4fde8260cfd6fbd634850cd5b6bf28718d6"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/platform-specific-csharp.md",
+        "fence": 2,
+        "expectedHash": "34217a0fda2a11f498bb39c3e996976eabd23ac5cbe4f59763a2da7f348f0daa",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/platform-specific-csharp.md",
+        "fence": 5,
+        "expectedHash": "e8f39578205de93b54789e2f801401ce3eb8b4f5c3fb95cf44754998bd338155",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "renderers": {
+    "documents": [
+      {
+        "path": "doc/articles/how-uno-works.md",
+        "expectedHash": "734cb952c850dd1dbf4ba9c4e7d5e5e72bc215ca9bd2af0faa83af0219d624cc"
+      },
+      {
+        "path": "doc/articles/features/using-skia-rendering.md",
+        "expectedHash": "483218f89d391cc47e4759d9c8cb4a31b1eeea7e45c840ab70746eba025de191"
+      },
+      {
+        "path": "doc/articles/features/using-native-rendering.md",
+        "expectedHash": "1d773c78f2b5e89a3ef2e9c63808712914c86da35fb19d4835109d2ba2cb0240"
+      },
+      {
+        "path": "doc/articles/controls/SKCanvasElement.md",
+        "expectedHash": "133a3a24e12d71ddc968667dd94123d167863899f8c97447295f39964571c778"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Composition/SKCanvasElement_Simple.xaml.cs",
+        "startLine": 13,
+        "endLine": 43,
+        "expectedHash": "6193fce2b7856e03ead2b77fb8892f109a7666f3e2a4d1623f0358e906a88cec",
+        "caption": "The sample checks SKCanvasElement support before creating a custom drawing surface. This is a per-component capability, not a statement that the entire application switched rendering backend.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "browser-interop": {
+    "documents": [
+      {
+        "path": "doc/articles/interop/wasm-javascript-1.md",
+        "expectedHash": "09698c16a6f7e1bfe57ba136482f44bb51702075b89dfd62215ab11d103cbe5a"
+      },
+      {
+        "path": "doc/articles/interop/wasm-javascript-2.md",
+        "expectedHash": "1297a73ade35459f28aee5687e9812d10ccbef7fc0a445efe65b02c0675e6b06"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/interop/wasm-javascript-1.md",
+        "fence": 0,
+        "expectedHash": "3a28a230a5eaf23dbe80d1c4d59a1ec5f6e56ed2c3d21e40ad89613ddb9c58f1",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/interop/wasm-javascript-1.md",
+        "fence": 4,
+        "expectedHash": "756f994740ffdb519ed9301d417a84c5783427fde1c63bce583519f8f44cdddf",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "native-integration": {
+    "documents": [
+      {
+        "path": "doc/articles/native-views.md",
+        "expectedHash": "28726dab3e1d2bc7ddb0c8242f9eea100eba8b1b0851a5456ef3a635c244ba6e"
+      },
+      {
+        "path": "doc/articles/features/using-skia-hosting-native-controls.md",
+        "expectedHash": "8fb8e2e8fef71fb97e062e28d6d611e4a1e70a5ca38333de47262070c517b011"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/using-skia-hosting-native-controls.md",
+        "fence": 0,
+        "expectedHash": "f6c768e6ece4d823ce496ece4a8671aa74544d8145c4326c726b74f688ad6b8e",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "assets-fonts": {
+    "documents": [
+      {
+        "path": "doc/articles/features/custom-fonts.md",
+        "expectedHash": "bf6ed499e59c2b5c3bba1efb9ba490d0e82334e18088292aa4b0335464ad28aa"
+      },
+      {
+        "path": "doc/articles/features/working-with-assets.md",
+        "expectedHash": "300dbe5ab54bd5e03ff83c8389c9f86ff55744246de87ef95a9a804aa24ca8b2"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/custom-fonts.md",
+        "fence": 2,
+        "expectedHash": "d617b743e79fdc549bfe9238ca07ffd03e4f47168984be669c8dac2eaa4c6284",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/features/custom-fonts.md",
+        "fence": 4,
+        "expectedHash": "57c22e43e25a4505a0054c50892d5772f521ab586aabcd27e2c61a907fd9ecc8",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "deployment-lifecycle": {
+    "documents": [
+      {
+        "path": "doc/articles/features/windows-ui-xaml-application.md",
+        "expectedHash": "c0e5ecb4bb21cf349574ae6a79a3214540d8c750de1c0bf7a61386083a9cb923"
+      },
+      {
+        "path": "doc/articles/features/protocol-activation.md",
+        "expectedHash": "d0f9d415f31b9bc1ef8fc3c353b29bb400d62bf493cd90b9379489c636dedc84"
+      },
+      {
+        "path": "doc/articles/uno-publishing-webassembly.md",
+        "expectedHash": "47192bbeedb26303d6e92c2780a897f40cbf88804f83306130ec08ea39f93c60"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/protocol-activation.md",
+        "fence": 4,
+        "expectedHash": "eba2f46caf29a9342c6d6fca7732e4ab7bf3bbb99917e901a559ec5191f1fd8e",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/features/protocol-activation.md",
+        "fence": 0,
+        "expectedHash": "5000cffb147ff93e3eb795f0729e057d517e9e6cd70da943b180939ca7e2ea9f",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "unit-tests": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/getting-started-tests.md",
+        "expectedHash": "e769b4e2318966ecc9080b7eba5b9c9d8e28f99607ac48f8a4b9ee564026e5da"
+      },
+      {
+        "path": "doc/articles/uno-development/creating-mocked-tests.md",
+        "expectedHash": "823b0bee6181e172dddd645721e6cd0934aaf075df38a4fa8638879489ba20f7"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/Uno.UI.RuntimeTests/Microsoft/UI/Xaml/Controls/Given_StackPanel.cs",
+        "startLine": 44,
+        "endLine": 81,
+        "expectedHash": "3eaec8abfc574c87e447365321f12737e5f999a733679517e391a9ba21af0cb9",
+        "caption": "This is a UI-thread runtime test, not a pure unit test: it needs the framework test host, awaited layout and the helper panel. Compare its integration dependencies with the no-UI calculation in the starter.",
+        "kind": "Uno runtime-test excerpt"
+      }
+    ]
+  },
+  "ui-tests": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/creating-ui-tests.md",
+        "expectedHash": "800a76f654530f84c91cf8e005e4132789b39a5c7a0bd55550a08389918b9d82"
+      },
+      {
+        "path": "doc/articles/uno-development/creating-runtime-tests.md",
+        "expectedHash": "8d598eafb051b1664df3e42d7cb53288d547b433e9eabc6e1c579fe3e59a3f34"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/uno-development/creating-ui-tests.md",
+        "fence": 2,
+        "expectedHash": "2aa75fbb5ad1174ba841125b764627c0f76dbceb9d04211e32237488f6bd9516",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/uno-development/creating-runtime-tests.md",
+        "fence": 2,
+        "expectedHash": "7205057e9a523709b6c6fa4c21f1d899622012261245534b8bb63eb62000d5bd",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "visual-regression": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/creating-ui-tests.md",
+        "expectedHash": "800a76f654530f84c91cf8e005e4132789b39a5c7a0bd55550a08389918b9d82"
+      },
+      {
+        "path": "doc/articles/features/using-skia-headless.md",
+        "expectedHash": "cf0b00f96fd69f2173112529bd6371a8b3c422bd7e1d148b569f5cfc1690f378"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/uno-development/creating-ui-tests.md",
+        "fence": 2,
+        "expectedHash": "2aa75fbb5ad1174ba841125b764627c0f76dbceb9d04211e32237488f6bd9516",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      },
+      {
+        "path": "doc/articles/features/using-skia-headless.md",
+        "fence": 0,
+        "expectedHash": "d552c4793b6e8ade9b8f230bd55b16f0d92bffa988cecf2fa6f65ef46b6cf6f9",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "resilience": {
+    "documents": [
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "expectedHash": "05fb888de3f3aa50f6d959f1469cb44d5692e44b5cde86c89f7cf3196d03af18"
+      },
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "expectedHash": "81e8729efb31ce125535c0fa89666724ad215ad58306405b1798f45019582c0d"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "fence": 45,
+        "expectedHash": "8b5080ce3dbbb75343ef0630ead3c470e1c0b31642b56a2fcfe2abe92c436a5f",
+        "caption": "The tutorial resets IsBusy in finally around data loading. That restores one invariant; separate error/cancelled/empty states and safe retry policy still need application design."
+      }
+    ]
+  },
+  "continuous-delivery": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-publishing-webassembly.md",
+        "expectedHash": "47192bbeedb26303d6e92c2780a897f40cbf88804f83306130ec08ea39f93c60"
+      },
+      {
+        "path": "doc/articles/getting-started/wizard/includes/cipipeline.md",
+        "expectedHash": "26c976a72cdbf46abfe2785b9ebba405e9857b21cc8c6dcff647892ec0aee052"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/uno-publishing-webassembly.md",
+        "fence": 0,
+        "expectedHash": "56aeee16571e4ae45b28ef65d485be60e12c985d8d19f690e6255fdc8def0147",
+        "caption": "The documented publish command selects the browser artifact. A real delivery gate must then inspect, test and promote that exact output."
+      }
+    ]
+  },
+  "capstone-app": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/features/applicationdata.md",
+        "expectedHash": "0ae7314e067580728f085e63e7831deb492432c46937757f348aaad3a38024dd"
+      },
+      {
+        "path": "doc/articles/controls/ListViewBase.md",
+        "expectedHash": "aced5af09bfd15c280e76ba8557fae4808a49c559bdb0eb877b899ecc4b8e060"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The tutorial view model is a compact state/action reference. Extend the capstone deliberately with stable IDs, draft validation and persistence rather than treating a generated counter as the finished task application."
+      },
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 127,
+        "endLine": 146,
+        "expectedHash": "325873a94504065a07c1df79ec9f9f2628a92834513fb987a90e7f186265ed6d",
+        "caption": "These sample mutations show explicit insert/remove/replace operations and item construction. The capstone must preserve stable domain identity across projection and persistence; these positional helpers are not that complete design.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "read-the-source": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/working-with-the-samples-apps.md",
+        "expectedHash": "f3abcb17d081f893a127d7665e88024818b91132bcef11cd444437b23c288c09"
+      },
+      {
+        "path": "doc/articles/uno-development/debugging-uno-ui.md",
+        "expectedHash": "5f273bf1b49b2e526dafa50bd6123e65d5013419122f8f3da7d0f2bcae147529"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/MeasureDetectorControl/MeasureDetectorInner.cs",
+        "startLine": 1,
+        "endLine": 27,
+        "expectedHash": "1a858d107603c8e8ea1ab6d4092797e86335107a95960b51b7b28a29aed6ec2b",
+        "caption": "A short instrumentation helper makes the measure/arrange boundary visible. Follow its base calls in the source and compare with a runtime test before generalizing behavior.",
+        "kind": "Uno sample excerpt"
+      },
+      {
+        "path": "doc/articles/uno-development/working-with-the-samples-apps.md",
+        "fence": 0,
+        "expectedHash": "daf2b3281eb28ca57aa83ded6edb1d639e5e18d8f8201645f2834a3cc7836298",
+        "caption": "The sample marker illustrates how repository examples are discovered. It identifies project context, not a complete standalone application."
+      }
+    ]
+  },
+  "xaml-pipeline": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/troubleshooting-source-generation.md",
+        "expectedHash": "db7095d6f63fdc97d8e41db7dd6a6d66aa103c491620ea1dc4a47a2f2a7712f4"
+      },
+      {
+        "path": "doc/articles/uno-development/Uno-UI-xBind-architecture.md",
+        "expectedHash": "fcafd0e2a357b0bcf4065e40c0df670c0cae24ec0b56ce065bc3fa1075c5a36e"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_Changing_Text.xaml",
+        "startLine": 1,
+        "endLine": 23,
+        "expectedHash": "fc581120143440ea08b15131c9ef98e3764afb9105e258a987d6288c2990edb2",
+        "caption": "The same template recipe contains a named CheckBox in every row instance. Read the ElementName binding as a scope-specific relationship, then compare with generated binding code.",
+        "kind": "Uno sample excerpt"
+      },
+      {
+        "path": "doc/articles/uno-development/Uno-UI-xBind-architecture.md",
+        "fence": 2,
+        "expectedHash": "50792343681bc39f8721a0d104c9c7a085ab85c2bcb7032752aefac4b843a45c",
+        "caption": "This generated-binding excerpt explains implementation at the pinned source revision and includes its historical namespace form. Do not edit generated output or paste it into runtime XAML as a lasting fix."
+      }
+    ]
+  },
+  "value-precedence": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/themeresource-internals.md",
+        "expectedHash": "57e89f575f848b02d545ef8d26eb0b64d9ee901e01c849adcc1b7a869e252590"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/custom-controls.md",
+        "expectedHash": "47bbf5440b564f43ea936a141eb95368d13f9d61305cc2339f49cd5cc96e2d6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/TextBlockControl/TextBlock_Style_Inheritance.xaml",
+        "startLine": 1,
+        "endLine": 31,
+        "expectedHash": "21bf25fdb244f859bc716a582b40771b3f8610836a7f95d267f4c03f2a81a667",
+        "caption": "The style/inheritance sample shows distinct foreground sources. It complements the live local-FontSize/ClearValue experiment; the two examples deliberately test different precedence relationships.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "custom-panel": {
+    "documents": [
+      {
+        "path": "doc/articles/uno-development/Uno-UI-Layouting-iOS.md",
+        "expectedHash": "76c50b9c821b8a25a24bab6162636994540a3fdb310814753252396210facd17"
+      },
+      {
+        "path": "doc/articles/uno-development/creating-runtime-tests.md",
+        "expectedHash": "8d598eafb051b1664df3e42d7cb53288d547b433e9eabc6e1c579fe3e59a3f34"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ProportionalPanel.cs",
+        "startLine": 21,
+        "endLine": 83,
+        "expectedHash": "d5121531c59153652561de409a86f19b2fe259805bf4feb9074630679fba6e03",
+        "caption": "This proportional panel derives one dimension from the other and has target-specific branches. Its sizing policy differs from the lesson’s vertical stack: compare both MeasureOverride and ArrangeOverride rather than copying it as a generic panel.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "rendering-invalidation": {
+    "documents": [
+      {
+        "path": "doc/articles/composition.md",
+        "expectedHash": "552cdaa2c3d061ae44cdf3a95714d9d9c33b1c723c167d512eea4db86029caee"
+      },
+      {
+        "path": "doc/articles/controls/SKCanvasElement.md",
+        "expectedHash": "133a3a24e12d71ddc968667dd94123d167863899f8c97447295f39964571c778"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Composition/SKCanvasElement_Simple.xaml.cs",
+        "startLine": 48,
+        "endLine": 88,
+        "expectedHash": "2310e793b91ec07c9801c30407f61e198f6bd255ee71718d9d95aa9a4aa772e7",
+        "caption": "The custom drawing element reacts to a Sample dependency-property change and calls Invalidate before RenderOverride draws. Its callback clamps a value; production callback designs should guard any recursive update. This does not implement the atlas’s tile classifier.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "contribution-capstone": {
+    "documents": [
+      {
+        "path": "doc/articles/contributing/guidelines/creating-tests.md",
+        "expectedHash": "c8c5b0718b26128afc5c87b94c3328183125769df9baa83f27e473d330de1461"
+      },
+      {
+        "path": "doc/articles/contributing/guidelines/pull-requests.md",
+        "expectedHash": "8cf70cfe7bd2b236b3e8cf6d7e88b10f2666783ad52821351b5ac970052cc307"
+      },
+      {
+        "path": "doc/articles/uno-development/contributing-intro.md",
+        "expectedHash": "e3071533919d8233d86e6ab31dcbbc16e3adab71376a364c6406eac0ee04f80e"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/Uno.UI.RuntimeTests/Microsoft/UI/Xaml/Controls/Given_StackPanel.cs",
+        "startLine": 44,
+        "endLine": 81,
+        "expectedHash": "3eaec8abfc574c87e447365321f12737e5f999a733679517e391a9ba21af0cb9",
+        "caption": "A concrete regression establishes setup, awaited state and expected geometry. Use this structure to design your own discriminating test; its UI-thread host is part of the contract.",
+        "kind": "Uno runtime-test excerpt"
+      },
+      {
+        "path": "doc/articles/contributing/guidelines/creating-tests.md",
+        "fence": 1,
+        "expectedHash": "6ec25fbbb8a791fea2cf839902d3653002c9844c70947755704bd7be38042286",
+        "caption": "This repository UI-test example selects a sample and inspects a result. Read neighboring assertions and helpers and do not confuse retry infrastructure with proof that a flaky application is correct."
+      }
+    ]
+  }
+}

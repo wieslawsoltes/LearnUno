@@ -1,0 +1,57 @@
+{
+  "id": "ui-tests",
+  "scenario": "A browser test sleeps for five seconds after clicking Load. It wastes time on fast runs and still fails on a slow machine. A professional UI test waits for the observable state required by the task, using a bounded deadline and useful failure evidence.",
+  "vocabulary": [
+    {
+      "term": "Condition wait",
+      "meaning": "Repeated observation until a required state is present or a deadline expires."
+    },
+    {
+      "term": "Stable selector",
+      "meaning": "An identifier based on a meaningful role/name or explicit automation contract."
+    },
+    {
+      "term": "Journey assertion",
+      "meaning": "A check that the user’s intended task produced the expected result."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Describe the user journey before choosing selectors: enter a task title, submit it, and find the new item. Prefer accessible roles/names or intentional automation identifiers over a brittle chain of generated elements. A selector should survive harmless layout refactoring while still identifying the intended control.",
+      "worked": "The live lesson exposes TaskTitle and TaskPreview automation identifiers and a bound value. Enter a new title and assert that the preview reflects it. This tests a concrete relationship rather than merely checking that a page loaded. For the real embedded course preview, first scope the locator to its runtime iframe.",
+      "question": "Why is a long anonymous CSS selector fragile?",
+      "answer": "It encodes incidental structure. An extra panel or template change can break it even when the user task remains correct."
+    },
+    {
+      "explain": "A fixed sleep assumes a completion duration instead of checking the condition. Too short produces flakiness; too long adds avoidable latency to every run. Increasing the sleep after each failure hides the missing synchronization contract. Readiness also has layers: runtime boot, view creation and task completion are not one event.",
+      "worked": "In the atlas, change the modeled operation latency while keeping a fixed wait. Observe both failure when the task is slower and wasted time when it is faster. These numbers are fixtures, not real browser timings. The point is to expose why a fixed delay cannot establish what state the application reached.",
+      "question": "Does a successful five-second sleep prove data is ready?",
+      "answer": "No. It proves only that time elapsed. The data may still be loading, may have failed, or may already have been ready much earlier."
+    },
+    {
+      "explain": "Wait for the specific condition with a finite timeout: a result visible, an enabled action, a state value or a matching item. Avoid vague conditions that can also be true before the operation, such as a container being present. Cancellation and error states should be distinguishable from success so tests do not accidentally accept either.",
+      "worked": "Use the atlas to compare a bounded condition wait with the fixed-delay policy. In a real test, await the result text or item identity that the action should produce. If the operation can complete with an error, assert that error separately in a dedicated test rather than broadening the success selector until both cases pass.",
+      "question": "What makes a wait condition meaningful?",
+      "answer": "It identifies the required post-action state and cannot be satisfied by an unrelated or preexisting state that fails the user’s task."
+    },
+    {
+      "explain": "A timeout should preserve evidence: source revision, target, logs, screenshot and a trace where available. Fail clearly instead of silently extending the deadline or retrying until a random pass appears. Retries can help investigate transient infrastructure, but they should not become the only response to an application race.",
+      "worked": "Inspect the upstream UI/runtime testing guides for their actual helpers and host assumptions. Run the published browser artifact, not only the development server. Include negative paths such as invalid input and a controlled failure. Test native targets separately when their input and automation technology differ.",
+      "question": "What should you inspect first after a timeout?",
+      "answer": "The expected condition and captured application state: whether the action happened, whether an error occurred, and whether the selector or lifecycle assumption was wrong."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Increase fixture latency beyond a fixed delay.",
+      "expected": "The sleep-based check can run too early.",
+      "why": "Elapsed time is not task completion."
+    },
+    {
+      "change": "Use a condition already true before clicking.",
+      "expected": "The test may pass without proving the action worked.",
+      "why": "A postcondition must distinguish the intended new state."
+    }
+  ],
+  "bridge": "The official guides show real Uno test infrastructure. The timing atlas isolates synchronization policy, while the live binding lab provides an actual UI relationship. Browser and native automation are different test environments; one passing browser journey does not certify all targets."
+}

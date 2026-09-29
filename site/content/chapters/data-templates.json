@@ -1,0 +1,57 @@
+{
+  "id": "data-templates",
+  "scenario": "A list of tasks should reuse one visual design without making every row share the same task state. This lesson separates the data item, item container and DataTemplate. Once those three roles are clear, you can reason about per-row binding, selection and recycling without manually building controls for every item. The important outcome is not just repeated appearance, but independent item identity under one reusable recipe.",
+  "vocabulary": [
+    {
+      "term": "DataTemplate",
+      "meaning": "A recipe used to create a visual representation for an item, separate from the item’s data."
+    },
+    {
+      "term": "Item context",
+      "meaning": "The data object supplied to an item’s visual representation; a binding path is interpreted against the relevant source context."
+    },
+    {
+      "term": "Container recycling",
+      "meaning": "Reusing a visual container for a different item identity, requiring item-specific state to be updated or cleared correctly."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with data that does not depend on controls. A task might have an ID, title and progress value. A TextBlock or Border belongs to its representation, not to the domain object. Keeping the data separate lets you test rules, serialize records and change the view without constructing an entire visual tree.",
+      "worked": "The starter uses three strings, so the template’s pathless Binding displays the item itself. In a richer object list, Binding Title would read a property on the current item. Identify the collection, item and visual recipe before adding another property. A list of controls is not interchangeable with a list of domain records.",
+      "question": "Why avoid storing a TextBlock inside each task model?",
+      "answer": "It couples domain state to a UI lifetime and renderer. Plain data can be reused and tested independently, while a template provides its presentation."
+    },
+    {
+      "explain": "A template is instantiated for an item representation; it is not one shared visual object drawn repeatedly. Each instance can have its own namescope and binding context. Sharing a template definition therefore does not imply sharing a TextBlock instance or a mutable progress field among all rows.",
+      "worked": "The atlas separates one template recipe from several item instances. Change the selected item’s progress and inspect which representation updates. Then change a template-wide visual setting and compare its effect across instances. This distinction explains how a reusable appearance can coexist with independent data values.",
+      "question": "Does changing one item’s progress require a separate DataTemplate definition for that item?",
+      "answer": "No. The shared recipe can bind to different values on each item. Data variation is precisely what lets one template produce distinct representations."
+    },
+    {
+      "explain": "Inside an item template, the binding source is often the item supplied by its container. A page-level view model and an item-level model are different contexts. When every row displays the same unexpected value, inspect whether the binding explicitly points to a shared parent instead of the current item. Do not start by repainting all rows.",
+      "worked": "Read the upstream sample’s ItemsSource assignment and then its ItemTemplate. Trace one property path from item to target. In the starter, changing CornerRadius edits the visual recipe and affects every row; changing one data string would affect that item’s text. These are different axes of change.",
+      "question": "What is a useful first check when every row shows the page title instead of its item title?",
+      "answer": "Inspect the source context and binding path inside the template. The view may be reading one shared page property rather than each item’s Title."
+    },
+    {
+      "explain": "Large collections add a lifetime concern: not every item should necessarily have a realized visual at once. A virtualizing control may recycle containers, so visual-only state must not leak from the old item into the new one. Stable item identity also matters for selection and edits when the collection changes order.",
+      "worked": "The small ItemsControl starter demonstrates templating, not virtualization performance. Use a bounded ListView or another suitable control for a large-data experiment and count realized containers. Test an item update, reorder and removal separately. A template that looks correct with three strings may still retain stale state after recycling.",
+      "question": "Does a passing three-item template example prove that a ten-thousand-item list is efficient?",
+      "answer": "No. It proves the small binding and visual recipe. Viewport constraints, virtualization, data loading and recycling behavior need their own tests."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change the template radius",
+      "expected": "All starter rows receive the new edge shape.",
+      "why": "The visual recipe is shared."
+    },
+    {
+      "change": "Change one item value",
+      "expected": "Only that item’s bound representation should change.",
+      "why": "Item context and state are independent even when the template is shared."
+    }
+  ],
+  "bridge": "The upstream item-template sample supplies the full ItemsSource and DataTemplate context. Read the property path against the item type, not against the page by assumption. Any code-behind, custom item class or resource referenced by the excerpt remains part of that source project."
+}

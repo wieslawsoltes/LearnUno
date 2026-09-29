@@ -1,0 +1,57 @@
+{
+  "id": "pointer-input",
+  "scenario": "A canvas editor works at 100% zoom but selects the wrong object after panning or scaling. The pointer and geometry are being compared in different coordinate spaces. Before adding more offsets, write down which space every point belongs to and which transform connects the spaces.",
+  "vocabulary": [
+    {
+      "term": "Local point",
+      "meaning": "A coordinate relative to the chosen element or model space."
+    },
+    {
+      "term": "Inverse transform",
+      "meaning": "The operation that maps an output-space point back into input geometry space."
+    },
+    {
+      "term": "Pointer capture",
+      "meaning": "Routing subsequent pointer input to an interaction owner while a gesture is active."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A pointer position is meaningful only with its coordinate reference. A parent-space point is not interchangeable with a drawing-space point. The upstream coordinate sample calls GetCurrentPoint(null), whereas the lesson starter asks for a point relative to its surface. Read that argument as part of the contract, not a cosmetic API option.",
+      "worked": "Place the surface origin at a nonzero parent offset in the atlas. A click at the visible upper-left corner should map near local zero, not to the parent offset itself. Label the parent point and local point separately in your debugging output. This prevents a log from appearing to prove an incorrect comparison.",
+      "question": "What information is missing from a log that only says “120, 80”?",
+      "answer": "The reference coordinate system and relevant transform. Those numbers cannot establish whether the pointer is inside a locally defined object without that context."
+    },
+    {
+      "explain": "For a translated surface, subtract the surface origin expressed in the same parent coordinates as the pointer. Do not subtract an offset that has already been scaled or converted unless that is the intended inverse mapping. Transform order matters: translating after scaling is generally not the same operation as scaling after translation.",
+      "worked": "In the atlas, increase the surface X offset while leaving the parent pointer fixed. The local X coordinate decreases. Now move the parent pointer by the same offset change: the local point returns to its previous value. This two-input experiment reveals whether translation is being applied exactly once.",
+      "question": "Why not keep adding a correction constant until selection looks right?",
+      "answer": "A correction fitted to one zoom or pan state usually fails elsewhere. An explicit inverse transform describes the whole relationship and can be tested at multiple points."
+    },
+    {
+      "explain": "For a nonzero uniform scale, divide the translated point by the scale to recover local coordinates. The full affine case also includes rotation, skew and possibly different X/Y scales, so use the appropriate transform API or matrix inverse. Handle singular transforms explicitly; a zero scale has no unique inverse.",
+      "worked": "Set the scale to two. A parent-space displacement of forty units should correspond to twenty local units. Compare the calculated coordinates and hit result before and after the change. The source sample and small lab expose coordinate APIs; the atlas deliberately isolates translation and scale so the arithmetic is visible.",
+      "question": "At scale two, does forty screen-space units imply forty model units?",
+      "answer": "No. After the origin adjustment, the inverse scale maps forty output-space units to twenty local units in this simplified uniform-scale model."
+    },
+    {
+      "explain": "Hit testing compares points and geometry in a common space. A drag also needs press, movement, release, cancellation and capture-loss paths. Capture is about continuing an interaction, not changing coordinate mathematics. Clear gesture state on every exit path, and provide keyboard or other non-pointer alternatives for essential editing operations.",
+      "worked": "Use a rectangle with known local bounds and test its center, each edge, and a point just outside. Repeat after translation and scale. Decide whether the right/bottom edges are inclusive and make the rule consistent. In a full editor, add clip, stroke-width and selection-tolerance policies rather than silently treating every bounding-box hit as an exact shape hit.",
+      "question": "Why can a bounding-box hit still be outside the visible shape?",
+      "answer": "The bounding rectangle is a conservative region, not necessarily the filled geometry. Precise selection may require path-level hit testing after the coordinate conversion."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Double scale while keeping a translated displacement fixed.",
+      "expected": "The corresponding local displacement halves.",
+      "why": "Inverse mapping divides by the output scale."
+    },
+    {
+      "change": "Cancel a drag or lose capture.",
+      "expected": "The interaction returns to an inactive state.",
+      "why": "Gesture ownership must end even when a normal release is not delivered."
+    }
+  ],
+  "bridge": "The pinned coordinate sample is useful precisely because its GetCurrentPoint argument differs from the starter. Compare the spaces explicitly. The atlas is a translation/scale model, not an inspection of live Uno pointer events or a complete affine hit-testing engine."
+}

@@ -1,0 +1,57 @@
+{
+  "id": "contribution-capstone",
+  "scenario": "You found a framework defect and have a fix that looks plausible. A reviewable contribution needs more: a minimal reproduction, a discriminating test, a focused change and an honest target report. This final chapter turns the course’s investigation habits into a concrete engineering workflow.",
+  "vocabulary": [
+    {
+      "term": "Minimal reproduction",
+      "meaning": "The smallest scenario that retains the observable defect and necessary environment."
+    },
+    {
+      "term": "Discriminating test",
+      "meaning": "A test that fails for the broken behavior and passes for the intended contract."
+    },
+    {
+      "term": "Review packet",
+      "meaning": "The code, reasoning and evidence needed for another engineer to evaluate a change."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "State the observed behavior, expected behavior and environment before editing implementation. Pin the source revision and remove unrelated features without removing the failure. A reproduction should be easy to run and should not require private production data or credentials. Read the repository’s contribution and test conventions before choosing a test location.",
+      "worked": "The final live exercise uses a small clamp rule to make a boundary change observable. For a real framework contribution, choose one control, property, layout or event behavior and reproduce it in a sample or appropriate test host. Record which target reproduces the problem and which have not yet been tested.",
+      "question": "Why build the reproduction before changing the framework?",
+      "answer": "It establishes the failure independently, keeps the investigation focused and provides a scenario against which the proposed repair can be evaluated."
+    },
+    {
+      "explain": "Write an expectation that expresses the intended contract and fails for the original defect. Use neighboring tests to select the right host and synchronization helpers. A layout regression may need a UI-thread runtime test and awaited relayout, while a pure calculation can be tested without the UI. Do not move a test to a weaker layer merely because it becomes easier to pass.",
+      "worked": "In the atlas, toggle the available evidence and observe how a passing-after-fix result differs from a true before/after regression. Run the new test on the unmodified behavior where feasible, then on the repair. Keep a nearby boundary case to guard against a patch that only special-cases the reported input.",
+      "question": "Is a test that passes after the patch sufficient proof it protects the defect?",
+      "answer": "Not by itself. It should also distinguish the broken behavior, ideally by failing before the repair or against an intentionally restored defect."
+    },
+    {
+      "explain": "Trace the shared and target-specific implementation, consider alternatives and make the smallest coherent repair. Avoid unrelated formatting or architectural changes that obscure the behavior under review. If generated code is involved, change the generator or its source input rather than a transient output file.",
+      "worked": "Explain why the selected change belongs at that ownership or invalidation boundary. Compare at least one alternative: a local workaround may hide a deeper contract problem, while an overly broad global change may create regressions elsewhere. Preserve the test and inspect relevant neighboring behavior before asserting the fix is complete.",
+      "question": "Why avoid unrelated refactoring in the same patch?",
+      "answer": "It makes causality and review harder. A reviewer should be able to connect the focused code change to the regression and intended contract without sorting through independent changes."
+    },
+    {
+      "explain": "Prepare a review packet with the reproduction, root cause, chosen approach, alternatives, test results, target matrix and documentation updates. Report what was not run. Performance claims require recorded workload and measurement boundaries; a faster-looking screenshot or smaller code diff is not performance evidence.",
+      "worked": "Use the pinned contribution guidance to format the PR and run the relevant checks. Include the failing/passing test names and source paths, describe platform differences and preserve logs when useful. The capstone is complete when another engineer can reproduce the issue, understand the repair and evaluate the evidence—not when every possible feature has been added.",
+      "question": "What is the standard for a professional contribution summary?",
+      "answer": "It makes the behavior, reasoning, evidence and scope explicit, including uncertainty and untested targets. It does not turn an intended test into a claimed passing result."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Supply only a screenshot of the repaired appearance.",
+      "expected": "Behavioral and regression claims remain weak.",
+      "why": "The image does not establish the original failure or the code path’s correctness."
+    },
+    {
+      "change": "Provide a minimal repro and a before/after discriminating test.",
+      "expected": "Reviewers can reproduce and evaluate the intended change.",
+      "why": "The evidence connects the defect, contract and repair."
+    }
+  ],
+  "bridge": "The pinned contribution and test guides are the primary process references. The online clamp and evidence atlas are training exercises, not an automatic framework contribution or certification. Apply the same discipline to a real, focused Uno issue and keep target validation explicit."
+}

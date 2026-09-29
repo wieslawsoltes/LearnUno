@@ -1,0 +1,57 @@
+{
+  "id": "renderers",
+  "scenario": "Two applications expose the same Button API and look similar, but one uses native platform representation and another draws through Skia. The appearance alone does not reveal the path. Choosing a renderer means evaluating input, text, accessibility and hosting along with pixels.",
+  "vocabulary": [
+    {
+      "term": "API surface",
+      "meaning": "The objects, properties and operations application code requests."
+    },
+    {
+      "term": "Rendering representation",
+      "meaning": "The backend structures used to implement those requests."
+    },
+    {
+      "term": "Custom drawing surface",
+      "meaning": "A component that draws its own content within the application’s chosen hosting system."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with the semantic UI request: a button has content, enabled state, focus and an action. The renderer implements representation and platform integration below that request. Keeping shared code at the semantic level allows multiple implementations, but it does not erase differences in supported features or native integration.",
+      "worked": "The course runner explicitly uses Uno NativeRenderer in WebAssembly. The surrounding learning site is HTML, and its dirty-tile experiment uses WebGPU independently. Identify these three systems in the architecture before describing any screenshot as evidence of a particular backend.",
+      "question": "Does the atlas WebGPU canvas prove the Uno preview uses WebGPU?",
+      "answer": "No. The course visualization and embedded Uno application are separate components with separately configured rendering paths."
+    },
+    {
+      "explain": "The same UI vocabulary can be represented by different platform mechanisms. Inspect project features, target configuration and implementation documentation instead of guessing from theme. A custom SkiaSharp drawing component is also not identical to selecting the application-wide Skia renderer; it can solve a particular graphics workload at a different abstraction level.",
+      "worked": "The upstream SKCanvasElement sample checks whether that element is supported, constructs a drawing element and reports an alternative when unavailable. Read this as a local capability check. It does not prove that every normal control in the application is rendered through that custom surface.",
+      "question": "What is the distinction between a custom canvas and an application renderer?",
+      "answer": "The canvas owns a particular drawing region and its content. The application renderer implements the broader UI representation and integration. Their choices are related but not interchangeable."
+    },
+    {
+      "explain": "Similar output can conceal different text metrics, clipping, input behavior and accessibility representations. Compare representative tasks rather than a single attractive screen. A workload with many static shapes stresses different mechanisms from a form with complex text input, native views and assistive technology.",
+      "worked": "Use the atlas to inspect the mapping from requested UI objects to output representation. Then run the same real view under selected hosts and test text entry, focus traversal, clipping, scroll performance and startup. Record target/version information beside the results rather than treating a generic backend name as a complete specification.",
+      "question": "Why is a screenshot comparison insufficient for choosing a renderer?",
+      "answer": "It cannot establish input correctness, focus, accessible semantics, resource lifetime or performance under interaction. Pixels are only one part of the UI contract."
+    },
+    {
+      "explain": "A renderer choice brings ownership and integration responsibilities. Custom dense graphics may need hit testing, spatial indexing, text shaping, invalidation and accessibility alternatives. Native-control embedding may have layering or transform restrictions that require design changes. Prefer a measured fit for the application’s tasks over a universal “best backend” claim.",
+      "worked": "For a CAD-like editor, prototype a representative large document and the surrounding editable forms. Measure drawing and interaction separately, include fallback behavior and test disposal/device-loss paths where applicable. Use the official native/Skia guides as configuration references, then retain the actual evidence from your prototype.",
+      "question": "What should a renderer evaluation deliver?",
+      "answer": "A target-specific comparison of required behaviors and measured workloads, with known integration limits and resource ownership documented—not merely a frame-rate claim."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Keep the same control API while changing host/renderer configuration.",
+      "expected": "Application intent can remain similar while representation changes.",
+      "why": "API vocabulary and backend implementation are separate layers."
+    },
+    {
+      "change": "Add a custom drawing surface to one region.",
+      "expected": "That region gains its own drawing contract.",
+      "why": "It does not automatically replace the renderer for every other control."
+    }
+  ],
+  "bridge": "The linked official guides distinguish native rendering, Skia rendering and SKCanvasElement. The source sample is a custom-surface example and is labeled accordingly. The runner retains its pinned backend; the lesson does not switch it dynamically or claim every configuration has been tested."
+}

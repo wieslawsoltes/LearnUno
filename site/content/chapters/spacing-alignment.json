@@ -1,0 +1,57 @@
+{
+  "id": "spacing-alignment",
+  "scenario": "A card can look too cramped even when its outer width is correct. Before adding arbitrary spacing, identify whether the problem is outside the card, at its edge, between siblings or around its text. This lesson gives each space a name and connects alignment to the slot offered by the parent. The result is a layout that can be adjusted deliberately instead of accumulating unexplained margins.",
+  "vocabulary": [
+    {
+      "term": "Margin",
+      "meaning": "Space between an element and its surrounding layout allocation."
+    },
+    {
+      "term": "Padding",
+      "meaning": "Space inside a container between its edge and its child content."
+    },
+    {
+      "term": "Alignment",
+      "meaning": "How an element uses the slot offered by its parent; it does not redefine every descendant’s layout policy."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin at the outside. Margin separates an element from the surrounding layout, while panel spacing describes the relationship between siblings. Using both is sometimes correct, but duplicating them unintentionally can double gaps. Trace the exact owner of a spacing value and state the relationship it expresses before changing it.",
+      "worked": "The starter has an outer panel and an inner Border. Change only the Border’s Margin and observe the card’s position relative to the panel. Then restore it. This isolates outside spacing from content spacing. In a reusable component, ask whether the component owns that external gap or whether its consuming layout should supply it.",
+      "question": "Should a reusable card always hard-code the space to its next sibling?",
+      "answer": "Not necessarily. That relationship often belongs to the parent layout. Keeping external spacing configurable makes the component usable in different compositions."
+    },
+    {
+      "explain": "Border thickness is another region, distinct from both margin and padding. It affects the edge drawn around content and can consume available room. Uniform values apply on both sides of an axis. A box with a fixed outer allocation can therefore have much less space for text than its Width suggests.",
+      "worked": "In the box-model experiment, hold outer width at 520 and use margin 24, border 4 and padding 32. The simplified horizontal content width is 520 minus twice their sum, which is 400. The colored regions correspond to separate terms in that equation rather than to interchangeable decorative bands.",
+      "question": "Why subtract each uniform inset twice when calculating content width?",
+      "answer": "The horizontal axis has a left and a right side. A uniform inset consumes space at both ends, so a 16-unit increase in padding reduces content width by 32 units."
+    },
+    {
+      "explain": "Padding belongs inside the container and moves its child away from the edge. Increasing it while the outer allocation is fixed can change wrapping and desired height. That secondary effect is useful evidence: a text block may need more lines because less width remains. Do not blame the font renderer before checking the content rectangle.",
+      "worked": "Complete the live exercise by increasing the card’s internal padding to 32 without altering its margin. Describe which boundary stayed in place and which moved. Then use a longer text string. The card’s visual edge and its child’s available region should be considered separately when deciding whether the design is still comfortable.",
+      "question": "Can a padding change alter the height required by wrapped text?",
+      "answer": "Yes. Less available width can produce more lines. The change may propagate through measurement even though the text and FontSize are unchanged."
+    },
+    {
+      "explain": "Alignment acts within the slot an element receives. Center positions the child within that slot; Stretch asks it to use available space where the layout contract permits. A fixed Width or maximum constraint can limit that effect. Centering a parent does not automatically center all text and descendants inside it.",
+      "worked": "Read the upstream spacing or alignment sample by following one child through margin, padding and alignment. Test the same view at a narrow width and with larger text. Record whether a fixed dimension is essential or merely an accidental screenshot constraint. Prefer a layout relationship that remains explainable as content changes.",
+      "question": "Why can a child fail to stretch even when its alignment is Stretch?",
+      "answer": "An explicit size, min/max constraint or parent layout policy can restrict the space it uses. Inspect all relevant inputs instead of changing alignment repeatedly."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Increase padding from 32 to 48 at fixed outer width",
+      "expected": "The model’s content width decreases by 32.",
+      "why": "The additional 16 units are consumed on both horizontal sides."
+    },
+    {
+      "change": "Change only source indentation",
+      "expected": "No layout difference is expected.",
+      "why": "Spacing is controlled by framework properties, not by markup formatting."
+    }
+  ],
+  "bridge": "The upstream sample provides actual Margin, Padding and alignment assignments. Compare their owners with the colored model regions. The simplified box equation is a useful accounting tool, while actual measurement still depends on the parent, content and element constraints."
+}

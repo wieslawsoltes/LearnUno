@@ -1,0 +1,57 @@
+{
+  "id": "profiling",
+  "scenario": "A benchmark reports a very fast best run, while users still experience occasional stalls. A single number hides the distribution and often measures the wrong boundary. This chapter teaches what to collect, how to summarize it and how to avoid giving a synthetic chart the authority of a real measurement.",
+  "vocabulary": [
+    {
+      "term": "Median",
+      "meaning": "The middle observation of ordered samples, using a stated even-count convention."
+    },
+    {
+      "term": "Percentile",
+      "meaning": "A distribution summary whose calculation method should be stated."
+    },
+    {
+      "term": "Measurement boundary",
+      "meaning": "The precise start and end events included in an elapsed-time value."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Define the operation before collecting numbers. Specify input size, target hardware, renderer, build configuration, warm-up, repetitions and whether the run is cold or warm. A Stopwatch around a loop measures that interval; it does not automatically include browser paint, GPU completion, network setup or input-to-display latency.",
+      "worked": "The live lab reports elapsed computation time and a checksum for a bounded sum. Double the workload and verify the arithmetic result before interpreting time. The atlas instead uses editable fixture samples so you can inspect statistics deterministically. Its chart is a teaching dataset, not a measurement of Uno performance.",
+      "question": "Why include the checksum with a timing result?",
+      "answer": "It helps verify that the measured operation still performs the intended work. A faster result produced by skipping computation is not a valid optimization comparison."
+    },
+    {
+      "explain": "Inspect the distribution before choosing a headline. Outliers can reveal garbage collection, initialization, contention or another condition worth investigating. They can also come from unrelated environmental noise. Do not delete them merely because they make the average less flattering; explain any exclusion rule in advance.",
+      "worked": "Add one large sample to the atlas and observe how the mean, median and tail summary respond. A low median can coexist with an important occasional stall. For an interactive application, those rare pauses may matter more to the task than the fastest sample.",
+      "question": "What does a stable median fail to tell you?",
+      "answer": "It does not characterize the entire tail. A subset of users or interactions can still experience long delays even when the middle observation stays small."
+    },
+    {
+      "explain": "Different statistics answer different questions. The mean is affected by every magnitude, the median describes a central ordered position, and a percentile summarizes a tail according to a defined estimator. Small datasets can make high percentiles unstable or nearly identical to the maximum. Always keep the sample count and method available.",
+      "worked": "Use the atlas’s displayed samples to compute a small case by hand, then compare the result. Change one value without changing the number of samples. Explain which summary moved and why. This arithmetic check is more useful than accepting a chart solely because it has precise-looking decimal places.",
+      "question": "Does reporting more decimal places make a measurement more reliable?",
+      "answer": "No. Precision in formatting does not add accuracy, sample quality or reproducibility. The measurement method and variability determine what claims are justified."
+    },
+    {
+      "explain": "An optimization report should connect evidence to a user task. Preserve correctness tests, compare the same inputs, and separate startup, CPU work, allocations and rendering metrics where they have different boundaries. Record regressions as well as improvements. A profiling tool points to hypotheses; it does not replace understanding the execution path.",
+      "worked": "Follow the upstream profiling guide to collect a trace on the actual target. Identify a suspected hot path, make one controlled change, then rerun the same workload. Include the environment, before/after distribution, correctness evidence and known limitations in the report. Treat the lesson’s numbers as preparation for that process, not its outcome.",
+      "question": "What is a defensible final claim?",
+      "answer": "A measured change to a defined operation under a recorded environment, with correctness retained and uncertainty or variability stated. A universal speed claim from a toy loop is not defensible."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Add a large outlier to a mostly small fixture dataset.",
+      "expected": "The mean and tail can rise while the median changes little.",
+      "why": "The statistics summarize different aspects of the distribution."
+    },
+    {
+      "change": "Move the timer so it excludes initialization.",
+      "expected": "The reported interval changes even with identical functionality.",
+      "why": "Measurement boundaries define which work is included."
+    }
+  ],
+  "bridge": "The profiling guide describes target tooling; the performance guide suggests areas to investigate. The live checksum experiment is real code, while the atlas data is synthetic. Neither substitutes for a representative release trace on the hardware your application supports."
+}

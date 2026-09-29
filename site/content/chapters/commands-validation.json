@@ -1,0 +1,57 @@
+{
+  "id": "commands-validation",
+  "scenario": "A Create button should be unavailable for an invalid title and should not run a save twice while work is pending. Commands make an action independent of a particular click event, but their availability and validation rules still need an owner. This lesson moves from the starter’s explicit enabled-state rule toward a reusable command contract with clear feedback and asynchronous lifetime.",
+  "vocabulary": [
+    {
+      "term": "ICommand",
+      "meaning": "An action contract with Execute, CanExecute and an event that tells observers to reevaluate availability."
+    },
+    {
+      "term": "Validation rule",
+      "meaning": "A domain or presentation condition that determines whether input is acceptable; it should not be confused with merely disabling a control."
+    },
+    {
+      "term": "CanExecuteChanged",
+      "meaning": "A notification that the command’s availability may have changed, prompting bound controls to ask again."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Name the action and its preconditions. CreateTask is a user intent; the Button is one way to invoke it. A keyboard shortcut or menu can expose the same action. Keeping the operation and availability rule together avoids copying subtly different validation into every control. The command should not need to know the button’s coordinates or visual template.",
+      "worked": "The starter begins with direct events to make the rule visible: trim the input, require a minimum length and enable the button accordingly. Identify the state read by that rule. In a full view model, the equivalent state belongs to properties that can be tested without constructing the visual tree.",
+      "question": "Why prefer one command over separate click handlers that duplicate a save rule?",
+      "answer": "The operation and its availability remain consistent across buttons, menus and shortcuts, and can be tested as application behavior rather than only as control events."
+    },
+    {
+      "explain": "CanExecute is a query, not a permanent decision. When the title or busy state changes, observers need a signal to ask it again. An otherwise correct predicate can leave the button stale if CanExecuteChanged is never raised. Source generators can provide convenient helpers, but they still encode an explicit dependency between state and availability.",
+      "worked": "Read the official counter tutorial’s RelayCommand example and compare the generated command property with the plain method it wraps. Then identify which changing inputs would affect your Create action. Do not assume a generator will discover arbitrary business dependencies unless you configure the supported notification mechanism.",
+      "question": "What can be wrong when CanExecute returns the right answer in a unit test but the button stays disabled?",
+      "answer": "The view may never have been told to reevaluate, or it may be bound to the wrong command. Verify the notification and binding path before changing the predicate."
+    },
+    {
+      "explain": "Validation and feedback should be specific. Trimming edge whitespace prevents a title made only of spaces from passing a simple length check, but it does not decide every domain constraint. Explain what is required and preserve the draft while the user corrects it. A disabled button alone can be ambiguous, especially for keyboard and assistive-technology users.",
+      "worked": "Increase the starter’s minimum to five and test empty text, spaces, four visible characters and five visible characters. The existing feedback caption still mentions three, so a complete product refinement must update that explanation too. This illustrates why a focused code check is only one part of the user-facing acceptance criteria.",
+      "question": "Does passing the new length rule make the existing “at least 3” help text correct?",
+      "answer": "No. Behavior and explanation now disagree. Update the feedback and accessibility contract alongside the predicate in a finished interface."
+    },
+    {
+      "explain": "Async commands need a concurrency policy. While a save is pending, reject duplicates, queue them or define an idempotent operation; do not leave the result accidental. Restore busy state in finally, distinguish cancellation from failure and surface useful errors. Event handlers may be async void by necessity, but ordinary testable operations should normally expose a Task-like result.",
+      "worked": "Build a command-backed version in a full Toolkit project after the plain validation experiment is understood. Test CanExecute transitions before, during and after a failed save. The generated attribute example is project-only; the browser runner does not invoke package source generators on an edited single file.",
+      "question": "Which state transition should be verified after an asynchronous save fails?",
+      "answer": "The command should leave its busy state, retain recoverable input, expose the error and reevaluate availability according to the intended retry policy."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Enter four visible characters after setting minimum five",
+      "expected": "Create remains unavailable.",
+      "why": "The trimmed value does not satisfy the new precondition."
+    },
+    {
+      "change": "A pending save receives another invocation",
+      "expected": "Behavior follows the explicit concurrency policy.",
+      "why": "A command abstraction alone does not prevent duplicate external operations."
+    }
+  ],
+  "bridge": "The official counter tutorial supplies real Toolkit attribute usage and its required view-model context. The live exercise exposes the underlying validation rule without pretending that those generator-dependent members exist in the single-file runner."
+}

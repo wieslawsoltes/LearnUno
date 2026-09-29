@@ -1,0 +1,57 @@
+{
+  "id": "two-way",
+  "scenario": "A settings form lets the user edit a name that other parts of the interface also display. TwoWay binding can connect editing in both directions, but it does not decide when an edit becomes durable or valid. This lesson separates a typed draft, source updates, validation and saving, so a responsive form does not accidentally issue a network mutation for every keystroke.",
+  "vocabulary": [
+    {
+      "term": "Write-back",
+      "meaning": "An update from an editable target to its source property."
+    },
+    {
+      "term": "UpdateSourceTrigger",
+      "meaning": "The policy controlling when an edit is transferred to the source, where supported by the target binding."
+    },
+    {
+      "term": "Draft",
+      "meaning": "Editable state that can be validated or discarded before a separate commit or persistence action."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Identify which value is authoritative during editing. A field may bind directly to a view-model property, or it may edit a draft separate from the saved record. Both can be valid. The important point is to make the ownership visible so a Cancel button has a meaningful operation instead of trying to undo an unknown sequence of persisted writes.",
+      "worked": "The live starter uses two TextBoxes and an ElementName binding to isolate synchronization. The second box writes to the first box’s Text property. There is no repository or server in this example, so typing changes local control state only. Do not infer durability from the fact that both fields show the same string.",
+      "question": "What does the starter persist when you type?",
+      "answer": "Nothing durable. It demonstrates local value synchronization; persistence would require a separate storage operation and success contract."
+    },
+    {
+      "explain": "TwoWay means the binding can send edits back as well as read source changes. The source path must be writable, and updates made elsewhere still need appropriate notifications. Bidirectionality also introduces the possibility of feedback, so setters should avoid reporting equivalent values repeatedly when that would cause redundant work.",
+      "worked": "Type into the second box and observe the first. Then change the model to OneWay and repeat. The missing write-back is an intentional mode difference, not a broken rendering loop. Keep both endpoints simple while learning direction; add conversion and validation only after the basic contract is understood.",
+      "question": "Does TwoWay remove the need for PropertyChanged when another part of the app changes the source?",
+      "answer": "No. Source-to-target observation still needs a notification mechanism. TwoWay adds a write-back direction; it does not make arbitrary source mutations discoverable."
+    },
+    {
+      "explain": "Update timing should match the task. PropertyChanged can transfer edits while typing, which is useful for live previews. A committed settings value or expensive search may need a deliberate boundary, debounce policy or explicit Save action. Binding mode, update trigger and persistence policy are three separate decisions.",
+      "worked": "The atlas compares a draft with its committed source. Type an invalid or incomplete value and inspect whether it is only draft state or already accepted. Use that model to explain why a field can display unfinished input without claiming that the domain record is valid. A user should be able to complete an edit without the application rejecting every intermediate character.",
+      "question": "Why might a numeric editor temporarily contain an empty string even when the domain requires a number?",
+      "answer": "Editing has intermediate states. A draft can represent them until validation and conversion produce a valid domain value at the chosen commit boundary."
+    },
+    {
+      "explain": "A save workflow must handle success, validation failure, cancellation and persistence failure. Do not clear the draft before the write is known to have succeeded. During asynchronous saving, define duplicate-execution behavior and restore availability in a reliable cleanup path. An error message should explain what the user can do next.",
+      "worked": "For the transfer exercise, add Save and Cancel around a draft model in a full project. Test typing, cancelling, failed saving and successful saving separately. The upstream TextBox and binding material provides the property and update-trigger context; your application still owns the transaction semantics.",
+      "question": "Should Cancel merely close the window after every keystroke was already saved?",
+      "answer": "That would not cancel the edits. Either edit a separate draft or define and implement a reliable rollback policy; the UI label should match the actual behavior."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Switch the model to OneWay",
+      "expected": "Target edits no longer write back.",
+      "why": "Direction is part of the binding contract."
+    },
+    {
+      "change": "A save operation fails",
+      "expected": "Keep the draft and show actionable feedback.",
+      "why": "Synchronization is not proof that a durable commit occurred."
+    }
+  ],
+  "bridge": "The upstream TextBox and binding examples establish the editing API. The course’s model adds an explicit draft/commit distinction so it does not imply that the framework automatically supplies validation, persistence or rollback."
+}

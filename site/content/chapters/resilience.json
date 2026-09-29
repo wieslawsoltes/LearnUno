@@ -1,0 +1,57 @@
+{
+  "id": "resilience",
+  "scenario": "A view shows both a spinner and an empty-state message, then loses the user’s draft after a failed retry. Several unrelated Boolean flags have stopped describing one coherent task. Model loading, data, failure and cancellation as explicit states with intentional transitions.",
+  "vocabulary": [
+    {
+      "term": "Recoverable failure",
+      "meaning": "A failure for which an intentional user or system action may restore progress."
+    },
+    {
+      "term": "Idempotency",
+      "meaning": "A property or protocol that prevents repeated attempts from duplicating an intended effect."
+    },
+    {
+      "term": "Stale result",
+      "meaning": "A result belonging to an operation that no longer represents current intent."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with the user’s intent and the states in which an action is valid. Loading can disable duplicate starts or permit replacement according to a declared policy. Cancellation is not the same outcome as a server error, and an empty successful result is not the same as a failed request. Separate these meanings before choosing visuals.",
+      "worked": "The lesson fixture fails its early attempts and succeeds later without using the network. That makes retry behavior repeatable. In the atlas, inspect the available actions for idle, loading, success, error and cancelled. Disabled actions reveal the transition contract instead of silently allowing contradictory state changes.",
+      "question": "Why distinguish empty success from failure?",
+      "answer": "They imply different feedback and next actions. Empty success can invite creating content; failure may require retry, authentication or troubleshooting."
+    },
+    {
+      "explain": "A transition changes the whole relevant state coherently. Independent flags such as IsLoading, HasData and HasError can be valid if carefully maintained, but they permit impossible combinations unless invariants are enforced. A discriminated state representation makes those alternatives explicit and easier to test.",
+      "worked": "Start loading, fail, then retry in the atlas. Inspect the bounded event trace and verify each transition is legal. Compare that with a design that merely toggles a spinner and leaves an old error label visible. The model helps explain why restoring one invariant in a finally block is not the same as defining every outcome.",
+      "question": "What should happen if an invalid action is requested?",
+      "answer": "The state machine should reject or explicitly handle it according to its contract, not silently enter an impossible state. The lesson model leaves state unchanged for invalid actions."
+    },
+    {
+      "explain": "Present each outcome with useful feedback while preserving user work. A recoverable failure should not erase an unsaved title or selection unnecessarily. Explain what happened and what the user can do next without leaking credentials or raw internal details. A retrying indicator should not masquerade as completed data.",
+      "worked": "Change the fixture to fail one more attempt and verify the user can still retry. In a richer application, preserve the draft separately from the loaded result and show which information is stale or unavailable. Test keyboard focus after the message changes so recovery does not force the user to start the task again.",
+      "question": "Why preserve the draft after a network failure?",
+      "answer": "The user’s input can remain valid even when transport failed. Discarding it turns a recoverable infrastructure problem into unnecessary loss of work."
+    },
+    {
+      "explain": "Retry only according to the failure class and operation semantics. Transient transport errors may justify bounded retries; invalid input or denied authorization often require another action. Repeating a mutation can duplicate effects unless the protocol supports safe repetition or an idempotency key. Cancellation and generation checks also prevent obsolete completions from replacing current state.",
+      "worked": "Design tests for transient failure then success, permanent failure, cancellation and a late older result. Use deterministic fixtures rather than toggling a real network until the test happens to pass. The full application may additionally need offline caches and conflict resolution, which this small retry example does not implement.",
+      "question": "Why not retry every failed save indefinitely?",
+      "answer": "Some failures cannot succeed without changed input or permission, and some repeated saves can duplicate effects. A bounded, classified policy is safer and more understandable."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Fail the first two fixture attempts instead of one.",
+      "expected": "The same recovery path remains available until the modeled success.",
+      "why": "Retry behavior can be tested independently of an external endpoint."
+    },
+    {
+      "change": "Allow an older request to complete after a replacement.",
+      "expected": "Its result must not overwrite newer intent.",
+      "why": "State ownership includes operation identity, not only a loading flag."
+    }
+  ],
+  "bridge": "The official exception and HTTP guides provide real error-handling context. The sample uses deterministic failure, and the atlas models transitions rather than network transport. More advanced offline synchronization requires additional storage, consistency and conflict policies."
+}

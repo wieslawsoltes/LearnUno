@@ -1,0 +1,57 @@
+{
+  "id": "mvvm",
+  "scenario": "A basket view displays a total, lets the user add items, and eventually needs validation and persistence. Putting every rule in a button handler makes it difficult to test or reuse. MVVM gives each responsibility a place: domain rules in the model, observable presentation state and actions in the view model, and visual interaction in the view. The pattern is useful when it makes those boundaries clearer, not when it merely adds more classes.",
+  "vocabulary": [
+    {
+      "term": "Domain model",
+      "meaning": "Data and rules describing the problem independently of a particular visual tree."
+    },
+    {
+      "term": "View model",
+      "meaning": "Presentation state and actions consumed by a view, with explicit dependencies and observation contracts."
+    },
+    {
+      "term": "Projection",
+      "meaning": "A representation derived from underlying state, such as a displayed total or a filtered list, rather than a second uncontrolled source of truth."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start with an invariant that can be stated without mentioning a control. In the basket example, total is quantity multiplied by unit price. That rule belongs to the domain calculation and can be tested without a Window. A UI element should not be required just to determine whether the arithmetic is correct.",
+      "worked": "Read Basket.Total in the runnable code. It is derived from Quantity and UnitPrice rather than independently maintained by several handlers. Change UnitPrice and calculate the expected result before building the view. Keep decimal arithmetic and formatting separate: the domain value and its text presentation serve different purposes.",
+      "question": "Why avoid storing a second mutable total field updated by several buttons?",
+      "answer": "It can drift out of sync with quantity and price. Deriving the total from its authoritative inputs reduces the number of states that must be kept consistent."
+    },
+    {
+      "explain": "A view model exposes the parts of domain and workflow state that a view needs. It may present formatted values, selected items, loading state and commands. It should not generally hold references to a TextBlock merely so a rule can update its text. Dependencies such as a repository should be explicit so tests can supply deterministic collaborators.",
+      "worked": "The starter is deliberately smaller than a full MVVM app: it uses a model and direct view updates to expose the calculation. Compare it with Uno’s official counter view model, where observable properties and generated commands provide the presentation contract. The difference is additional wiring and ownership, not different arithmetic.",
+      "question": "What makes a view-model calculation test possible without loading Uno?",
+      "answer": "The calculation depends on values and explicit collaborators rather than on visual controls or a live Window. Its observable contract can be tested separately from the view binding."
+    },
+    {
+      "explain": "The view projects state through bindings, templates and control behavior. A projection should not silently become another authority for the same domain fact. For example, a formatted currency string should not be parsed back from a label to recover the basket’s total. Keep the original typed value and derive the display representation from it.",
+      "worked": "In the atlas, inspect the underlying domain values and the resulting presentation. Change one input and follow which outputs depend on it. Then ask which properties would need notifications in a complete view model. A correct computed getter still needs an observation policy if bound consumers must update when its inputs change.",
+      "question": "Should business code read a TextBlock.Text value to find the basket total?",
+      "answer": "No. The typed domain or presentation state is the source. The text is a formatted output that may vary by culture and should not become a hidden data store."
+    },
+    {
+      "explain": "MVVM does not prohibit all code-behind. View-specific focus, pointer capture and visual animation can remain view responsibilities. The practical question is whether the behavior expresses a reusable rule or a renderer-specific interaction. Moving a control reference into a view model just to satisfy a slogan can make the design less testable.",
+      "worked": "For the transfer task, extract observable quantity and commands, then test the total rule, notification dependencies and command availability. Keep a separate UI test for the binding and keyboard interaction. The result should be a smaller, clearer test matrix rather than every test creating the entire application.",
+      "question": "Which behavior is a reasonable candidate for view-specific code?",
+      "answer": "Moving keyboard focus to an actual control or managing pointer capture. Domain validation and arithmetic should remain independent of that visual operation."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change UnitPrice from 12.5 to 20 with quantity two",
+      "expected": "The initial total becomes forty.",
+      "why": "The model derives total from its authoritative inputs."
+    },
+    {
+      "change": "A dependent computed value changes",
+      "expected": "Its observers need a suitable notification path.",
+      "why": "A getter alone does not tell the view when to read again."
+    }
+  ],
+  "bridge": "The official counter tutorial supplies a complete observable-property and command pattern. The course’s Basket example isolates domain projection first; do not confuse its direct UI wiring with the final full MVVM architecture."
+}

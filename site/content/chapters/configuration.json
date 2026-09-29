@@ -1,0 +1,57 @@
+{
+  "id": "configuration",
+  "scenario": "A development endpoint accidentally appears in a production build, or a saved user preference unexpectedly overrides a default. Configuration is application input with a precedence policy. This lesson separates defaults, environment settings and user choices, then introduces typed validation and the rule that downloadable browser assets cannot keep privileged server secrets confidential.",
+  "vocabulary": [
+    {
+      "term": "Configuration layer",
+      "meaning": "One source of settings, such as defaults, environment-specific values or user overrides."
+    },
+    {
+      "term": "Precedence",
+      "meaning": "The documented rule deciding which source wins when several layers define the same key."
+    },
+    {
+      "term": "Public client setting",
+      "meaning": "A value intended to be visible to the user’s client, unlike a privileged server credential."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "List the decisions that genuinely vary by environment or user. Endpoint addresses, feature flags and display preferences can be configuration; core invariants should not become arbitrary unvalidated strings. Give related values a typed contract so startup can reject missing or malformed input with an actionable diagnostic.",
+      "worked": "The starter uses a dictionary to make the order of assignments obvious. Theme begins as Light and is replaced by a later value. This is a small precedence model, not a full IConfiguration provider implementation. In a full application, read the actual registration and provider order supplied by its hosting setup.",
+      "question": "Why validate configuration near startup instead of waiting for the first distant null reference?",
+      "answer": "The failure is closer to its source and can identify the missing key or invalid value. Late accidental failures obscure which configuration input was wrong."
+    },
+    {
+      "explain": "Layer order is a product policy. Defaults can be overridden by environment settings, and user preferences may override selected display choices. Not every key should necessarily be user-overridable. Document the intended winners and test conflicting inputs, especially when development and production deployments share a build pipeline.",
+      "worked": "Change the starter’s later Theme assignment to System and predict the final displayed value. In the atlas, inspect which layer wins rather than merely reading the merged dictionary. Provenance matters: knowing the effective value is useful, but knowing which source supplied it is what helps diagnose an unexpected override.",
+      "question": "What should a diagnostic show when several layers define the same non-secret setting?",
+      "answer": "The effective value and its source or precedence path, with sensitive values redacted. A merged result without provenance can be difficult to explain."
+    },
+    {
+      "explain": "A browser application is a public client. Its JavaScript, WebAssembly, assemblies and configuration assets can be downloaded. Renaming a field or embedding a credential in a DLL does not create a trusted secret store. Keep privileged operations and their credentials behind an appropriate server boundary; clients should receive only the authority they are intended to possess.",
+      "worked": "Inspect the upstream application/server configuration example and identify which values belong in the client versus the service. Treat endpoint URLs as public routing information, not secrets. A sample placeholder token is not a recommendation to distribute an administrator credential with the application.",
+      "question": "Would hiding a client secret inside a compiled browser assembly make it confidential?",
+      "answer": "No. The assembly is delivered to the client and can be inspected. Privileged secrets must not depend on client-side obscurity for protection."
+    },
+    {
+      "explain": "Record the effective environment and application revision in a reproducible build manifest. Validate required settings in tests and review which files are packaged. A configuration change can alter behavior without changing a view, so visual snapshots alone do not cover it. Prefer failures that name the invalid input over silently falling back to an unintended environment.",
+      "worked": "Create a small matrix with missing endpoint, invalid URI, development override and user theme preference. Derive the expected result for each row independently. In the starter, the exercise changes only one display setting; the full-project extension should use a typed contract and a deliberate provider order.",
+      "question": "Why include configuration validation in deployment tests?",
+      "answer": "The same code can behave differently under different packaged inputs. Build success does not prove that the deployed settings identify the intended environment."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Assign Theme=System after the default",
+      "expected": "System is displayed.",
+      "why": "The later assignment wins in this simple dictionary example."
+    },
+    {
+      "change": "Package a privileged credential in browser assets",
+      "expected": "The credential is exposed to the client.",
+      "why": "Downloadable code and configuration are not a confidential server-side store."
+    }
+  ],
+  "bridge": "The pinned application/server examples show real configuration boundaries. The lesson dictionary isolates precedence only; it is not a substitute for the hosting provider, options validation or secret-management architecture used in a production app."
+}

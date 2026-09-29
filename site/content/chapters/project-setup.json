@@ -1,0 +1,57 @@
+{
+  "id": "project-setup",
+  "scenario": "You have a repository and a working editor, but a build that produces only a DLL is not yet a browser application. This lesson turns setup into a sequence of verifiable outputs: a pinned SDK, a selected target, a compiled application, a packaged browser artifact and a launched view. The goal is to know which tool owns each failure so that a missing workload, an incorrect target and a runtime exception do not all become “Uno does not work.”",
+  "vocabulary": [
+    {
+      "term": "SDK",
+      "meaning": "The build toolchain selected for the repository; global.json can make that selection reproducible."
+    },
+    {
+      "term": "Target framework",
+      "meaning": "The platform/API contract being built, for example the browser WebAssembly target."
+    },
+    {
+      "term": "Publish artifact",
+      "meaning": "The runtime, scripts, assemblies and content assembled for deployment, not merely the output of C# compilation."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Begin with reproducible inputs. The .NET SDK supplies the compiler and build engine; Uno.Sdk adds project conventions and platform integration. Workloads supply target-specific tooling. A package reference is not a substitute for installing the required workload. Inspect the repository’s global.json and project file before changing the globally installed toolchain.",
+      "worked": "Compare the pinned SDK in this course with the versions mentioned by the imported docs. The documentation snapshot and runner version are recorded separately because documentation can describe features outside the intentionally pinned teaching host. For your own app, create a template using the official setup path, then commit its relevant version and target choices.",
+      "question": "What should you inspect before upgrading every package to fix a setup error?",
+      "answer": "The selected SDK, required workloads, target framework and exact diagnostic. Changing unrelated versions can hide the original issue and make the build less reproducible."
+    },
+    {
+      "explain": "Compilation answers a language-and-reference question: can the source be turned into an assembly for this target? In a multi-target project, an outer build can orchestrate several inner builds. Select the intended target explicitly when debugging packaging. The same source may compile for one platform and fail for another because conditional files and references differ.",
+      "worked": "Use the atlas to select Browser, leave the compilation output present, and disable publishing. The diagram deliberately keeps the compile gate green while the launch gate fails. This is not a simulated MSBuild log; it is a model of why checking for Lesson.dll alone is an insufficient release test.",
+      "question": "Does a successful outer build establish that the browser publish folder is usable?",
+      "answer": "Not necessarily. Verify the browser inner target’s publish output and launch it; a generic success status does not establish that the required host assets were produced."
+    },
+    {
+      "explain": "Publishing collects dependencies that a development environment may otherwise supply implicitly. Browser applications need their boot scripts, WebAssembly runtime assets, managed assemblies and content. A host also needs correct paths and content types. An application served below a repository subpath can expose asset URL assumptions that never failed at the development server’s root.",
+      "worked": "Inspect the official solution-structure and publishing documents beside the sample. Locate the shared application code and browser host responsibilities rather than copying a directory layout blindly. This course validates embedded.js and WebAssembly output, then tests the static artifact. The downloaded lesson project intentionally exposes its own Program and manifest.",
+      "question": "Why test a published folder instead of only dotnet run?",
+      "answer": "Development tooling can provide resources, routes and startup behavior that differ from the deployed artifact. Testing the actual output closes that packaging gap."
+    },
+    {
+      "explain": "Startup is a lifecycle, not a single constructor call. The host starts an Application, the launch path creates a Window, content is attached, and the window is activated. Initialize controls only when the application environment they depend on exists. Keep initialization failures visible rather than suppressing exceptions behind a permanent loading screen.",
+      "worked": "The live lesson supplies the host and asks you to return content. Export it and read Program.cs to see the missing context. For a real application, record one smoke test that launches the published artifact and asserts a named control is usable. Add a build provenance file so a screenshot can be connected to a source revision.",
+      "question": "Which test distinguishes packaging success from usable startup?",
+      "answer": "Launch the published target, wait for explicit readiness, and interact with a meaningful control. File existence alone cannot detect a managed startup exception."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Remove runtime assets but retain the DLL",
+      "expected": "Compilation can still be represented as successful; launch fails.",
+      "why": "The host needs more than the managed assembly."
+    },
+    {
+      "change": "Serve the same artifact under /LearnUno/",
+      "expected": "Every asset URL must still resolve.",
+      "why": "Root-relative assumptions can break repository-subpath hosting."
+    }
+  ],
+  "bridge": "The Uno SDK and solution-structure documents explain the full-project context that the browser runner supplies for you. Treat template commands as terminal steps, not C# to paste into Lesson.Build. Compare their expected outputs with the generated files before deployment."
+}

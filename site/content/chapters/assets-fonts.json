@@ -1,0 +1,57 @@
+{
+  "id": "assets-fonts",
+  "scenario": "A one-unit line looks crisp on one display and soft on another, while a translated label wraps differently after deployment. Logical geometry, physical coverage and packaged fonts all affect the output. A screenshot from one machine is not a complete asset contract.",
+  "vocabulary": [
+    {
+      "term": "Logical unit",
+      "meaning": "The coordinate unit used by layout rather than a guaranteed physical pixel."
+    },
+    {
+      "term": "Pixel coverage",
+      "meaning": "The portion of a physical pixel covered by rendered geometry."
+    },
+    {
+      "term": "Font metrics",
+      "meaning": "Measurements such as glyph advance and vertical extents that affect layout."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Keep layout dimensions in their intended logical coordinate system. A logical unit can map to a different physical extent at another display scale. Do not hard-code physical screenshot dimensions into view-model geometry unless the application specifically operates in device pixels and converts deliberately.",
+      "worked": "The atlas begins with a stroke specified in logical coordinates. Change its logical width while leaving display scale fixed. The physical extent changes proportionally, but alignment relative to pixel boundaries also matters. The TextBlock lab similarly uses a logical MaxWidth rather than a claim about a fixed number of physical screen pixels.",
+      "question": "Is one logical unit always one physical pixel?",
+      "answer": "No. Display scale maps logical geometry into physical space. The mapping and fractional alignment determine the resulting coverage."
+    },
+    {
+      "explain": "Multiplying by display scale converts a logical extent into physical coordinates, but an origin can still land between physical pixels. A stroke spanning fractional boundaries may cover several pixels partially. Pixel snapping is a policy that can trade geometric fidelity for crispness; it is not a universal fix for every vector shape or animation.",
+      "worked": "Compare an integer-aligned stroke with one shifted by a fraction of a logical unit in the atlas. Its nominal width can stay constant while the coverage pattern changes. Test thin rules and icon outlines at multiple scales rather than adjusting them solely for the designer’s monitor.",
+      "question": "Why can two strokes of equal width look different?",
+      "answer": "Their positions relative to physical pixel boundaries can differ. Width alone does not determine raster coverage."
+    },
+    {
+      "explain": "Coverage is part of rasterization, not a change to the underlying model dimensions. Text rendering adds font selection, shaping, hinting and other target-specific behavior. The atlas illustrates a simplified one-dimensional coverage calculation; it does not reproduce a complete font rasterizer or predict every renderer’s antialiasing.",
+      "worked": "Inspect which modeled pixels receive full or partial coverage, then explain what changed when you moved the origin. Keep the numerical readout separate from a visual judgment such as “sharper.” A correct mathematical model can explain a mechanism without establishing that a particular styling choice is preferable for every display.",
+      "question": "Does a coverage model certify text quality on all devices?",
+      "answer": "No. Text uses additional font and rendering mechanisms, and actual target output requires inspection with the intended fonts and scripts."
+    },
+    {
+      "explain": "Package assets with explicit paths and licensing, then verify the published artifact. Case sensitivity and repository subpaths can reveal errors hidden on a development machine. A missing custom font can silently fall back to another font with different metrics, changing wrapping and layout even when the source text and FontSize are identical.",
+      "worked": "The live example narrows a TextBlock to show line wrapping. Follow the font guide to load a real packaged font in a full project, then compare a fallback and the intended face using representative scripts. Test long localized text, scaling and deployment paths. Do not redistribute font files without appropriate rights.",
+      "question": "What should be checked when text wraps differently only after publishing?",
+      "answer": "Whether the intended font and assets actually loaded, whether paths and case match the host, and whether scale, culture and renderer differ from the development environment."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change the physical scale without changing logical geometry.",
+      "expected": "Physical coverage changes while the logical model remains stable.",
+      "why": "The output mapping depends on display scale."
+    },
+    {
+      "change": "Remove or misname a packaged font.",
+      "expected": "A fallback can change glyph metrics and wrapping.",
+      "why": "The configured family name does not prove the intended font bytes were loaded."
+    }
+  ],
+  "bridge": "The custom-font and asset guides explain real packaging and platform conventions. The atlas is a simplified coverage experiment, and the live text lab is a wrapping example. Neither is a full typography benchmark or a grant to redistribute upstream font assets."
+}

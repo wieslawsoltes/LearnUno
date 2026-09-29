@@ -1,0 +1,57 @@
+{
+  "id": "authentication",
+  "scenario": "A screen can display “signed in” while a service still correctly rejects an operation. This lesson distinguishes identity, authorization and client presentation, then maps them to a proper authentication boundary. The live toggle is intentionally only a UI-state demonstration. Its purpose is to teach what an authentication result should influence, not to manufacture a security protocol from a Boolean.",
+  "vocabulary": [
+    {
+      "term": "Authentication",
+      "meaning": "Establishing the identity associated with a session or request through an appropriate trusted process."
+    },
+    {
+      "term": "Authorization",
+      "meaning": "Deciding whether an identity is allowed to perform a particular protected operation."
+    },
+    {
+      "term": "Public client",
+      "meaning": "An application distributed to the user, such as a browser app, which cannot keep a shared server secret confidential."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Ask two different questions: who is the user, and what may that user do? Authentication addresses identity; authorization addresses permission for an operation. The client can adapt its presentation based on session state, but protected services must enforce their own access rules independently of the visible controls.",
+      "worked": "Run the starter’s local toggle and read its explicit “Presentation model” label. It changes no token, server session or permission. That distinction is part of the exercise: a UI state can be useful for rendering without becoming trusted evidence that a remote operation is authorized.",
+      "question": "Does setting a local signedIn variable grant legitimate server access?",
+      "answer": "No. It changes client state only. The trusted service must validate the request’s authentication and authorization under its own security policy."
+    },
+    {
+      "explain": "Use established authentication libraries and provider protocols rather than inventing password or token handling. Redirects, callback URLs, token lifetimes and platform brokers have host-specific requirements. A public browser client must not ship a privileged client secret as if compilation could hide it.",
+      "worked": "Read the pinned OpenID Connect or broker example with its project context. Identify the provider, callback and the application’s session boundary. Keep placeholders and demonstration configuration distinct from production credentials. The course does not execute the provider flow inside the single-file sandbox.",
+      "question": "Why must the full authentication example be tested on its actual target host?",
+      "answer": "Redirect handling, broker integration, browser policies and callback configuration can differ by platform. A local presentation toggle cannot validate those mechanisms."
+    },
+    {
+      "explain": "A session can expire, be cancelled or fail to refresh. The UI should present those outcomes clearly without leaking tokens into logs or treating every error as a successful guest state. Authentication also needs a navigation policy: a protected destination may need a sign-in flow, and cancellation should return to a coherent task rather than a half-initialized page.",
+      "worked": "In the model, inspect how identity and permitted operations are represented separately. Try a user who is authenticated but lacks permission for a protected action. The interface may hide or disable that action for usability, yet the service must still reject an unauthorized direct request.",
+      "question": "Why is hiding an administrator button insufficient access control?",
+      "answer": "A client can be modified or a request can be sent directly. Authorization must be enforced at the trusted operation boundary, not solely by the interface."
+    },
+    {
+      "explain": "Define acceptance tests for sign-in, cancellation, expiration, logout and denied authorization. Keep credentials out of fixtures and retained browser traces. Use deterministic service doubles for presentation-state tests, then separately verify the real provider integration and server enforcement. State explicitly which layer a test proves.",
+      "worked": "The starter lets you rename the member caption. After that edit, explain which real inputs would be needed to set this state safely in an application. The correct next step is integrating a supported authentication contract, not turning the demo Boolean into a production access check.",
+      "question": "What can the starter’s test legitimately establish?",
+      "answer": "That the view responds to a modeled session state. It does not establish authentication, token validation or authorization against any real service."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Toggle the demonstration state",
+      "expected": "The local caption changes.",
+      "why": "This is a presentation model, not an authentication implementation."
+    },
+    {
+      "change": "An authenticated user lacks a permission",
+      "expected": "The protected service must deny the operation.",
+      "why": "Identity and authorization are distinct contracts."
+    }
+  ],
+  "bridge": "The Uno authentication and broker guides are project-level integration references. Their source excerpts remain labeled as such. The live lab is a UI-state model only and must not be reused as an access-control mechanism."
+}

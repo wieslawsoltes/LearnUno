@@ -1,0 +1,57 @@
+{
+  "id": "animation",
+  "scenario": "A panel should acknowledge a state change without making the interface feel slow or unstable. Instead of choosing an animation by appearance alone, describe its clock, easing function, interpolated property and final state. Then decide whether motion is helping the user understand anything.",
+  "vocabulary": [
+    {
+      "term": "Normalized time",
+      "meaning": "Elapsed progress mapped into the interval from zero to one."
+    },
+    {
+      "term": "Easing function",
+      "meaning": "A mapping from normalized time to progress through an animated value."
+    },
+    {
+      "term": "Interpolation",
+      "meaning": "Combining start, end and progress to calculate the current value."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A duration defines how the clock progresses, not how far the animated object travels. Normalize elapsed time and clamp the finished animation to its end state. Pause/resume should preserve the position rather than restart unexpectedly. User intent may replace an in-flight animation, so decide whether a new action starts from the current value or from an earlier baseline.",
+      "worked": "The live lab creates a DoubleAnimation from opacity 0.2 to 1 and starts a Storyboard on demand. Shorten the duration without changing those endpoints. The fade reaches the same final opacity sooner; it does not become brighter. The atlas exposes normalized progress directly so you can reason before replaying.",
+      "question": "Does halving duration halve the final opacity?",
+      "answer": "No. Duration changes the timing. The final value remains the configured endpoint unless the animation policy or property values also change."
+    },
+    {
+      "explain": "Easing changes the relationship between elapsed time and value progress. Linear progress moves proportionally with time. An ease-in curve starts slowly, while an ease-out curve approaches the end more gently. The atlas uses explicitly defined cubic functions; it does not claim to reproduce every named platform easing type.",
+      "worked": "At twenty-five percent elapsed time, select cubic ease-in. The modeled progress is 0.25 cubed, or 0.015625: only 1.5625 percent of the distance. Compare the linear marker at the same clock position. A curve is easier to understand when time and distance are visible together rather than represented by one unlabeled moving dot.",
+      "question": "Why are the linear and eased markers at different positions with the same clock?",
+      "answer": "They use different time-to-progress functions. Their elapsed time is equal, but their calculated interpolation progress differs."
+    },
+    {
+      "explain": "For scalar interpolation, value equals start plus the difference between end and start multiplied by eased progress. This equation works for the simplified position or opacity experiment. More complex types need their supported interpolation rules, and discrete state changes may not be meaningfully interpolated at all.",
+      "worked": "Set travel distance to 360 units and retain the cubic ease-in quarter-time example. The calculated position is 5.625 units from the start. Change only the distance to 100; progress stays 1.5625 percent while position becomes 1.5625 units. This separates the easing contract from the size of the visual movement.",
+      "question": "Which quantity is independent of the selected travel distance?",
+      "answer": "Normalized eased progress. Position depends on distance; the progress mapping depends on the clock and easing function."
+    },
+    {
+      "explain": "The animated property determines which work may be required. Changing layout dimensions can invalidate layout; a visual transform or opacity can have another update path. Do not assume every smooth animation is compositor-only or every backend has identical cost. Measure actual target behavior and always preserve a understandable final state without motion.",
+      "worked": "Inspect the real Storyboard sample for target and property assignment, then test replay, navigation away, and a reduced-motion alternative. Stop or replace an obsolete animation with its owner. Ensure status text or state remains clear when the transition is disabled; animation should explain the change, not be the only evidence it occurred.",
+      "question": "What is a successful reduced-motion design?",
+      "answer": "The same task and final state remain understandable and operable without the timed movement. Disabling motion must not disable the action or hide its result."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Shorten duration but keep From and To.",
+      "expected": "The same endpoints are reached faster.",
+      "why": "Timing and value range are independent inputs."
+    },
+    {
+      "change": "Compare ease-in and linear at 25 percent time.",
+      "expected": "Their distances differ while elapsed time agrees.",
+      "why": "The easing function maps time into different value progress."
+    }
+  ],
+  "bridge": "The source guide demonstrates actual Uno Storyboard APIs and their surrounding context. The live lab animates opacity in Uno; the atlas computes explicit cubic curves as a teaching model. Its numbers are not frame-time measurements or a claim about a particular renderer’s compositor."
+}

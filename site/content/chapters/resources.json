@@ -1,0 +1,57 @@
+{
+  "id": "resources",
+  "scenario": "You want two headings to share typography and a card palette to respond coherently to theme changes. Copying literal values works initially but makes later changes inconsistent. This lesson treats a resource as a named design decision, a style as a collection of property defaults, and lookup scope as part of the contract. It also explains why a local value can make a perfectly valid setter appear ineffective.",
+  "vocabulary": [
+    {
+      "term": "Resource key",
+      "meaning": "The name used to request an object or value from a resource dictionary."
+    },
+    {
+      "term": "Style setter",
+      "meaning": "A property value supplied by a Style for its target type, subject to effective-value precedence."
+    },
+    {
+      "term": "ThemeResource",
+      "meaning": "A resource reference intended to respond to theme-related reevaluation, unlike a one-time assumption about a fixed palette."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Choose what deserves a name. A shared title size, a semantic foreground brush or a control style expresses a reusable decision. A resource key should communicate that role rather than a position in one screenshot. Keep resources at the narrowest useful shared scope so their consumers and replacement points remain understandable.",
+      "worked": "The starter defines TitleStyle in the StackPanel’s resources. Both headings refer to that key. Identify the dictionary that owns the style and the TextBlocks that consume it. The style object is a shared recipe for property values, not a parent that arranges both headings.",
+      "question": "Why name a brush “WarningForeground” instead of “OrangeBrush3”?",
+      "answer": "A semantic name describes the intended use. The actual color can change with theme or design requirements without forcing every consumer to be renamed."
+    },
+    {
+      "explain": "Resource lookup is contextual. The same key can resolve differently when a nearer scope overrides a value. This is useful for component-level customization, but accidental shadowing can make a global change appear ineffective. Inspect where the reference is resolved rather than assuming all dictionaries form one flat global map.",
+      "worked": "Use the lesson-specific lookup model to compare a local dictionary with a broader scope. Then read the upstream resource example and identify each dictionary boundary. A resource reference is not equivalent to a static field access: its meaning depends on the framework’s lookup rules and the context of the requesting object.",
+      "question": "What should you check when one card uses a different value for an apparently identical key?",
+      "answer": "Look for a nearer resource scope, a different theme dictionary or a local property override. Identical key text does not guarantee identical lookup context."
+    },
+    {
+      "explain": "A Style targets a type and supplies setters. The effective property system still decides which value wins. A locally assigned FontSize can override a style setter, so editing the shared setter may update one heading but not another. Removing the local value is different from assigning a value that merely happens to equal the default.",
+      "worked": "Change the starter’s FontSize setter from 24 to 32 and confirm that both headings change. In a separate variation, add a local FontSize to one heading and repeat. Explain the mismatch using value sources, not by claiming the style failed to load. The later precedence lab gives a more explicit layer-by-layer model.",
+      "question": "Does an unchanged locally sized heading prove that the style setter was ignored by the loader?",
+      "answer": "No. The setter may be valid but lower in precedence than a local value. Inspect the effective source before changing resource loading."
+    },
+    {
+      "explain": "Theme-aware design includes contrast, disabled states, focus and high-contrast behavior, not only a light/dark background toggle. Use ThemeResource where the value is intended to track theme changes and verify the actual resource names and support in the selected version. A static custom color should not accidentally override a system accessibility choice.",
+      "worked": "Compare the pinned theme documentation with the sample dictionaries. Test the same content in light and dark modes and inspect which properties are local literals versus resource references. Keep the beginner lab small, then move shared design decisions into a control library with documented override points.",
+      "question": "What is missing from a theme test that checks only the background color?",
+      "answer": "Text contrast, focus visibility, disabled/selected states, high-contrast behavior and content legibility. A coherent theme is a set of usable states, not one color swap."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change the shared FontSize setter",
+      "expected": "Both starter headings change.",
+      "why": "They consume the same style and have no conflicting local size."
+    },
+    {
+      "change": "Give one heading a local FontSize",
+      "expected": "That heading can retain its local size.",
+      "why": "A higher-precedence value can override a valid style setter."
+    }
+  ],
+  "bridge": "The resource and theme excerpts show real lookup and dictionary patterns. Treat historical implementation notes as revision-specific and compare the sample’s local setters with its resource references. The lesson starter isolates a simple shared style before introducing a full theme dictionary."
+}

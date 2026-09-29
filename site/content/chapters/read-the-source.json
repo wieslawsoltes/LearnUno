@@ -1,0 +1,57 @@
+{
+  "id": "read-the-source",
+  "scenario": "You need to explain why a TextBlock change triggers layout on one target. Searching the repository returns declarations, generated APIs, shared implementations and tests. Reading source productively means following a question through the actual path rather than treating every matching symbol as the answer.",
+  "vocabulary": [
+    {
+      "term": "Entry point",
+      "meaning": "The public operation or state change where the investigation begins."
+    },
+    {
+      "term": "Platform partial",
+      "meaning": "A target-specific portion of a shared type’s implementation."
+    },
+    {
+      "term": "Behavioral proof",
+      "meaning": "A test or observation that distinguishes the expected behavior from an alternative."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start with a precise observable question and a pinned revision. Identify the public symbol, its declared contract and the conditions under which it is used. A projected or generated declaration can provide API compatibility without proving a complete implementation on every target. Read support metadata and actual method bodies before drawing conclusions.",
+      "worked": "The live lesson reflects the loaded TextBlock type and a selected property. This proves metadata presence in the runner, not the complete behavior behind that property. Use the source index to locate the same symbol at the pinned repository revision. Keep the runtime version and source snapshot separate when their versions differ.",
+      "question": "What does successful reflection of FontSize prove?",
+      "answer": "That the loaded type exposes that property metadata. It does not by itself prove layout, rendering or support behavior on another target or revision."
+    },
+    {
+      "explain": "Follow the state read and written by the shared implementation. Locate dependency-property metadata, callbacks, invalidation, event dispatch or delegated services involved in the question. Draw the causal path using actual calls and fields rather than filling gaps with assumptions based on naming.",
+      "worked": "For a layout question, write a short notebook: setter or property-system update, effective-value callback, invalidation request, later measure/arrange, then output. Each arrow should point to a file or test you inspected. If a call leaves the shared implementation, stop and identify where it resolves for the selected target.",
+      "question": "Why record file paths and line ranges during investigation?",
+      "answer": "They make the explanation reviewable and reproducible at the pinned revision. They also expose where an inference still lacks direct evidence."
+    },
+    {
+      "explain": "Resolve the platform-specific branch and generated inputs that actually execute. A method with the same name may have different implementations under browser, Skia or native configurations. Generated code also derives from source inputs, so editing generated output is usually not a lasting repair.",
+      "worked": "Inspect the sample’s host and feature conditions before generalizing its result. A browser coordinate sample, for example, may intentionally test a target-specific regression. Read surrounding conditions and comments, not just the central method. Record which parts of the explanation are shared contracts and which are implementation details of that target.",
+      "question": "Can a browser-specific implementation establish identical native behavior?",
+      "answer": "No. It can support a statement about that path. Other targets need their corresponding source and behavior evidence."
+    },
+    {
+      "explain": "Find a test that would fail if your explanation were wrong. A type-presence assertion is weaker than a runtime assertion about the observed property or geometry. If no test covers the relevant condition, construct a minimal reproduction and a targeted regression. Keep the expected behavior independent from a copied implementation.",
+      "worked": "Finish the investigation with the question, causal path, target boundary and proving test. Explain a nearby counterexample: a different property, missing notification or alternate renderer. This turns source reading into a reusable engineering result rather than a collection of vaguely related links.",
+      "question": "What is the final deliverable of a source investigation?",
+      "answer": "A precise, evidence-linked explanation of the behavior and its scope, including a test or reproduction and any unresolved assumptions."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Find only a generated API declaration.",
+      "expected": "Implementation behavior remains unproven.",
+      "why": "Compatibility surface is not the same as an executed code path."
+    },
+    {
+      "change": "Follow the target path and a failing/passing regression.",
+      "expected": "The explanation becomes tied to observable behavior.",
+      "why": "The evidence distinguishes a real implementation contract from a guess."
+    }
+  ],
+  "bridge": "The working-with-samples and debugging guides explain repository navigation and host context. Included source excerpts are bounded views into pinned files, not a complete codebase explanation. Use their full-file links and the reference index to follow the next call without losing provenance."
+}

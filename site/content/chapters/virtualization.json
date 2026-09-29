@@ -1,0 +1,57 @@
+{
+  "id": "virtualization",
+  "scenario": "A task list contains five thousand records, but only six rows fit on screen. Building five thousand independent visual trees is not necessary to display those six rows. This chapter separates data ownership from container realization and explains the viewport contract that makes virtualization useful.",
+  "vocabulary": [
+    {
+      "term": "UI virtualization",
+      "meaning": "Realizing a limited set of item containers around the viewport."
+    },
+    {
+      "term": "Data virtualization",
+      "meaning": "Loading only part of a dataset rather than keeping every record in memory."
+    },
+    {
+      "term": "Overscan",
+      "meaning": "A small extra realized range before and after the visible rows."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A data item is not a control. ItemsSource gives the items control data, and a DataTemplate describes how a container presents an item. UI virtualization limits visual work, while data paging limits data acquisition and retention. Either can exist without the other, so report dataset size and realized-container count separately.",
+      "worked": "Increase the atlas dataset from five thousand to ten thousand while keeping viewport and row height fixed. The total scroll extent grows, but the nearby visual range remains small. The live ListView still holds an in-memory array in this exercise; a small visual tree does not mean the data array has disappeared.",
+      "question": "Does a virtualizing ListView prove that only visible records were downloaded?",
+      "answer": "No. UI realization and data loading are distinct mechanisms. This lesson’s data source is already in memory."
+    },
+    {
+      "explain": "The control needs a bounded viewport to decide what is nearby. Nesting a virtualizing list inside an unbounded scrolling layout can remove the constraint the realization strategy relies on. Before blaming item templates, inspect the measurement offered to the list and identify which element owns scrolling.",
+      "worked": "With forty-unit rows and a 240-unit viewport, the model displays about six complete rows, with edge rows depending on the scroll offset. Move by a fractional row and inspect firstVisible and lastVisible. The formulas use floor for the leading index and ceil for the trailing extent, preventing a partially visible row from being omitted.",
+      "question": "Why can seven rows intersect a viewport that is six row-heights tall?",
+      "answer": "A fractional-row offset can expose a partial row at both ends, with complete rows between them. Intersection count is not always viewport height divided by row height."
+    },
+    {
+      "explain": "Overscan realizes a bounded buffer to reduce churn near the viewport edges. Larger buffers trade retained objects and template work for smoother reuse under some workloads. Variable-height rows, grouping and different panel strategies require more sophisticated estimation than this fixed-height model.",
+      "worked": "Increase overscan per side while holding data count fixed. The realized range expands until it reaches a dataset boundary or the configured buffer. Inspect the row indices and calculated count, not merely the visual size of the scroll thumb. At the beginning and end, clipping the buffer to valid indices is part of correctness.",
+      "question": "Which input directly grows the modeled realized range: dataset count or overscan?",
+      "answer": "Overscan grows the nearby buffer. Increasing a sufficiently large dataset mainly grows total extent while the viewport and buffer remain unchanged."
+    },
+    {
+      "explain": "Recycled containers must stop representing their old item. Clear item-specific handlers, transient visuals and asynchronous requests according to the control’s lifecycle. Preserve selection and commands by stable item identity, not by assuming a container slot always represents the same row. A late image response must not paint the wrong recycled item.",
+      "worked": "The atlas uses a deterministic modulo pool solely to make reuse visible. Watch one slot represent a different item after scrolling. In the upstream sample, inspect collection modifications and scrolling together; insertions above the viewport can change indices without changing item identities. Test that edits and selection still refer to the intended record.",
+      "question": "Why is the container slot a poor durable identity for an item?",
+      "answer": "The slot is intentionally reused. Domain identity must survive realization, scrolling, sorting and filtering independently of the current visual container."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Double the dataset with viewport and overscan unchanged.",
+      "expected": "The scroll extent grows; the nearby container count stays bounded.",
+      "why": "Visual realization depends on the viewport, not one container for every record."
+    },
+    {
+      "change": "Scroll while a row-owned asynchronous image request is pending.",
+      "expected": "An old result must not update a container now representing another item.",
+      "why": "Recycling changes the item-container relationship and requires a lifetime or generation check."
+    }
+  ],
+  "bridge": "The ListViewBase documentation and its sample demonstrate real control behavior; the fixed-row atlas exposes the arithmetic. Its pool assignment is not claimed to be Uno’s exact internal algorithm. Verify actual realization and scrolling on the renderer and layout used by your app."
+}

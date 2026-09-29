@@ -1,0 +1,57 @@
+{
+  "id": "deployment-lifecycle",
+  "scenario": "A release works locally but some users see a new shell with an old runtime package. Others reopen a saved document from a previous schema. Application version, asset coherence and persisted-data version are related, but they are not the same contract.",
+  "vocabulary": [
+    {
+      "term": "Release artifact",
+      "meaning": "The built output selected for deployment after validation."
+    },
+    {
+      "term": "Content hash",
+      "meaning": "An identity tied to asset content that helps distinguish changed files."
+    },
+    {
+      "term": "Schema version",
+      "meaning": "The version of a persisted data contract, independent of the application display version."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Publish a coherent set of assets from a known source revision and dependency graph. Preserve build provenance so a failure report identifies what users actually received. A successful compile does not prove that JavaScript, WebAssembly, styles and content were packaged or served correctly.",
+      "worked": "The course pipeline verifies actual embedded.js and WebAssembly output, then tests the static artifact before deployment. In the atlas, choose shell and runtime revisions and inspect whether they agree. These selections model release coherence; they do not publish an application or change the real deployment.",
+      "question": "Why should the deployed artifact be the one that passed tests?",
+      "answer": "A fresh untested rebuild can differ in dependencies, configuration or generated output. Promoting the verified artifact minimizes the gap between evidence and the released bytes."
+    },
+    {
+      "explain": "Caching changes which assets a client requests. A stale document can reference a package no longer available, and an aggressive cache policy can keep an old shell around. Content hashes help distinguish assets, but update and retention policies must still allow clients to transition coherently. Service workers add another explicit lifecycle rather than automatically solving freshness.",
+      "worked": "Mix a newer shell with an older runtime in the atlas and inspect the warning. In a real deployment, examine network responses, cache headers and generated URLs before blaming managed code. Reproduce both a clean session and an existing client session; each can expose a different transition problem.",
+      "question": "Does clearing your own browser cache prove the upgrade path works for existing users?",
+      "answer": "No. It tests a clean start and can remove the state that reproduces the problem. Existing-client transitions need their own verification."
+    },
+    {
+      "explain": "Activation can arrive through a normal launch, deep link or restoration path. Validate activation input and make repeated activation safe. Do not assume every process receives a final shutdown event before termination, especially across browser and mobile lifecycles. The application should be able to recover meaningful state without depending on one guaranteed last callback.",
+      "worked": "The live lesson formats an activation record as a model. A full application must route an actual protocol activation and handle malformed or obsolete identifiers. Separate transient UI state from durable work so an interrupted session does not lose essential data or reopen a half-valid operation.",
+      "question": "Why should restoration be idempotent?",
+      "answer": "Repeated or retried activation must not duplicate actions, corrupt state or create multiple conflicting owners. Restoring the same valid snapshot should have a predictable result."
+    },
+    {
+      "explain": "Persisted user data needs its own version and migration policy. A release number is not enough to describe a file schema. Validate imported values, migrate known older forms, and reject unsupported data with a useful explanation while preserving the original where possible. Do not silently overwrite an unreadable document with an empty state.",
+      "worked": "Compare the atlas asset-version checks with the persistence lesson’s schema migration. The first guards release coherence; the second guards data interpretation. Test an old snapshot, a malformed snapshot, a new unsupported schema and an interrupted write. Record which target lifecycle and storage behavior was actually exercised.",
+      "question": "Can matching shell/runtime versions prove a saved document is compatible?",
+      "answer": "No. The saved document has its own schema and validation requirements. Asset coherence and durable-data compatibility must be checked separately."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Pair shell and runtime from different modeled releases.",
+      "expected": "The coherence check reports a mismatch.",
+      "why": "A client should not assume independent asset versions are compatible."
+    },
+    {
+      "change": "Load a snapshot with an unsupported schema.",
+      "expected": "Restoration reports a meaningful incompatibility without silently destroying the input.",
+      "why": "Application activation does not make arbitrary persisted data valid."
+    }
+  ],
+  "bridge": "The application, protocol-activation and publishing guides describe the real lifecycle and hosting context. The small activation record and atlas are models only. The course’s own CI and public-site tests provide actual deployment evidence for its pinned release."
+}

@@ -1,0 +1,57 @@
+{
+  "id": "control-templates",
+  "scenario": "Your button looks right once, but applying a new theme makes a click run twice. The problem is not the new color: the control kept a handler attached to an old template part. Treat a template as replaceable structure with its own lifetime, rather than a permanent set of child fields.",
+  "vocabulary": [
+    {
+      "term": "Templated parent",
+      "meaning": "The control whose template creates the visual tree."
+    },
+    {
+      "term": "Template part",
+      "meaning": "A named element a control optionally or necessarily cooperates with."
+    },
+    {
+      "term": "Reapplication",
+      "meaning": "Replacement or recreation of the template tree during the control lifetime."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A ControlTemplate supplies a visual implementation of a control contract. TemplateBinding reads from the templated parent; ordinary data Binding often reads a different context. Before writing code that finds a named part, decide whether that part is required and what the control should do when it is absent. The semantic action should not depend on incidental arrangement of decorative elements.",
+      "worked": "Inspect the delayed-image sample template. Its Image Source uses TemplateBinding Source, linking the template element to the owning control. The waiting label is another template element, not a property on the data item. In the teaching button, changing the Border radius changes the template representation without changing the action the button represents.",
+      "question": "Does TemplateBinding normally read the current data item?",
+      "answer": "Its source is the templated parent. A DataTemplate item context and a ControlTemplate parent are different relationships even when both templates contain a TextBlock."
+    },
+    {
+      "explain": "When behavior needs a part, subscribe only after obtaining the current instance. Keep the instance and delegate identity needed for later cleanup. An anonymous delegate attached repeatedly is difficult to remove unless you retain the same delegate. A template may also provide a different control type than expected; validate the lookup rather than blindly casting.",
+      "worked": "Use the atlas to apply a template and attach a handler. Note the identities of the current part and subscription. One user action should lead to one intended operation. A duplicate handler is a useful deterministic symptom: it reveals accumulated subscriptions before you need a memory profiler to find the retained objects.",
+      "question": "Why should the handler identity be retained?",
+      "answer": "Unsubscription must remove the actual delegate that was registered. Constructing a new lambda with similar source text is not a reliable replacement for keeping that registration."
+    },
+    {
+      "explain": "A theme change, style replacement or template assignment can cause a different visual tree to become current. References to the old part do not automatically start referring to the replacement. Code that caches a part forever may send updates to an invisible tree, retain memory, or continue handling events from obsolete objects.",
+      "worked": "Apply the second template in the atlas. Compare the old and current part identifiers, then trigger the modeled action. With cleanup disabled, inspect how the old connection survives. The visual result might still look correct while behavior or lifetime is wrong, which is why screenshot-only testing misses this class of defect.",
+      "question": "Can a correct-looking replacement template still leave a bug?",
+      "answer": "Yes. The old part or subscriptions can remain reachable without being visible. Behavior and ownership must be verified separately from the rendered appearance."
+    },
+    {
+      "explain": "Release old handlers before retaining and subscribing to the new part. Make repeated application safe, handle missing optional parts and restore state into the current tree. The control owns the subscription relationship; a template author should not have to guess which obsolete object still receives updates.",
+      "worked": "Build a test sequence of apply, invoke, reapply, invoke, remove. Verify operation counts and that the old part no longer drives behavior. Then audit the actual visual states: a minimal template can accidentally remove keyboard focus, disabled feedback or high-contrast support. A visually customized Button should retain the interaction contract learners already know.",
+      "question": "What should a reapplication regression assert?",
+      "answer": "It should show that the current part works once, the old part no longer triggers the behavior, and missing optional parts do not crash the control."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Reapply a template without detaching the old handler.",
+      "expected": "An obsolete connection remains in the model.",
+      "why": "Template identity changes while the old event source still owns its delegate."
+    },
+    {
+      "change": "Detach before assigning the new part.",
+      "expected": "Only the current relationship remains active.",
+      "why": "Cleanup follows the ownership boundary instead of relying on visibility."
+    }
+  ],
+  "bridge": "The imported template fragment is an actual Uno sample and depends on its surrounding custom control. The minimal runtime-XAML lab teaches replacement of appearance; the atlas teaches part lifetime. Neither minimal fragment is a complete accessible production theme."
+}

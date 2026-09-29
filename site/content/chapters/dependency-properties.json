@@ -1,0 +1,57 @@
+{
+  "id": "dependency-properties",
+  "scenario": "A reusable count badge must work when a developer assigns Count in C#, binds it to a view model, or supplies a value through a style. Those update paths do not all call the same CLR setter. This chapter turns a convenient property into an explicit framework contract, then shows where the control should react.",
+  "vocabulary": [
+    {
+      "term": "Dependency property",
+      "meaning": "A registered property whose effective value is managed by the framework."
+    },
+    {
+      "term": "Owner type",
+      "meaning": "The type that registers the property and its metadata contract."
+    },
+    {
+      "term": "Metadata callback",
+      "meaning": "A callback invoked for relevant effective-value changes, not merely CLR setter calls."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Registration gives the property a stable identity, owner, value type and metadata. The CLR wrapper is the familiar public API, but the registered DependencyProperty is the identity consumed by styles, bindings and the value system. A default should be a safe baseline for every instance. Avoid putting a shared mutable list into metadata and then treating it as if each control received a fresh list.",
+      "worked": "In CountBadge, read the Register call before the wrapper. Its property name is Count, its value type is int, and its owner is CountBadge. Create two badges and set only one. Their values should remain independent even though both instances use the same CountProperty identifier. The identifier is shared; each instance owns its effective value.",
+      "question": "Which part is shared between two CountBadge instances?",
+      "answer": "The registered CountProperty identifier and metadata are shared. The effective value belongs to each DependencyObject instance; sharing a property identifier does not make the instance values global."
+    },
+    {
+      "explain": "A thin wrapper delegates get to GetValue and set to SetValue. It should not be the only place that updates the badge label. A binding or another property-system mechanism can supply a value without entering that CLR wrapper. Code that appears correct under direct assignment can therefore fail when the same control is used declaratively.",
+      "worked": "In the atlas, compare an update entering through the CLR wrapper with an update entering through the property system. The label should follow the effective change in either case. In the real lab, keep the wrapper free of rendering logic and let the metadata callback update Content. Then test both direct Count assignment and a bound Count in a full project.",
+      "question": "Why is updating Content only inside the Count setter insufficient?",
+      "answer": "Not every effective-value update is a call to that setter. The property-system callback is the common observation point for the control behavior this example needs."
+    },
+    {
+      "explain": "The callback receives the affected object and old/new value information. Cast the object to the owner type and update only the derived state that depends on this property. Guard against recursive writes: setting the same property again from its callback can create a loop or conceal a mistaken invariant. Validation and coercion policies need a deliberate design rather than repeated corrective assignments.",
+      "worked": "Change Count from three to eight and inspect the callback result. The badge is a projection of the integer, so the callback formats a caption; it does not create another independent count field. The upstream callback-registration test also shows the importance of retaining a registration token and unregistering it when the observer lifetime ends.",
+      "question": "What is the source of truth: the formatted caption or Count?",
+      "answer": "Count is the state. The caption is derived presentation. Storing an independently mutable count inside both places would create two values that can disagree."
+    },
+    {
+      "explain": "A reusable property contract includes initial state, updates, ownership and invalidation. Updating text can affect measurement, so rely on the relevant control/property behavior rather than forcing a global layout pass. A control that exposes several related properties should document how they combine and test the combinations, not just isolated assignments.",
+      "worked": "After completing the focused exercise, instantiate two badges, bind one to an observable source, clear its local value and change the source again. Record which value source is active. This distinguishes a callback problem from a precedence problem. The next control-template chapter separates this semantic contract from the visual tree that presents it.",
+      "question": "How would you diagnose a style setter that appears ignored?",
+      "answer": "Check the effective-value source before changing the callback. A local value or binding can take precedence over the style; a correct callback cannot make an overridden setter win."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Create two badges and update only the first.",
+      "expected": "Only the first caption changes.",
+      "why": "Registered property identity is shared, but effective values are per object."
+    },
+    {
+      "change": "Supply Count through a Binding instead of the CLR setter.",
+      "expected": "The callback still updates the caption.",
+      "why": "Reusable behavior is attached to the property system rather than one entry path."
+    }
+  ],
+  "bridge": "The upstream custom-control guide explains registration and wrappers; the framework test demonstrates callback unsubscription. These are complementary contracts. The small badge lab executes its own registered property; it does not reproduce every precedence, coercion or metadata feature of Uno."
+}

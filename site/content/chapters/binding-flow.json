@@ -1,0 +1,57 @@
+{
+  "id": "binding-flow",
+  "scenario": "An editor shows a project name in a TextBox and repeats it as a heading. The two controls should remain consistent without every keystroke handler manually assigning every label. This lesson introduces a binding as a relationship with an explicit source, path, target and update policy. The goal is to diagnose that relationship when the first value appears correctly but later changes do not.",
+  "vocabulary": [
+    {
+      "term": "Binding source",
+      "meaning": "The object whose value is read; it may be DataContext, a named element or an explicit Source."
+    },
+    {
+      "term": "Binding path",
+      "meaning": "The property or property chain read from the selected source object."
+    },
+    {
+      "term": "Binding target",
+      "meaning": "The destination property, commonly a dependency property on a framework control."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Always identify the endpoints before discussing updates. In the starter, the source is the named TextBox and the target is TextBlock.Text. ElementName selects the source explicitly, while the path Text selects its property. That differs from a plain {Binding Title}, which normally starts from the current DataContext. Similar markup can therefore refer to entirely different objects.",
+      "worked": "Point to NameInput in the markup and then to ElementName=NameInput in the binding. The source is a control in this introductory example, so its Text property already has framework change behavior. A plain C# view model would need an appropriate notification contract for later source assignments.",
+      "question": "What object does ElementName select in this starter?",
+      "answer": "The named TextBox, not the page’s DataContext. The path Text is read from that selected element."
+    },
+    {
+      "explain": "An initial source read and an ongoing subscription are different operations. A binding can display the correct startup value even when later updates will be missed. For ordinary CLR properties, the binding needs a signal such as INotifyPropertyChanged. The signal identifies the property that changed so the target can read again; repainting the target is not a substitute.",
+      "worked": "In the atlas, disable PropertyChanged and edit the source. The target remains stale. Re-enable notifications without making another edit: nothing has replayed the missed event. Use Rebind or change the source again to trigger a new read. This makes a subtle failure mode visible rather than implying that a notification flag is magical synchronization.",
+      "question": "Why can the first value be correct while later values are stale?",
+      "answer": "The initial read succeeded, but the change-observation path is missing or incorrect. Check notification emission and property names before changing rendering code."
+    },
+    {
+      "explain": "Mode describes direction and update lifetime. OneWay transfers source changes to the target; TwoWay also supports writing target edits back; OneTime does not track later source changes in the same way. Conversion and update timing are additional policies. A binding that can read a property may still be unable to write it if the source lacks a suitable setter.",
+      "worked": "The starter deliberately uses OneWay because its heading is not an editor. Switch modes in the model and edit both fields to inspect the direction of transfer. Keep the model boundary in mind: it illustrates writable string endpoints and does not implement every XAML conversion or update-trigger rule.",
+      "question": "Would TwoWay make sense for an ordinary read-only heading?",
+      "answer": "Usually not. A read-only display only needs source-to-target updates; TwoWay should express an actual editing requirement rather than being enabled by habit."
+    },
+    {
+      "explain": "Debug a relationship in a stable order: source identity, path, type compatibility, mode and notifications. A nearby DataContext assignment can change the source for an entire subtree. Item templates introduce their own contexts. A missing property can therefore be a source-selection problem even when its spelling is correct on a different object.",
+      "worked": "Use the upstream binding example to identify the data object before reading each path. In your own variation, make one deliberate error at a time: a wrong ElementName, a wrong path, or an absent notification. Record the symptom and restore the contract before proceeding. This creates a diagnostic checklist you can reuse in a real view.",
+      "question": "What should you inspect before adding a forced refresh to a stale binding?",
+      "answer": "The source object and its notification path. A forced refresh may hide the symptom while leaving the broken data relationship in place."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Type into the starter TextBox",
+      "expected": "The heading follows its Text property.",
+      "why": "The named source and OneWay target relationship are explicit."
+    },
+    {
+      "change": "Disable notifications in the model and change source",
+      "expected": "The target remains stale until a new read occurs.",
+      "why": "Assignment and notification are distinct operations."
+    }
+  ],
+  "bridge": "The upstream binding guide provides full-project source/context examples. Read the source selection and path first, then compare the mode with the intentionally small ElementName binding in the runner. Do not assume an item-template binding uses the same source as its surrounding page."
+}

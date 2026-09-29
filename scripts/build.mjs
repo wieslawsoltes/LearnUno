@@ -3,6 +3,7 @@ import {mkdir, cp, writeFile, readFile, readdir} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import path from 'node:path';
 import {buildCatalog} from './catalog.mjs';
+import {buildStudyMaterial} from './study-material.mjs';
 import {relocateRuntime} from './relocate-runtime.mjs';
 
 await mkdir('dist/assets', {recursive: true});
@@ -25,6 +26,7 @@ await cp('THIRD_PARTY_NOTICES.md', 'dist/THIRD_PARTY_NOTICES.md');
 await mkdir('dist/third-party', {recursive: true});
 await cp('node_modules/highlight.js/LICENSE', 'dist/third-party/highlight.js-LICENSE.txt');
 await buildCatalog();
+const study = await buildStudyMaterial();
 
 async function findEmbedded(directory) {
   if (!existsSync(directory)) return null;
@@ -52,8 +54,8 @@ const source = JSON.parse(await readFile('sources.lock.json', 'utf8'));
 const {labs}=await import('../site/src/atlas/catalog.mjs');
 const {guides}=await import('../site/src/learning/guides.mjs');
 const manifest = {
-  version: '0.2.0', builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
-  runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, visualLabs:labs.length, foundationGuides:guides.length, source
+  version: '0.3.0', builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
+  runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, visualLabs:labs.length, foundationGuides:guides.length, studyChapters:study.lessons.length, guidedSteps:study.steps, studyWords:study.authoredWords, sourceExcerpts:study.documentExcerpts+study.codeExcerpts, source
 };
 await writeFile('dist/build.json', JSON.stringify(manifest, null, 2));
 console.log(JSON.stringify(manifest, null, 2));

@@ -1,0 +1,57 @@
+{
+  "id": "accessibility",
+  "scenario": "A plus icon is obvious to the designer, but a learner navigating with a screen reader hears only “button” or an unhelpful symbol. Accessibility requires an operational and semantic interface, not just pixels. This chapter connects what a control looks like with what it exposes and how it can be used.",
+  "vocabulary": [
+    {
+      "term": "Accessible name",
+      "meaning": "The task-relevant text identifying a control to assistive technology."
+    },
+    {
+      "term": "Role and state",
+      "meaning": "What the control is and its current condition, such as checked or unavailable."
+    },
+    {
+      "term": "Focus order",
+      "meaning": "The sequence in which keyboard users reach interactive elements."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Start from the task the user is trying to complete. An icon-only control needs a meaningful identity such as Add a learning task, not a description of its drawing such as plus shape. A standard control already carries useful semantics and keyboard behavior; replacing it with a painted rectangle means you must supply those missing contracts yourself.",
+      "worked": "Run the starter with its plus-content Button. Inspect the visible symbol and AutomationProperties.Name separately. They answer different questions: the symbol is compact visual presentation, while the name explains the action. Avoid adding several competing labels that cause the same phrase to be announced repeatedly.",
+      "question": "Should the accessible name always describe the icon geometry?",
+      "answer": "No. It should identify the task or control meaning. Geometry can be incidental; Add a task is more useful than a description of the plus-sign strokes."
+    },
+    {
+      "explain": "Name, role, value and state form a representation distinct from the screenshot. A disabled action should expose its disabled state, and a toggle should expose whether it is selected. A name alone does not repair a custom control with the wrong role or missing state changes. Use supported automation properties and peers where the component requires them.",
+      "worked": "Change the modeled label and state in the atlas and inspect the semantic representation. Then examine the real browser accessibility tree for the Uno control. Record the actual role, name and state instead of inferring them from CSS classes. The official Uno properties guide describes the framework-side mapping; target behavior still needs testing.",
+      "question": "Can a button with a good name still be inaccessible?",
+      "answer": "Yes. It may be unreachable by keyboard, have invisible focus, expose an incorrect state, or perform a drag-only action with no usable alternative."
+    },
+    {
+      "explain": "Keyboard access is a complete interaction path. Focus must be visible, reach controls in a sensible task order, move into dialogs intentionally and return to a useful location when they close. Do not intercept keys globally in ways that break text editing, scrolling or standard control behavior. Layout changes must not silently discard the currently focused task.",
+      "worked": "Use Tab to reach the icon action and text box, then activate the button without pointing. Increase text size and narrow the view while preserving focus. In a dialog workflow, record the focused element before opening, after opening and after closing. These are observable assertions, not an aesthetic checklist.",
+      "question": "Why is “the user can click every control” an incomplete test?",
+      "answer": "It tests only a pointing path. Keyboard and assistive-technology users may have no equivalent way to reach or operate those same controls."
+    },
+    {
+      "explain": "Combine semantic inspection, keyboard journeys, contrast/text-scaling checks and actual assistive-technology testing. A browser test can verify some names and focus transitions, but it does not certify native screen-reader behavior across every Uno target. Document the platform, tooling and scenario used for each verification.",
+      "worked": "Use the upstream screen-reader guide to choose a real target test. Ask someone to complete the task without looking at the screen and record confusing announcements or focus loss. Fix the task obstacle, then preserve a regression at the smallest layer that can reliably observe it. Keep manual evidence for behavior automation cannot faithfully establish.",
+      "question": "What should an accessibility verification report say?",
+      "answer": "Which target, assistive technology, version and user journey were tested, what the observable result was, and which other targets or interactions remain unverified."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Replace a descriptive name with only “+”.",
+      "expected": "The semantic identity becomes less useful.",
+      "why": "A visual convention is not a reliable explanation of the task."
+    },
+    {
+      "change": "Test Tab and activation after a responsive layout change.",
+      "expected": "Focus should remain predictable and the action operable.",
+      "why": "Accessibility includes lifetime and navigation behavior, not only static labels."
+    }
+  ],
+  "bridge": "The imported AutomationProperties sample shows actual XAML names and relationships. Inspect it alongside the testing guide rather than copying properties blindly. The atlas is an explanatory semantic model; the real playground and target assistive tools provide the behavioral evidence."
+}

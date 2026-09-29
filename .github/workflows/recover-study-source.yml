@@ -1,0 +1,32 @@
+name: Recover reviewed chapter source
+on:
+  push:
+    branches: [feat/source-connected-lessons]
+    paths: ['.study-transfer/**', '.github/workflows/recover-study-source.yml']
+permissions:
+  contents: write
+jobs:
+  recover:
+    if: github.repository == 'wieslawsoltes/LearnUno'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/source-connected-lessons
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Recover exact reviewed source
+        run: python .study-transfer/restore.py
+      - run: npm ci
+      - run: npm test
+      - name: Commit complete source and remove transfer parts
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --pathspec-from-file=/tmp/learnuno-restored-paths.txt
+          git rm -r .study-transfer
+          git diff --cached --stat
+          git commit -m 'feat: recover all sixty source-connected chapters and 240 detailed lesson steps'
+          git push origin HEAD:feat/source-connected-lessons

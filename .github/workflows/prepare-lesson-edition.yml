@@ -1,0 +1,36 @@
+name: Prepare lesson edition dependencies
+on:
+  push:
+    branches: [feat/lesson-specific-atlas]
+    paths: ['package.json', '.github/workflows/prepare-lesson-edition.yml']
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/lesson-specific-atlas
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --package-lock-only
+      - run: npm ci
+      - run: npm audit
+      - name: Record the resolved dependency graph
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'build: lock grammar-based code coloring dependency'
+            git push origin HEAD:feat/lesson-specific-atlas
+          fi
+          tar -czf /tmp/lesson-devkit.tar.gz node_modules package.json package-lock.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lesson-devkit
+          path: /tmp/lesson-devkit.tar.gz
+          retention-days: 3

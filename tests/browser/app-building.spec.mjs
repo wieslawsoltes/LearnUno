@@ -1,12 +1,11 @@
 import {test, expect} from '@playwright/test';
+import {unoControls} from './uno-controls.mjs';
 import {lessons, appBuildingTrackIds, trackMap} from '../../site/src/course.mjs';
 import {labMap, labForLesson} from '../../site/src/atlas/catalog.mjs';
 
 const additions = lessons.filter(lesson => lesson.introducedIn === '0.4.0');
 const byId = new Map(additions.map(lesson => [lesson.id, lesson]));
 
-// These are complete published-site/real-runtime tests. Isolated component
-// previews do not execute this suite or establish that the new assemblies load.
 async function startRuntime(page) {
   await page.goto('./#/playground/toolkit-observable');
   await page.evaluate(() => window.learnUnoLab.start());
@@ -66,10 +65,11 @@ for (const lesson of additions) test('app-building chapter and unique atlas: ' +
 
 test('app-building real controls submit search and preserve an explicit modal decision', async ({page}) => {
   const frame = await startRuntime(page);
+  const controls = unoControls(page, frame);
   await execute(page, 'textbox-editing');
   const input = frame.getByRole('textbox').first();
   await input.fill('Ship the interface');
-  await frame.getByRole('button', {name: 'Save title', exact: true}).click();
+  await controls.button('Save title').click();
   await expect(frame.getByText('Saved: Ship the interface', {exact: true})).toBeVisible();
   await execute(page, 'autosuggest-search');
   const search = frame.getByRole('textbox').first();
@@ -77,20 +77,21 @@ test('app-building real controls submit search and preserve an explicit modal de
   await search.press('Enter');
   await expect(frame.getByText('Submitted: Grid', {exact: true})).toBeVisible();
   await execute(page, 'dialog-decisions');
-  await frame.getByRole('button', {name: 'Review delete decision', exact: true}).click();
-  await frame.getByRole('button', {name: 'Keep draft', exact: true}).click();
+  await controls.button('Review delete decision').click();
+  await controls.button('Keep draft').click();
   await expect(frame.getByText('Draft kept', {exact: true})).toBeVisible();
 });
 
 test('app-building actual Toolkit commands, validation, messaging and edit transactions', async ({page}) => {
   const frame = await startRuntime(page);
+  const controls = unoControls(page, frame);
   await execute(page, 'toolkit-commands');
-  const create = frame.getByRole('button', {name: 'Create task', exact: true});
-  await expect(create).toBeDisabled();
+  const create = controls.button('Create task');
+  await create.expectEnabled(false);
   await frame.getByRole('textbox').first().fill('ab');
-  await expect(create).toBeDisabled();
+  await create.expectEnabled(false);
   await frame.getByRole('textbox').first().fill('abc');
-  await expect(create).toBeEnabled();
+  await create.expectEnabled(true);
   await create.click();
   await expect(frame.getByText('Created: abc', {exact: true})).toBeVisible();
 
@@ -101,62 +102,64 @@ test('app-building actual Toolkit commands, validation, messaging and edit trans
   await expect(frame.getByText('Ready to submit', {exact: true})).toBeVisible();
 
   await execute(page, 'toolkit-messaging');
-  await frame.getByRole('button', {name: 'Deactivate recipient', exact: true}).click();
-  await frame.getByRole('button', {name: 'Send typed notice', exact: true}).click();
+  await controls.button('Deactivate recipient').click();
+  await controls.button('Send typed notice').click();
   await expect(frame.getByText('No notice received', {exact: true})).toBeVisible();
   await execute(page, 'toolkit-messaging');
-  await frame.getByRole('button', {name: 'Send typed notice', exact: true}).click();
+  await controls.button('Send typed notice').click();
   await expect(frame.getByText('Task changed', {exact: true})).toBeVisible();
 
   await execute(page, 'mvvm-drafts');
   const draft = frame.getByRole('textbox').first();
   await draft.fill('Unsaved title');
-  await frame.getByRole('button', {name: 'Discard edits', exact: true}).click();
+  await controls.button('Discard edits').click();
   await expect(draft).toHaveValue('Original title');
   await draft.fill('  Saved edit  ');
-  await frame.getByRole('button', {name: 'Commit draft', exact: true}).click();
+  await controls.button('Commit draft').click();
   await expect(draft).toHaveValue('Saved edit');
-  await expect(frame.getByRole('button', {name: 'Discard edits', exact: true})).toBeDisabled();
+  await controls.button('Discard edits').expectEnabled(false);
 });
 
 test('app-building actual AsyncRelayCommand cooperates with cancellation and can run again', async ({page}) => {
   const frame = await startRuntime(page);
+  const controls = unoControls(page, frame);
   await execute(page, 'toolkit-async-command', 'solution');
-  const load = frame.getByRole('button', {name: 'Load task list', exact: true});
-  const cancel = frame.getByRole('button', {name: 'Cancel load', exact: true});
+  const load = controls.button('Load task list');
+  const cancel = controls.button('Cancel load');
   await load.click();
-  await expect(cancel).toBeEnabled();
+  await cancel.expectEnabled(true);
   await cancel.click();
   await expect(frame.getByText('Cancelled', {exact: true})).toBeVisible();
-  await expect(load).toBeEnabled();
+  await load.expectEnabled(true);
   await load.click();
   await expect(frame.getByText('Loaded', {exact: true})).toBeVisible();
-  await expect(cancel).toBeDisabled();
+  await cancel.expectEnabled(false);
 });
 
 test('app-building real navigation history and request-local results', async ({page}) => {
   const frame = await startRuntime(page);
+  const controls = unoControls(page, frame);
   await execute(page, 'frame-history');
-  const back = frame.getByRole('button', {name: 'Go back', exact: true});
-  const open = frame.getByRole('button', {name: 'Open another page', exact: true});
-  await expect(back).toBeDisabled();
+  const back = controls.button('Go back');
+  const open = controls.button('Open another page');
+  await back.expectEnabled(false);
   await open.click();
   await expect(frame.getByText('Visit 1', {exact: true})).toBeVisible();
   await open.click();
   await expect(frame.getByText('Back entries: 1', {exact: true})).toBeVisible();
   await back.click();
   await expect(frame.getByText('Visit 1', {exact: true})).toBeVisible();
-  await expect(back).toBeDisabled();
+  await back.expectEnabled(false);
 
   await execute(page, 'navigation-results');
-  const choose = frame.getByRole('button', {name: 'Choose workspace', exact: true});
+  const choose = controls.button('Choose workspace');
   await choose.click();
-  await frame.getByRole('button', {name: 'Cancel picker', exact: true}).click();
+  await controls.button('Cancel picker').click();
   await expect(frame.getByText('Picker cancelled', {exact: true})).toBeVisible();
   await choose.click();
-  await frame.getByRole('button', {name: 'Use workspace', exact: true}).click();
+  await controls.button('Use workspace').click();
   await expect(frame.getByText('Chosen: Design', {exact: true})).toBeVisible();
-  await expect(choose).toBeEnabled();
+  await choose.expectEnabled(true);
 });
 
 test('app-building real DI validates ownership, captures, decoration and options', async ({page}) => {

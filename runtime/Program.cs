@@ -29,9 +29,6 @@ public static class Program
         AppDomain.CurrentDomain.UnhandledException += (_, error) => Console.Error.WriteLine(error.ExceptionObject);
         TaskScheduler.UnobservedTaskException += (_, error) => Console.Error.WriteLine(error.Exception);
 
-        // Enable the actual framework semantic tree before constructing any view.
-        // A teaching playground must not require a hidden activation step for roles.
-        Uno.UI.FeatureConfiguration.AutomationPeer.AutoEnableAccessibility = true;
         // NativeRenderer resolves HtmlElementAttribute by scanning loaded assemblies.
         Assembly.Load("Uno.UI.Runtime.WebAssembly");
         Report("Browser renderer assembly loaded");
@@ -113,7 +110,9 @@ public static partial class Bridge
             var request = JsonSerializer.Deserialize<EngineRequest>(json, LanguageEngine.JsonOptions)
                 ?? throw new ArgumentException("A request is required.");
             if (request.Code.Length > 100_000) throw new ArgumentException("Keep a lesson below 100,000 characters.");
-            var result = await Engine.Value.HandleAsync(request);
+            var result = request.Method == "inspect"
+                ? RuntimeInspector.Capture()
+                : await Engine.Value.HandleAsync(request);
             return JsonSerializer.Serialize(new { ok = true, result }, LanguageEngine.JsonOptions);
         }
         catch (Exception error)

@@ -1,6 +1,6 @@
 {
   "name": "learnuno",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Interactive Uno learning studio with lesson-specific models and real browser compilation",

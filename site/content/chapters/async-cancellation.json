@@ -53,5 +53,23 @@
       "why": "Completion time does not establish relevance to current intent."
     }
   ],
-  "bridge": "The Uno networking and exception material supplies real asynchronous API contexts. The runner’s delay and the atlas’s latencies are deterministic teaching fixtures; use the upstream examples to inspect token propagation, error handling and host-specific behavior before connecting a real service."
+  "bridge": "The Uno networking and exception material supplies real asynchronous API contexts. The runner’s delay and the atlas’s latencies are deterministic teaching fixtures; use the upstream examples to inspect token propagation, error handling and host-specific behavior before connecting a real service.",
+  "continueWith": [
+    {
+      "id": "task-failure",
+      "title": "Handle asynchronous failures at the right boundary"
+    },
+    {
+      "id": "debounced-input",
+      "title": "Debounce input without rendering stale results"
+    },
+    {
+      "id": "autosuggest-search",
+      "title": "Build suggestions without feedback loops"
+    },
+    {
+      "id": "toolkit-async-command",
+      "title": "Make asynchronous commands cancellable and observable"
+    }
+  ]
 }

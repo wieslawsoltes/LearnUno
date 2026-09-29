@@ -9,6 +9,8 @@ LearnUno is independent of Uno Platform and Microsoft. Names identify compatible
 | highlight.js 11.12.0 | https://github.com/highlightjs/highlight.js | BSD-3-Clause; locally bundled syntax grammars and worker coloring |
 | DOMPurify | https://github.com/cure53/DOMPurify | Apache-2.0 OR MPL-2.0; Monaco transitive sanitizer, overridden to 3.4.16 |
 | marked | https://github.com/markedjs/marked | MIT; Monaco transitive Markdown dependency |
+| CommunityToolkit.Mvvm 8.4.2 | https://github.com/CommunityToolkit/dotnet | MIT; actual observable objects, commands, validation and messaging in the app-building runner |
+| Microsoft.Extensions.DependencyInjection and Options 10.0.12 | https://github.com/dotnet/runtime | MIT; actual service container and typed options in app-building examples |
 | .NET and Roslyn | https://github.com/dotnet/roslyn | MIT; runtime and semantic compiler services |
 | fflate 0.8.3 | https://github.com/101arrowz/fflate | MIT; client-side project ZIP export |
 | esbuild | https://github.com/evanw/esbuild | MIT; build tooling |

@@ -1,0 +1,64 @@
+{
+  "id": "frame-history",
+  "scenario": "A shell exposes a Back action, but history is not simply the number of pages you constructed. Observe Frame history as destinations are opened and revisited, update action availability from the actual state, and distinguish going back from issuing another forward navigation to a page that happens to look similar.",
+  "vocabulary": [
+    {
+      "term": "Back stack",
+      "meaning": "Navigation entries representing destinations that can be revisited through back navigation."
+    },
+    {
+      "term": "CanGoBack",
+      "meaning": "The Frame’s current indication that a back transition is available."
+    },
+    {
+      "term": "Forward navigation",
+      "meaning": "A new navigation request, which is not equivalent to popping an existing back-history entry."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Frame owns its navigation history. A page’s constructor count or the number of menu clicks is not a reliable substitute for BackStack and CanGoBack. Other transitions, failed requests, state restoration, and explicit history edits can change the relationship. Let the shell project the current Frame state into its back-button availability.",
+      "worked": "Open one page: there is an active destination but no earlier entry to revisit. Open a second page and the first becomes a back entry. The report displays the actual collection count, while the button follows CanGoBack. This separates visible content from the existence of navigation history.",
+      "question": "Why is Back unavailable after the first successful navigation?",
+      "answer": "There is an active destination but no preceding destination in that Frame’s back stack. Current content is not itself a back entry."
+    },
+    {
+      "explain": "GoBack uses an existing entry and its parameter; Navigate creates a new forward request. Calling Navigate to a familiar Page type is not the same as returning to its historical instance or state. Keep the distinction visible in navigation services, tests, and analytics so repeated route requests do not accidentally inflate the back stack.",
+      "worked": "Open three visits and go back once. The destination receives the earlier entry’s parameter. Compare that with clicking Open another page again, which creates a new visit with a new sequence label. The two actions can display the same Page type while carrying different history semantics.",
+      "question": "Can two transitions target the same Page type but mean different things?",
+      "answer": "Yes. Back revisits a recorded destination, while forward navigation creates a new request. Page type alone does not describe the history operation."
+    },
+    {
+      "explain": "Use navigation events to refresh the shell after accepted transitions, including those initiated outside its buttons. A deep link, keyboard gesture, or platform back request may change the current destination. Avoid updating a separate counter optimistically before navigation succeeds, or the UI may enable Back while the Frame cannot perform it.",
+      "worked": "The example refreshes Report from Navigated as well as the local actions. In a real shell, centralize this projection rather than scattering duplicate state assignments. Add a failed-navigation fixture and verify that the displayed history count remains consistent with the actual Frame.",
+      "question": "Why listen to accepted navigation rather than only local clicks?",
+      "answer": "The shell must reflect all transition sources and actual outcomes. A click is intent, not proof that history changed."
+    },
+    {
+      "explain": "At the root, a back request may close a pane, dismiss a modal, leave an application flow, or do nothing according to platform conventions. Do not force one desktop assumption onto every target. Restoring history also requires serializable destination state and a policy for missing entities or obsolete routes. Test these separately from ordinary in-memory back navigation.",
+      "worked": "Save a small route history in an independent project and reload it with one destination removed. Decide whether to skip that entry, show a not-found page, or restart the flow. A history string should be validated like any imported state rather than blindly activating arbitrary types.",
+      "question": "Does a saved history entry guarantee its target still exists?",
+      "answer": "No. Route availability, entity existence, and authorization can change. Restoration must validate entries and provide a deliberate fallback."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Open a first destination",
+      "expected": "Back remains unavailable.",
+      "why": "There is no preceding history entry yet."
+    },
+    {
+      "change": "Open another destination and go back",
+      "expected": "The earlier parameter is restored through history.",
+      "why": "GoBack uses the recorded entry instead of creating a duplicate forward visit."
+    }
+  ],
+  "bridge": "Connect back navigation to NavigationView and a keyboard action, derive availability from Frame state, and test root behavior. Add validated restoration and distinguish application-level history from modal dismissal and nested-region history.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/basics/navigation-history-and-backwards-navigation",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

@@ -53,5 +53,27 @@
       "why": "The lifetime may be broader than the state’s semantic owner."
     }
   ],
-  "bridge": "The pinned Uno service examples show registrations in a full application. The manual injection lab strips away the hosting setup so the dependency contract is visible first; use the source example to study composition and lifetime rather than as an instruction to install every package."
+  "bridge": "The pinned Uno service examples show registrations in a full application. The manual injection lab strips away the hosting setup so the dependency contract is visible first; use the source example to study composition and lifetime rather than as an instruction to install every package.",
+  "continueWith": [
+    {
+      "id": "composition-root",
+      "title": "Assemble an application at one composition root"
+    },
+    {
+      "id": "scope-ownership",
+      "title": "Give an editing session its own service scope"
+    },
+    {
+      "id": "captive-dependencies",
+      "title": "Detect a singleton that captures scoped state"
+    },
+    {
+      "id": "service-factories",
+      "title": "Combine injected services with runtime arguments"
+    },
+    {
+      "id": "service-decorators",
+      "title": "Add behavior with a service decorator"
+    }
+  ]
 }

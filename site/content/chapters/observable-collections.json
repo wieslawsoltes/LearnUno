@@ -53,5 +53,15 @@
       "why": "Collection notification does not replace item property notification."
     }
   ],
-  "bridge": "The source excerpt demonstrates actual ItemsSource or collection-notification wiring. Identify whether each operation changes the sequence or an existing item. The starter’s string collection deliberately keeps the first case simple before you introduce mutable item models."
+  "bridge": "The source excerpt demonstrates actual ItemsSource or collection-notification wiring. Identify whether each operation changes the sequence or an existing item. The starter’s string collection deliberately keeps the first case simple before you introduce mutable item models.",
+  "continueWith": [
+    {
+      "id": "linq-projections",
+      "title": "Know when a LINQ query actually runs"
+    },
+    {
+      "id": "listview-selection",
+      "title": "Treat list selection as application state"
+    }
+  ]
 }

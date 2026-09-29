@@ -1,0 +1,69 @@
+{
+  "id": "options-validation",
+  "scenario": "A list page uses a configured page size. A misspelled setting, an invalid bound, or an environment override should produce a useful configuration error rather than an enormous request or a later layout failure. Use the actual options library to construct a typed settings object and validate it at a clear boundary.",
+  "vocabulary": [
+    {
+      "term": "Typed options",
+      "meaning": "A settings class with named properties that describes a configuration contract."
+    },
+    {
+      "term": "Options factory",
+      "meaning": "The construction path that applies registered configuration, post-configuration, and validation actions to an options instance."
+    },
+    {
+      "term": "Validation timing",
+      "meaning": "The point at which configured values are checked; registration, first access, and host startup are distinct events."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A PageSettings object makes the intended PageSize value visible to consumers and tests. It does not automatically make every integer valid. Configuration providers supply inputs, options construction assembles them, and validation checks the application’s constraints. Keep defaults and valid ranges documented together so an environment override cannot quietly violate the contract.",
+      "worked": "The starter configures PageSize to two hundred even though the allowed maximum is one hundred. The class compiles because two hundred is a valid Int32; only the application rule rejects it. A typed property catches some representation mistakes but cannot express every business constraint on its own.",
+      "question": "Why does an integer property still need validation?",
+      "answer": "Its type describes representation, not the application’s acceptable range or relationships to other settings. A representable value can still be invalid for the operation."
+    },
+    {
+      "explain": "AddOptions, Configure, and Validate record actions in the service collection. Resolving IOptions<T> and reading Value causes the effective instance to be created and validated in this example. Building a bare provider is not the same as starting a Generic Host. Do not add ValidateOnStart and then assume it ran without actually exercising the corresponding host startup path.",
+      "worked": "Run the starter and observe Configuration rejected. Change the configured value to fifty and run again to reach the success branch. Both versions build a provider; the visible difference appears when Value is accessed. A test should exercise that access rather than merely check that a registration method returned.",
+      "question": "Does building this provider prove every options instance has been validated?",
+      "answer": "No. It does not eagerly construct all lazy option values. Explicitly exercise the required value or use a tested startup-validation policy in the actual host."
+    },
+    {
+      "explain": "A configuration error should identify the failed rule and relevant setting without dumping credentials or an entire sensitive configuration object. OptionsValidationException exposes failures that can be logged or shown in a support-friendly startup message. A client bundle cannot keep server secrets confidential, regardless of whether those values are bound to an options class.",
+      "worked": "The failure text says PageSize must be between one and one hundred. It does not include unrelated settings. Add a cross-field rule in a project, such as minimum page size not exceeding maximum, and verify the error identifies the relationship instead of letting a distant consumer fail unpredictably.",
+      "question": "Should a configuration diagnostic serialize the complete settings object by default?",
+      "answer": "No. It may contain sensitive or irrelevant values. Report the violated contract with carefully selected context and keep privileged secrets outside downloadable clients."
+    },
+    {
+      "explain": "IOptions<T> provides an application-level cached value for its normal use. IOptionsMonitor<T> and IOptionsSnapshot<T> have different update and lifetime contracts; a client app still needs a deliberate scope model and change policy. Reloading configuration does not automatically update every view safely or guarantee that in-flight operations should change settings halfway through.",
+      "worked": "For an editable preferences feature, define whether a running request uses its initial page size or the latest setting. Test an invalid reload and decide how the UI reports or retains a last-known-valid value. Do not infer reload behavior from this fixed-value lesson, which deliberately tests one construction and validation boundary.",
+      "question": "Why can changing a setting during an operation require an explicit policy?",
+      "answer": "The operation may depend on a consistent snapshot. Applying a new value halfway through can violate assumptions even when both old and new values are individually valid."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Keep PageSize at 200",
+      "expected": "Accessing Value reports the validation failure.",
+      "why": "The integer is representable but outside the accepted configuration range."
+    },
+    {
+      "change": "Change PageSize to 50",
+      "expected": "The options value is constructed and accepted.",
+      "why": "Configuration and validation now satisfy the same contract."
+    }
+  ],
+  "bridge": "In a hosted Uno project, bind a typed settings section, validate individual and cross-field rules, and test the real host startup or first-access path. Decide whether preferences are immutable snapshots or reloadable state, and keep confidential server credentials out of the client configuration bundle.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/options",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    },
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Configuration/Overview.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

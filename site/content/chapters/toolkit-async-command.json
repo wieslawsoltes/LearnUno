@@ -1,0 +1,64 @@
+{
+  "id": "toolkit-async-command",
+  "scenario": "A task-list command should expose loading feedback, prevent accidental duplicate execution, and allow cancellation without blocking the UI. Use AsyncRelayCommand with a CancellationToken-taking delegate. The live example uses the actual toolkit command and a deterministic delay so running, cancellation, and completion can be tested without a network service.",
+  "vocabulary": [
+    {
+      "term": "ExecutionTask",
+      "meaning": "The Task representing the command’s current or most recent asynchronous execution."
+    },
+    {
+      "term": "CanBeCanceled",
+      "meaning": "Command state indicating that an active operation supports a cancellation request."
+    },
+    {
+      "term": "Concurrency policy",
+      "meaning": "The rule deciding whether another execution may start while an earlier one is still running."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "An asynchronous command must preserve the Task representing completion. AsyncRelayCommand adds running and cancellation state to the ICommand shape consumed by controls. Keep the command instance stable and use its observable properties rather than inventing unrelated busy flags that can disagree. The delegate remains responsible for meaningful results and expected-error presentation.",
+      "worked": "Click Load task list. The button’s command becomes unavailable under the default nonconcurrent policy, Status becomes Loading, and Cancel becomes available through CanBeCanceled. No blocking wait is used. A test can await ExecuteAsync on the model while a browser test verifies the associated controls.",
+      "question": "What does the async command add beyond a normal event handler?",
+      "answer": "It exposes an operation contract that callers and bindings can observe, including execution state and cancellation, rather than hiding completion inside an async void callback."
+    },
+    {
+      "explain": "A CancellationToken-taking delegate lets the command request cancellation. Pass the same token to delay, I/O, and other cooperative operations. Cancellation does not preempt a CPU-bound loop that never checks it, and it does not undo an external operation that already committed. Catch expected cancellation separately from failure and explain its outcome in presentation state.",
+      "worked": "Cancel before the delay completes. Task.Delay observes the token and the model sets Cancelled. Then execute the command again and allow it to finish. The example catches cancellation only when its own token was requested, avoiding the accidental classification of an unrelated cancellation exception as a normal user action.",
+      "question": "Why filter the cancellation catch by the current token?",
+      "answer": "It makes the expected-cancellation policy explicit. An unrelated cancelled dependency may need different handling rather than being silently treated as this user’s cancellation request."
+    },
+    {
+      "explain": "Default command availability prevents ordinary UI consumers from starting overlapping executions, but command state is not a global lock on the service or a substitute for validating programmatic callers. Decide whether repeated intent should be ignored, queued, cancelled-and-replaced, or run concurrently. When allowing concurrency, identify results and cleanup by operation generation.",
+      "worked": "Increase the delay to 1,200 ms and try activating Load repeatedly through the UI. Then test the model’s public operation boundary directly. If duplicate service writes would be harmful, add an appropriate service-level guard or idempotency key instead of assuming the visual button is the only possible caller.",
+      "question": "Does a disabled command guarantee a service can never be invoked twice?",
+      "answer": "No. Other call paths may exist, and programmatic invocation needs its own contract. UI availability is one layer of duplicate-execution policy."
+    },
+    {
+      "explain": "Cancel view-owned work when its activation ends, but distinguish temporary visual detachment from permanent model disposal. For expected service failures, set an error state and keep the command usable afterward. For unexpected faults, retain diagnostics and an observed Task rather than swallowing everything. Test success, cancellation, failure, and reexecution as distinct outcomes.",
+      "worked": "The root’s Unloaded handler requests cancellation when leaving the playground. In a production cached page, put the policy in navigation activation and decide what should happen on return. Add a deterministic failing service and verify that a second run works; a correct IsRunning transition alone does not prove useful error feedback.",
+      "question": "What should be checked after a cancelled operation?",
+      "answer": "The outcome, command availability, token/resource cleanup, and whether a later execution succeeds without stale results from the earlier operation."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Cancel before completion",
+      "expected": "Status becomes Cancelled and Load becomes available again.",
+      "why": "The delay observes the command’s token and the operation completes its cancellation path."
+    },
+    {
+      "change": "Let the operation complete",
+      "expected": "Loaded appears without blocking input.",
+      "why": "Await suspends the operation while the UI event loop remains available."
+    }
+  ],
+  "bridge": "Replace the delay with an injected repository call, propagate cancellation, and test every outcome by awaiting the command’s Task. Add a generation guard for replaceable searches and an idempotency policy for writes. Keep command error handling explicit instead of relying on a global unhandled-exception hook.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/asyncrelaycommand",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

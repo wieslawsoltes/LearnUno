@@ -1,3 +1,4 @@
+import {packageReferences} from './runtime-dependencies.mjs';
 import { zipSync, strToU8 } from 'fflate';
 import { download } from './helpers.mjs';
 
@@ -18,7 +19,7 @@ export function createProjectFiles(lesson, code) {
     <PublishTrimmed>false</PublishTrimmed>
     <RunAOTCompilation>false</RunAOTCompilation>
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
-  </PropertyGroup>
+  </PropertyGroup>${packageReferences(lesson)}
 </Project>
 `;
   const app = `using System.Reflection;

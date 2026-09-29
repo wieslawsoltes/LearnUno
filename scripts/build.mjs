@@ -54,7 +54,7 @@ const source = JSON.parse(await readFile('sources.lock.json', 'utf8'));
 const {labs}=await import('../site/src/atlas/catalog.mjs');
 const {guides}=await import('../site/src/learning/guides.mjs');
 const manifest = {
-  version: '0.3.0', builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
+  version: JSON.parse(await readFile('package.json', 'utf8')).version, builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
   runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, visualLabs:labs.length, foundationGuides:guides.length, studyChapters:study.lessons.length, guidedSteps:study.steps, studyWords:study.authoredWords, sourceExcerpts:study.documentExcerpts+study.codeExcerpts, source
 };
 await writeFile('dist/build.json', JSON.stringify(manifest, null, 2));

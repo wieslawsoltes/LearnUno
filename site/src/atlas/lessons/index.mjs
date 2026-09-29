@@ -1,3 +1,4 @@
+import appBuilding from '../app-building/index.mjs';
 import foundations from './foundations.mjs';
 import layout from './layout.mjs';
 import binding from './binding.mjs';
@@ -8,7 +9,7 @@ import performance from './performance.mjs';
 import platforms from './platforms.mjs';
 import quality from './quality.mjs';
 import internals from './internals.mjs';
-export const lessonLabs=[...foundations,...layout,...binding,...architecture,...services,...controls,...performance,...platforms,...quality,...internals];
+export const lessonLabs=[...foundations,...layout,...binding,...architecture,...services,...controls,...performance,...platforms,...quality,...internals,...appBuilding];
 export const lessonLabMap=new Map(lessonLabs.map(lab=>[lab.id,lab]));
 export function lessonScene(lab,state,step=0){
  const out=lab.run(state,step);

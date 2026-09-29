@@ -13,8 +13,8 @@ const selections = JSON.parse(fs.readFileSync('site/content/source-map.json', 'u
 const sha = value => createHash('sha256').update(value).digest('hex');
 const authored = lessons.map(lesson => JSON.parse(fs.readFileSync(`site/content/chapters/${lesson.id}.json`, 'utf8')));
 
-test('all sixty expanded chapters contain four substantial, distinct guided steps', () => {
-  assert.equal(authored.length, 60);
+test('all ninety expanded chapters contain four substantial, distinct guided steps', () => {
+  assert.equal(authored.length, 90);
   const explanations = new Set();
   for (const chapter of authored) {
     assert(chapter.scenario.split(/\s+/).length >= 35, chapter.id);
@@ -29,7 +29,7 @@ test('all sixty expanded chapters contain four substantial, distinct guided step
     }
     assert(chapter.bridge.length > 140, chapter.id);
   }
-  assert.equal(explanations.size, 240);
+  assert.equal(explanations.size, 360);
 });
 for (const lesson of lessons) test('expanded chapter source and rendering contract: ' + lesson.id, () => {
   const c = authored.find(c => c.id === lesson.id), sources = selections[lesson.id];
@@ -62,7 +62,7 @@ test('source snippets are exact pinned line/fence selections when the checkout i
       assert.equal(sha(text),c.expectedHash,c.path);count++;
     }
   }
-  assert.equal(count,86);
+  assert.equal(count,117);
 });
 
 test('code fence ranges preserve line numbers, language and longer outer fences',()=>{
@@ -85,7 +85,7 @@ test('strict study build emits all chapters with source provenance and no empty 
  if(!fs.existsSync('.sources/uno/doc'))return t.skip('Complete CI build performs the pinned source check.');
  const output=fs.mkdtempSync(path.join(os.tmpdir(),'learnuno-study-'));t.after(()=>fs.rmSync(output,{recursive:true,force:true}));
  const result=await buildStudyMaterial({outputRoot:output,strict:true});
- assert.equal(result.lessons.length,60);assert.equal(result.steps,240);assert.equal(result.codeExcerpts,86);assert.equal(result.documentExcerpts,131);assert(result.authoredWords>42000);
+ assert.equal(result.lessons.length,90);assert.equal(result.steps,360);assert.equal(result.codeExcerpts,117);assert.equal(result.documentExcerpts,191);assert(result.authoredWords>42000);
  for(const lesson of lessons){const c=JSON.parse(fs.readFileSync(path.join(output,lesson.id+'.json'),'utf8'));assert.equal(c.revision,lock.revision);assert(c.documents.every(d=>d.markdown.trim()&&!d.markdown.trim().startsWith('```')));assert(c.snippets.every(s=>sha(s.code)===s.codeHash));}
 });
 

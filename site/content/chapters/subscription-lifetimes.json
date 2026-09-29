@@ -1,0 +1,64 @@
+{
+  "id": "subscription-lifetimes",
+  "scenario": "A long-lived publisher can keep a short-lived screen reachable through its event handler. Hiding that screen is not proof that it has been released. Represent the subscription as an owned disposable resource, make cleanup safe to call twice, and verify that publishing after detachment no longer invokes the screen’s callback.",
+  "vocabulary": [
+    {
+      "term": "Subscription token",
+      "meaning": "An object whose disposal removes a specific registration or otherwise ends its ownership."
+    },
+    {
+      "term": "Idempotent disposal",
+      "meaning": "Cleanup that can be called more than once without repeating the underlying release operation."
+    },
+    {
+      "term": "Reachability",
+      "meaning": "Whether an object remains accessible through a chain of references, which can include event delegates and closures."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "An event publisher retains its subscribers through delegates. A handler may retain a view, a view model, or captured locals even after that view is no longer displayed. The important question is who owns the publisher and subscription, not whether the handler was written as a method or a lambda. Make the reference direction explicit before diagnosing a leak.",
+      "worked": "The publisher in the lab owns a handler that closes over output and received. Publishing a tick calls that handler and changes the label. A process-wide publisher would extend that reachability unless the registration is removed. This local fixture isolates the same mechanism without creating a global leak in the learning runtime.",
+      "question": "Does hiding a control unsubscribe it from an unrelated publisher?",
+      "answer": "No. Visibility and event registration are different contracts. A long-lived publisher can retain a hidden or detached object until its registration is removed."
+    },
+    {
+      "explain": "A Subscribe method can return an IDisposable token that knows precisely which delegate to remove. This moves cleanup knowledge next to attachment and gives the consumer one resource to own. The token should avoid unnecessary captured state and should document whether disposal can race with an already-dispatched callback.",
+      "worked": "The lab creates a token containing the release action for the exact handler. Press Publish tick and then Dispose subscription. A later publication must not increment the displayed count. That behavior is stronger evidence of detachment than merely nulling the local variable that once held the token.",
+      "question": "Does setting a subscription variable to null remove the event handler?",
+      "answer": "No. It only drops that variable’s reference. The publisher still retains the handler unless the release operation actually removes it."
+    },
+    {
+      "explain": "Interlocked.Exchange swaps the release action to null and returns the previous action. Only the first Dispose call invokes it. This makes a button-triggered cleanup and a later lifecycle cleanup safe to combine. Idempotence prevents double release; it does not automatically make every callback or the publisher’s implementation thread-safe.",
+      "worked": "Click Dispose subscription twice, then navigate away. All paths can attempt cleanup without invoking the release action again. In a more advanced variation, model a callback that was already queued before disposal and decide whether an activation generation should reject that late callback.",
+      "question": "What does idempotent disposal not guarantee?",
+      "answer": "It does not retract callbacks already in progress or make unrelated mutable state thread-safe. Those require explicit concurrency and acceptance rules."
+    },
+    {
+      "explain": "A view may own visual-event adapters while a view model owns service subscriptions. Dispose at the end of that owner’s actual lifetime, not at whichever event is easiest to find. Cached views can reactivate, so attachment and detachment may be paired repeatedly. Use deterministic tests to count active registrations rather than relying only on memory snapshots.",
+      "worked": "Extract the token into an application service and test that activation creates one registration, repeated activation does not duplicate it, deactivation removes it, and a later activation works again. Add exception-safe cleanup when several resources are acquired so a failure midway does not leak earlier acquisitions.",
+      "question": "What is a useful automated lifecycle assertion?",
+      "answer": "Count active registrations and observed callbacks across activate, deactivate, and reactivate sequences. A bounded count exposes duplicate subscriptions and missing cleanup directly."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Dispose twice",
+      "expected": "Only the first call removes the registration.",
+      "why": "The release action is atomically exchanged with null."
+    },
+    {
+      "change": "Publish after disposal",
+      "expected": "The counter no longer advances.",
+      "why": "The specific delegate was removed from the publisher."
+    }
+  ],
+  "bridge": "Apply owned subscriptions to navigation activation, service notifications, and reusable controls. Build a composite owner for several tokens, dispose it on the intended lifetime boundary, and test reactivation. Do not equate weak references with a complete delivery or lifecycle policy.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/events/how-to-subscribe-to-and-unsubscribe-from-events",
+      "title": "Subscribing and unsubscribing from events",
+      "kind": "External primary reference"
+    }
+  ]
+}

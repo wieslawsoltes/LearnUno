@@ -1,0 +1,64 @@
+{
+  "id": "captive-dependencies",
+  "scenario": "A workspace coordinator survives for the whole app, but one of its constructor dependencies belongs to a single document. The graph compiles and may appear to work with one document, then leaks state across documents or retains disposed resources. Reproduce that lifetime mismatch with the actual DI container and repair the ownership rather than turning off the warning.",
+  "vocabulary": [
+    {
+      "term": "Captive dependency",
+      "meaning": "A shorter-lived dependency retained by a longer-lived consumer, effectively extending or violating its intended lifetime."
+    },
+    {
+      "term": "Scope validation",
+      "meaning": "Container checks that reject supported invalid scoped-service resolutions and lifetime captures."
+    },
+    {
+      "term": "Negative test",
+      "meaning": "A test that deliberately supplies an invalid configuration and verifies an expected rejection."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Think of constructor references as ownership edges that can keep a dependency reachable as long as its consumer. A singleton consumer is shared across the provider lifetime. A scoped document session is supposed to vary with each document scope. Capturing one session in the singleton constructor cannot express that changing relationship correctly.",
+      "worked": "The starter registers DocumentSession as scoped and WorkspaceConsumer as singleton. Its constructor graph contains the incompatible edge. The lesson catches the expected validation failure and presents it as the observable result, so the experiment succeeds by detecting the bad configuration rather than crashing the playground.",
+      "question": "Why can the problem stay hidden when testing only one document?",
+      "answer": "There may be no visible conflict until a second scope needs independent state or the first closes. Lifetime defects often require multiple owners or repeated activation to become observable."
+    },
+    {
+      "explain": "Enable ValidateOnBuild and ValidateScopes in the composition test. The provider can inspect supported registration graphs and report the captive relationship early. Keep the expected rejection in a negative test with a specific reason. Do not turn all startup errors into success or catch unrelated failures without reporting them.",
+      "worked": "Read the rejection message, then change only the consumer registration to AddScoped. The graph becomes accepted because consumer and dependency share the document boundary. The class constructor remains unchanged: the fix is the lifetime policy used to compose the feature.",
+      "question": "Does a caught validation error mean the invalid application graph is safe to use?",
+      "answer": "No. The teaching lab reports the failure instead of using the graph. A production host should fail or choose an explicitly supported recovery path rather than continue with invalid ownership."
+    },
+    {
+      "explain": "Making the consumer scoped is appropriate when its behavior belongs to a document. A genuinely application-wide coordinator may instead invoke a scoped operation through a factory or scope-owning service boundary. It must not store the returned scoped service after that operation closes. Injecting IServiceProvider everywhere merely hides the edge from a readable constructor contract.",
+      "worked": "Compare two designs: a document-scoped WorkspaceConsumer versus a singleton coordinator that creates a scope for one independent background operation. The latter must return durable data, not a live session tied to the disposed scope. Explain which design matches the user workflow before implementing either.",
+      "question": "Why is resolving a scoped service later through a root provider not an automatic fix?",
+      "answer": "The required owner lifetime is still missing. Service location changes where resolution occurs, not which component must own and dispose the scope."
+    },
+    {
+      "explain": "A corrected graph needs behavior tests for concurrent documents and repeated open/close cycles. Verify that one document’s state does not appear in another and that closing one scope does not invalidate an active feature. ValidateScopes is an important guardrail, but it does not detect every manually captured reference, static cache, or callback lifetime bug.",
+      "worked": "Add a test that resolves two document consumers in separate scopes and asserts different session identities. Dispose the first scope, then execute an operation in the second. Finally dispose the root owner and assert all expected cleanup occurred without treating immediate garbage collection as the criterion.",
+      "question": "Can scope validation detect every lifetime problem in application code?",
+      "answer": "No. Manual references, event subscriptions, factories, and static state can create ownership mistakes outside the container’s analyzable graph. Use lifecycle tests alongside validation."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Run the incompatible starter",
+      "expected": "The lab reports an intentional graph rejection.",
+      "why": "The singleton constructor captures a scoped service."
+    },
+    {
+      "change": "Change only the consumer to AddScoped",
+      "expected": "The graph validates and resolves inside a scope.",
+      "why": "The consumer now has the same session boundary as its dependency."
+    }
+  ],
+  "bridge": "Audit a real Uno feature’s registrations by drawing lifetime edges. Add a negative test for a deliberately captive service, then test two independent feature scopes. Use container diagnostics as evidence about the graph, not as a substitute for subscription and resource-lifecycle tests.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

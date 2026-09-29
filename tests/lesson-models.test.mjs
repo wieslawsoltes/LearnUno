@@ -10,8 +10,8 @@ import {renderLessonDepth} from '../site/src/learning/views.mjs';
 const model=id=>lessonLabs.find(l=>l.lesson===id);
 const run=(id,settings={})=>{const l=model(id);return l.run({...l.defaults,...settings});};
 test('every lesson has its own model identity with no generic fallback',()=>{
- assert.equal(labs.length,60);assert.equal(lessonLabs.length,49);
- const ids=lessons.map(labForLesson);assert.equal(new Set(ids).size,60);
+ assert.equal(labs.length,90);assert.equal(lessonLabs.length,79);
+ const ids=lessons.map(labForLesson);assert.equal(new Set(ids).size,90);
  for(const l of lessons)assert.equal(labMap.get(labForLesson(l)).lesson,l.id);
  assert.throws(()=>labForLesson({id:'missing-authoring'}),/no authored/);
 });
@@ -24,7 +24,7 @@ for(const lab of lessonLabs)test('lesson-specific model: '+lab.lesson,()=>{
  for(const c of lab.controls){const alternatives=c.type==='range'?[c.min,c.max]:c.type==='toggle'?[!c.value]:c.type==='select'?c.options:['</text><script>injection()</script>'];for(const value of alternatives){const settings=normalizeSettings(lab,{...defaults,[c.key]:value});const out=scene(lab,settings);assert(!/NaN|undefined|Infinity/.test(out.svg),lab.id+' '+c.key);assert(!/<script[\s>]/i.test(out.svg));if(JSON.stringify(out.data)!==JSON.stringify(base.data))affected=true;}}
  assert(affected,'At least one authored input must change actual model data, not just the caption.');
 });
-test('all sixty deep dives have concrete lesson-specific content',()=>{
+test('all ninety deep dives have concrete lesson-specific content',()=>{
  for(const lesson of lessons){const html=renderLessonDepth(lesson);assert(html.includes(labMap.get(labForLesson(lesson)).challenge.replaceAll('&','&amp;').replaceAll('>','&gt;').replaceAll('<','&lt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')));assert(html.includes('#/lesson/'+lesson.id+'/visualize'));}
 });
 test('fundamentals chapters have distinct substance, code and primary references',()=>{

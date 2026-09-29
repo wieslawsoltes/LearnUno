@@ -1,0 +1,64 @@
+{
+  "id": "autosuggest-search",
+  "scenario": "A control search should suggest likely matches while keeping submitted intent separate from intermediate typing. AutoSuggestBox provides distinct events for text changes, suggestion choice, and submission. Learn to respect those boundaries before connecting the UI to an asynchronous remote search where duplicate requests and stale results become costly.",
+  "vocabulary": [
+    {
+      "term": "Suggestion set",
+      "meaning": "A bounded list of possible completions derived from the current input, not an already committed choice."
+    },
+    {
+      "term": "Change reason",
+      "meaning": "The event metadata distinguishing user input from selection-driven or programmatic text updates."
+    },
+    {
+      "term": "Submitted query",
+      "meaning": "The final search intent accepted through keyboard or a chosen suggestion."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Typing changes the candidate list; submitting performs the task. Showing a suggestion does not mean the user selected it, and selecting an item can update text without representing another independent keystroke. Use separate state for the current phrase, available suggestions, and accepted query so a UI event cannot accidentally start the wrong operation.",
+      "worked": "Type Grid and observe matching control names. The output remains Nothing submitted until submission. Then press Enter or choose a suggestion and inspect the accepted value. The source is a local array, so the experiment isolates event meaning without network latency or service availability.",
+      "question": "Should a displayed suggestion immediately become the saved choice?",
+      "answer": "No. Suggestions are possibilities. The application should wait for a deliberate selection or submission before committing intent."
+    },
+    {
+      "explain": "AutoSuggestBox reports why Text changed. Restrict the local filtering handler to UserInput so a selection-driven text assignment does not recursively behave like a new typed query. A programmatic refresh may need its own explicit path. Keep the matching policy predictable, including culture, case sensitivity, maximum results, and empty input behavior.",
+      "worked": "The fixture uses OrdinalIgnoreCase and Take to bound its candidate list. Select a suggestion after typing a prefix and verify that submission uses the chosen suggestion. Change the cap to six and compare the available candidates; the limit is a presentation decision, not a guarantee about remote search completeness.",
+      "question": "Does a higher suggestion limit change which query was submitted?",
+      "answer": "Not by itself. It changes the candidate presentation; the accepted query still comes from a chosen suggestion or explicit text submission."
+    },
+    {
+      "explain": "QuerySubmitted can contain a chosen suggestion or plain query text. Prefer the typed domain item when one was chosen, and otherwise validate the textual query. For object suggestions, keep stable IDs and a display property rather than interpreting the label as identity. Do not rely on a stale local variable captured before the user finalized the input.",
+      "worked": "Submit a phrase that has no matching suggestion. The event still carries QueryText, and the caller can decide whether free-text search is allowed. Contrast this with a required entity picker, where an unmatched phrase must not be treated as a valid entity key. The same control can support different application contracts.",
+      "question": "Can free text and selected entities use the same validation rule?",
+      "answer": "Not necessarily. A free-text search accepts a phrase, while an entity picker usually requires a valid selected identity. Define the contract before handling submission."
+    },
+    {
+      "explain": "When suggestions come from I/O, debounce input, cancel obsolete work, and reject stale generations before replacing ItemsSource. A change-reason guard prevents one kind of loop; it does not solve out-of-order responses. Keep focus and keyboard navigation usable while loading and announce meaningful empty or error states without clearing the user’s draft.",
+      "worked": "Connect the debounce lesson to a deterministic service whose first request finishes last. Type two phrases and verify that only the newer request updates suggestions. Then simulate a failure and keep the phrase visible so the user can retry or submit an alternative. Do not put long synchronous filtering work on the UI thread for a large corpus.",
+      "question": "What separate bug remains after checking UserInput?",
+      "answer": "Older asynchronous results can still overwrite newer ones. Request generation and cancellation policies are needed in addition to the event-reason guard."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Choose a suggestion",
+      "expected": "The accepted value is taken from ChosenSuggestion.",
+      "why": "Selection is a distinct event outcome from intermediate typing."
+    },
+    {
+      "change": "Submit unmatched free text",
+      "expected": "The caller receives QueryText and must validate its intended meaning.",
+      "why": "Not every accepted search phrase is an existing entity identifier."
+    }
+  ],
+  "bridge": "Create an entity picker backed by an injected search service. Keep stable IDs, expose loading/empty/error states, limit suggestions, and test stale completions and keyboard submission. Compare the upstream AutoSuggestBox event sample with your async acceptance policy rather than assuming a local filter demonstrates remote correctness.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/controls/auto-suggest-box",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

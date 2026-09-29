@@ -53,5 +53,15 @@
       "why": "The arithmetic expectation is independent of the UI’s successful construction."
     }
   ],
-  "bridge": "The Uno repro and troubleshooting guides supply an issue-reporting workflow. The selected sample/test illustrates a concrete assertion or handler boundary. Read its setup and expected outcome before treating it as a recipe for your own failure."
+  "bridge": "The Uno repro and troubleshooting guides supply an issue-reporting workflow. The selected sample/test illustrates a concrete assertion or handler boundary. Read its setup and expected outcome before treating it as a recipe for your own failure.",
+  "continueWith": [
+    {
+      "id": "input-contracts",
+      "title": "Turn text input into a validated value"
+    },
+    {
+      "id": "textbox-editing",
+      "title": "Build a text field that preserves the user’s intent"
+    }
+  ]
 }

@@ -1,0 +1,53 @@
+{
+  "version": "0.4.0",
+  "baseCommit": "f7e50a30a9c4bd0c18ca3dcf826c3ec497142380",
+  "newLessons": [
+    "input-contracts",
+    "record-identity",
+    "linq-projections",
+    "task-failure",
+    "debounced-input",
+    "subscription-lifetimes",
+    "textbox-editing",
+    "combobox-keys",
+    "listview-selection",
+    "navigationview-shell",
+    "dialog-decisions",
+    "autosuggest-search",
+    "toolkit-observable",
+    "toolkit-commands",
+    "toolkit-async-command",
+    "toolkit-validation",
+    "toolkit-messaging",
+    "mvvm-drafts",
+    "frame-parameters",
+    "frame-history",
+    "route-registry",
+    "deep-link-contracts",
+    "navigation-guards",
+    "navigation-results",
+    "composition-root",
+    "scope-ownership",
+    "captive-dependencies",
+    "service-factories",
+    "service-decorators",
+    "options-validation"
+  ],
+  "tracks": [
+    "csharp-apps",
+    "everyday-controls",
+    "mvvm-patterns",
+    "navigation-patterns",
+    "app-composition"
+  ],
+  "originalLessons": 60,
+  "lessons": 90,
+  "steps": 360,
+  "documentExcerpts": 191,
+  "codeExcerpts": 117,
+  "runtimePackages": {
+    "CommunityToolkit.Mvvm": "8.4.2",
+    "Microsoft.Extensions.DependencyInjection": "10.0.12",
+    "Microsoft.Extensions.Options": "10.0.12"
+  }
+}

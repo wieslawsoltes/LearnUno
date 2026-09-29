@@ -1,0 +1,69 @@
+{
+  "id": "composition-root",
+  "scenario": "A workspace screen needs a display name today and may need a repository tomorrow. Constructing every collaborator inside the view model hides those choices and makes tests harder. Use the actual Microsoft dependency-injection container to assemble the graph in one place, then keep the model unaware of the container that built it.",
+  "vocabulary": [
+    {
+      "term": "Composition root",
+      "meaning": "The application boundary that registers implementations, chooses lifetimes, and assembles object graphs."
+    },
+    {
+      "term": "Constructor injection",
+      "meaning": "Expressing required collaborators as constructor parameters rather than looking them up during ordinary behavior."
+    },
+    {
+      "term": "Service descriptor",
+      "meaning": "A registration describing a service type, its implementation or factory, and its lifetime policy."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "An interface is useful when it names a replaceable capability rather than merely copying every member of a concrete class. WorkspaceModel needs a workspace name; it does not need to know how configuration was read or where a settings screen stores the value. Constructor injection makes that requirement visible to the compiler and to tests.",
+      "worked": "Create WorkspaceModel directly with a WorkspaceName fixture in a unit test. No container, Window, or application singleton is needed to verify Heading. The same constructor is used by the container in the running lab, so testability comes from the dependency design rather than from using a particular service-provider API.",
+      "question": "Must a unit test build the DI container to test this model?",
+      "answer": "No. The model can be constructed directly with a deterministic collaborator. Container tests should separately verify registration and lifetime wiring."
+    },
+    {
+      "explain": "ServiceCollection records construction policies; it does not immediately instantiate every registered type. Register a shared immutable name as a singleton and WorkspaceModel as transient. Build one provider for the intended application or test boundary. Creating providers inside each feature can duplicate singletons and split ownership into unrelated graphs.",
+      "worked": "Change the registered name to Project desk, then run without editing WorkspaceModel. The output changes because a different dependency value was supplied. Resolve the model twice in a project test and compare identities: model instances differ while the singleton name service is shared within that provider.",
+      "question": "Why is repeatedly calling BuildServiceProvider during registration problematic?",
+      "answer": "It creates separate ownership graphs with potentially duplicated singleton instances and disposal responsibilities, rather than extending the intended application provider."
+    },
+    {
+      "explain": "ValidateOnBuild and ValidateScopes help expose invalid construction or lifetime relationships. They do not prove that an HTTP endpoint is reachable, a factory returns correct data, or every runtime argument is valid. Factory bodies may defer work until resolution, and some open generic registrations cannot be fully constructed during validation. Treat validation as one layer of evidence.",
+      "worked": "Remove the IWorkspaceName registration in a full-project variation and confirm that the required model cannot be constructed. Keep the failure near startup with a useful diagnostic. Then restore the registration and test the model behavior independently; a valid graph can still contain a business-rule bug.",
+      "question": "Does provider validation prove that all registered services perform their work correctly?",
+      "answer": "No. It checks supported aspects of construction and lifetime wiring. Behavioral, configuration, network, and target-platform tests remain separate."
+    },
+    {
+      "explain": "The lab resolves a short-lived graph, calculates a string, and disposes the provider before returning a TextBlock that contains only that string. A real application host must keep its provider alive while features use its services and dispose it when the application boundary ends. Do not return a view model that still needs an already disposed provider-owned resource.",
+      "worked": "Extend the model with a disposable repository in a project. Give the application host responsibility for provider disposal and define shorter feature scopes where appropriate. Document whether externally created singleton instances or container-created instances are owned by the container instead of relying on accidental cleanup.",
+      "question": "Why is disposing the provider before returning this particular TextBlock acceptable?",
+      "answer": "The view contains a completed string value and does not retain a service-dependent model. A live bound feature with ongoing services needs a correspondingly longer owner lifetime."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Replace the registered workspace value",
+      "expected": "The same model class produces a different heading.",
+      "why": "Construction choices are outside model behavior."
+    },
+    {
+      "change": "Remove a required registration",
+      "expected": "Provider validation or resolution rejects the incomplete graph.",
+      "why": "Constructor requirements are explicit and cannot be satisfied by a missing service."
+    }
+  ],
+  "bridge": "In an Uno application, place registrations in the host/composition setup and inject a repository into a view model. Keep IServiceProvider out of ordinary feature methods. Test direct construction separately from registration validation, then document ownership of application-wide services and shorter editing sessions.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    },
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/DependencyInjection/Overview.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

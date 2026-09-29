@@ -4,12 +4,12 @@ import {lessons} from '../../site/src/course.mjs';
 import {labMap, labForLesson} from '../../site/src/atlas/catalog.mjs';
 const sha = value => createHash('sha256').update(value).digest('hex');
 
-test('guided chapters publish sixty complete source-connected lessons', async ({page}) => {
+test('guided chapters publish ninety complete source-connected lessons', async ({page}) => {
   const indexResponse = await page.request.get('./study/index.json');
   expect(indexResponse.ok()).toBe(true);
   const index = await indexResponse.json();
-  expect(index.lessons).toHaveLength(60);expect(index.steps).toBe(240);
-  expect(index.authoredWords).toBeGreaterThan(42000);expect(index.documentExcerpts).toBe(131);expect(index.codeExcerpts).toBe(86);
+  expect(index.lessons).toHaveLength(90);expect(index.steps).toBe(360);
+  expect(index.authoredWords).toBeGreaterThan(42000);expect(index.documentExcerpts).toBe(191);expect(index.codeExcerpts).toBe(117);
   for (const lesson of lessons) {
     const response = await page.request.get(`./study/${lesson.id}.json`);
     expect(response.ok(), lesson.id).toBe(true);

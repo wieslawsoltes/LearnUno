@@ -1,0 +1,64 @@
+{
+  "id": "listview-selection",
+  "scenario": "A task list needs both single-item details and future batch actions. Begin by making selected IDs visible, then decide whether clicking selects, invokes, or both. Keep selection independent of current row positions so filtering and sorting cannot make a delete or edit operation target the wrong task.",
+  "vocabulary": [
+    {
+      "term": "Selection mode",
+      "meaning": "The control policy for zero, one, or multiple selected items and associated gestures."
+    },
+    {
+      "term": "Invocation",
+      "meaning": "An action performed on an item, such as opening it, which need not be equivalent to selecting it."
+    },
+    {
+      "term": "Selection reconciliation",
+      "meaning": "The process of preserving or clearing selected identities after the item source changes."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "ListView supports different selection policies and optional item-click behavior. A multi-select list often represents a pending batch operation; a browse list may use single selection for a details pane. Do not attach destructive work directly to SelectionChanged without understanding that keyboard navigation and programmatic changes can also alter selection.",
+      "worked": "Select Draft and Review in the multiple-selection fixture. The output exposes their IDs, not a list of visual controls. Clear selection through the button and observe the same event path. This shows that selection is state that can be changed by several inputs, not only by clicking a particular row.",
+      "question": "Can SelectionChanged fire without a pointer click?",
+      "answer": "Yes. Keyboard interaction and programmatic changes can alter selection. Business operations should not assume the event proves a deliberate destructive action."
+    },
+    {
+      "explain": "SelectedItems contains selected data objects when ItemsSource is data-based. Convert them into stable keys before invoking a batch service and capture that set at the moment the action starts. Do not keep enumerating a changing selection while an asynchronous delete is in progress, or the operation may act on a different set than the user confirmed.",
+      "worked": "The example maps Row objects to Id values. Extend it with a Preview batch button that captures the IDs into an array. Change selection afterward and verify that the pending preview still refers to the original captured request until the user explicitly refreshes or confirms it.",
+      "question": "Why snapshot the selected keys before an async action?",
+      "answer": "The action needs a stable intent. The live selection can change during awaits, so rereading it later can apply the operation to different items."
+    },
+    {
+      "explain": "Filtering, replacing, or reordering ItemsSource can change visible membership and container identity. Keep domain IDs as the durable selection reference and reconcile them against the new source. Decide what happens when selected data becomes hidden or deleted; neither preserving every stale selection nor silently selecting another row is universally correct.",
+      "worked": "Sort the three tasks by title in a full-project variation and keep the selected ID set unchanged. Then remove one selected task. The selected key should be removed or represented as unavailable according to your batch policy, not redirected to the task that moved into its old index.",
+      "question": "What does a selected row index fail to identify after deletion?",
+      "answer": "The original entity. Indices shift, so a stored position can now refer to a different task. Reconcile by stable identity."
+    },
+    {
+      "explain": "Test no selection, one selection, several selections, source replacement, and keyboard gestures. Expose a summary before a batch operation and disable the action when no valid keys remain. A rendered ListView does not prove your selection-to-service mapping is correct; include a deterministic test for the exact IDs passed to the operation.",
+      "worked": "Change the exercise to Single and verify that selecting Review replaces the previous selection. Check that the label and action availability agree. Then return to Multiple and confirm that Clear selection leaves no active batch intent, even if a details pane still displays a previously loaded record.",
+      "question": "What should a batch action validate just before execution?",
+      "answer": "That its captured keys are still valid and authorized for the operation. Selection is user intent, not proof of server-side permission or current existence."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Switch to Single",
+      "expected": "Only one row remains selected at a time.",
+      "why": "The control changes its selection contract, not the underlying task IDs."
+    },
+    {
+      "change": "Clear selection",
+      "expected": "The selected key set becomes empty.",
+      "why": "A batch action must not reuse a stale set from an unrelated earlier selection."
+    }
+  ],
+  "bridge": "Connect ListView selection to a details view model and a separate batch-command model. Preserve keys across sorting, reconcile removed items, and test keyboard behavior. Keep item invocation and batch confirmation as explicit actions rather than overloading SelectionChanged.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/controls/listview-and-gridview",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

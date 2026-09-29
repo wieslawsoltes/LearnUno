@@ -1,0 +1,64 @@
+{
+  "id": "frame-parameters",
+  "scenario": "A task list opens details for one item. The destination should receive a stable description of the task, not a reference to the selected ListView container. Use a typed parameter, validate it at the destination, and distinguish page construction from navigation activation before adding asynchronous loading or state restoration.",
+  "vocabulary": [
+    {
+      "term": "Navigation parameter",
+      "meaning": "Data attached to a navigation request and delivered to the destination lifecycle."
+    },
+    {
+      "term": "Destination descriptor",
+      "meaning": "A compact value identifying the requested screen and entity, suitable for validation and later serialization."
+    },
+    {
+      "term": "Navigation activation",
+      "meaning": "The event in which a destination receives navigation context, distinct from constructing its object graph."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A stable task ID is sufficient to request details in this lesson. Passing a ListViewItem or a whole live view model creates ownership and restoration problems: the destination becomes coupled to the previous view’s object graph. Prefer a typed descriptor that expresses intent and can be checked before data is loaded.",
+      "worked": "The button sends TaskTarget(42) with the destination Page type. The page can display the ID without understanding the originating button. Replace the selection UI later and the destination contract remains intact. This is actual Frame navigation, not a label-only simulation of page construction.",
+      "question": "Why avoid passing a visual container as a parameter?",
+      "answer": "It ties navigation to transient presentation objects, complicates lifetime and serialization, and can retain the previous view unnecessarily."
+    },
+    {
+      "explain": "A Page constructor creates its local visual structure. OnNavigatedTo receives the parameter for the transition and is the appropriate place to interpret navigation context. A cached Page can receive new parameters without matching your assumption about constructor frequency, so do not capture destination state only in construction code.",
+      "worked": "Navigate first to 42, then change the exercise to 84 and run again. The destination reads the parameter through NavigationEventArgs rather than a global static field. A project test can navigate the same page type with different descriptors and verify that the new context is applied.",
+      "question": "Why is constructor-only parameter logic fragile with caching?",
+      "answer": "The instance may be reused while navigation context changes. Activation must interpret the current request instead of assuming construction happens for every visit."
+    },
+    {
+      "explain": "The parameter is an input boundary. Check its type, required fields, and domain constraints, then request data through an injected service. A well-typed ID still does not prove that the entity exists or that the user may access it. Represent missing, unauthorized, loading, and failed outcomes explicitly in the destination state.",
+      "worked": "The sample handles a missing or wrong parameter with a message rather than an invalid cast. Extend TaskTarget with a positive-ID check and a deterministic repository lookup. Keep not-found distinct from a programming error so a stale deep link produces useful feedback instead of crashing the application.",
+      "question": "Does receiving a valid TaskTarget prove the task is accessible?",
+      "answer": "No. It validates the request shape only. Existence, authorization, and current data must still be resolved at the appropriate service boundary."
+    },
+    {
+      "explain": "A destination that loads asynchronously needs cancellation and stale-result protection when another navigation replaces its context. Avoid async void for reusable loading methods. Track activation identity and cancel page-owned work when leaving or receiving a superseding request according to your caching policy. History entries and live page instances remain different concepts.",
+      "worked": "Add a slow repository for task 42 and a fast one for task 84. Navigate quickly between them and require the displayed title to match the newest accepted target. A typed parameter prevents ambiguous addressing; it does not by itself prevent out-of-order loading results.",
+      "question": "What additional contract is needed after typed navigation is correct?",
+      "answer": "The destination must own asynchronous loading and decide which activation’s result may update its state. Cancellation and generation checks solve that separate lifecycle problem."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Pass TaskTarget(84)",
+      "expected": "The destination displays task 84.",
+      "why": "The current request, not a global value, supplies the identity."
+    },
+    {
+      "change": "Navigate without a matching parameter",
+      "expected": "The page shows its explicit missing-parameter state.",
+      "why": "The destination validates the incoming contract before using it."
+    }
+  ],
+  "bridge": "Create a typed task-details route and a repository-backed view model. Test valid, missing, stale, and unauthorized IDs, then test rapid navigation between targets. Keep the parameter compact and the destination’s asynchronous work owned by its activation.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/basics/navigate-between-two-pages",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

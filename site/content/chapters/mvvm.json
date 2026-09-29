@@ -53,5 +53,11 @@
       "why": "A getter alone does not tell the view when to read again."
     }
   ],
-  "bridge": "The official counter tutorial supplies a complete observable-property and command pattern. The course’s Basket example isolates domain projection first; do not confuse its direct UI wiring with the final full MVVM architecture."
+  "bridge": "The official counter tutorial supplies a complete observable-property and command pattern. The course’s Basket example isolates domain projection first; do not confuse its direct UI wiring with the final full MVVM architecture.",
+  "continueWith": [
+    {
+      "id": "mvvm-drafts",
+      "title": "Design Save and Cancel around a real draft"
+    }
+  ]
 }

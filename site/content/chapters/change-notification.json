@@ -53,5 +53,11 @@
       "why": "The button changes the observable source rather than manually updating the label."
     }
   ],
-  "bridge": "The official counter tutorial demonstrates generated observable properties; the runner shows the underlying interface explicitly. Compare assignment, equality and event emission in both forms. Toolkit attributes require their generator-enabled project and should not be pasted into the runtime compiler as if generation happened automatically."
+  "bridge": "The official counter tutorial demonstrates generated observable properties; the runner shows the underlying interface explicitly. Compare assignment, equality and event emission in both forms. Toolkit attributes require their generator-enabled project and should not be pasted into the runtime compiler as if generation happened automatically.",
+  "continueWith": [
+    {
+      "id": "toolkit-observable",
+      "title": "Use ObservableObject without hiding the notification contract"
+    }
+  ]
 }

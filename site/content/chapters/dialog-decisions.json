@@ -1,0 +1,69 @@
+{
+  "id": "dialog-decisions",
+  "scenario": "A delete operation needs a clear decision, not an ambiguous popup whose dismissal accidentally commits the action. Show a ContentDialog from a loaded Uno view, await its result, and leave the draft intact unless the primary action is accepted. The lab records decisions only; it deliberately deletes no files or persisted data.",
+  "vocabulary": [
+    {
+      "term": "Modal decision",
+      "meaning": "An interaction that asks the user to resolve a focused choice before proceeding with that workflow."
+    },
+    {
+      "term": "XamlRoot",
+      "meaning": "The root context used to associate a dialog with the appropriate XAML tree and host."
+    },
+    {
+      "term": "Dismissal",
+      "meaning": "Closing a dialog without accepting its primary action; it must not be interpreted as success by default."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A dialog title should describe the decision, and button labels should identify actions rather than force the user to decode Yes and No. Use a dialog for a meaningful interruption, not every minor interaction. The safe dismissal path should preserve existing data. Keep the actual operation outside the display-construction code until the result is known.",
+      "worked": "The fixture asks Delete this draft? and exposes Delete plus Keep draft. Its body explains that the lesson records a decision only. This makes the effect testable without destructive side effects. Try closing through the safe action and compare it with explicitly accepting the primary action.",
+      "question": "Why prefer action labels to Yes and No?",
+      "answer": "The action remains clear even when the title is long or the user scans only the buttons. Explicit labels reduce interpretation mistakes for consequential decisions."
+    },
+    {
+      "explain": "Create and show the dialog after the initiating view is attached, and supply the correct XamlRoot when the hosting API requires it. Multi-window or embedded scenarios cannot assume one global root is always appropriate. Avoid showing several dialogs concurrently in the same context; serialize the decision workflow and keep the initiating action disabled while it is active.",
+      "worked": "The click handler reads root.XamlRoot after the view is loaded and disables the launch button. The constructor alone does not show anything. In a project with more than one window, initiate the dialog from the owning view and verify that focus and modality apply to the expected window.",
+      "question": "Why not capture a global root once for every dialog?",
+      "answer": "The correct host can differ between windows or embedded trees, and a root may not exist before attachment. Dialog ownership should follow the initiating UI context."
+    },
+    {
+      "explain": "ShowAsync completes with a result describing the accepted action or dismissal. Branch explicitly on Primary before committing destructive work. A closed dialog is not necessarily an accepted dialog. Errors and cancellation should restore action availability while preserving the draft and enough context to explain what happened.",
+      "worked": "Accept Delete and inspect Accepted delete decision. Reopen and choose Keep draft; the output changes to Draft kept. The common finally block reenables the launch button in both cases. Replace the fixture with a repository call only after testing the result-to-command mapping.",
+      "question": "Is successful completion of ShowAsync equivalent to accepting Delete?",
+      "answer": "No. Completion includes dismissal and other button outcomes. The result must be inspected before deciding which application action is authorized by the user’s choice."
+    },
+    {
+      "explain": "A modal flow must support keyboard navigation, visible focus, accessible text, safe dismissal, and returning focus to a sensible control. Reopen the dialog after each outcome to test cleanup and availability. For asynchronous validation inside a button handler, use the documented deferral/cancel mechanism rather than allowing the dialog to close before validation finishes.",
+      "worked": "Use Tab and Enter to complete each path, then reopen the dialog. Add a delayed validation case in a full project and verify that errors remain visible without losing the draft. Do not infer native screen-reader behavior from a browser screenshot; inspect the actual platform’s automation behavior.",
+      "question": "Why test the second opening as well as the first?",
+      "answer": "It exposes lifecycle bugs such as a permanently disabled launcher, retained dialog state, or incorrect host/focus restoration after the initial decision."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Dismiss with the safe action",
+      "expected": "Draft kept is reported.",
+      "why": "Dismissal is distinct from the primary decision."
+    },
+    {
+      "change": "Accept the primary action",
+      "expected": "The example records an accepted delete decision.",
+      "why": "The caller explicitly checks ContentDialogResult.Primary."
+    }
+  ],
+  "bridge": "Add a dialog service boundary that returns a typed decision to a view model while the view adapter owns XamlRoot and focus. Test accept, dismiss, host failure, and repeated opening. Keep the real mutation after acceptance and handle repository failure without pretending that the dialog itself performed a successful save or delete.",
+  "references": [
+    {
+      "url": "https://platform.uno/docs/articles/controls/ContentDialog.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/controls/dialogs-and-flyouts/dialogs",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

@@ -7,11 +7,21 @@
 
 ## Learn the mechanism, not just the name
 
-**60 guided lessons · 240 expanded explanation steps · 60 lesson-specific visual experiments · 12 fundamentals chapters · 120 runnable starter/solution variants**
+**90 guided lessons · 360 expanded explanation steps · 90 lesson-specific visual experiments · 12 fundamentals chapters · 180 authored starter/solution variants**
 
 Predict a result, change an assumption, inspect the outcome, and test it in a **real Uno WebAssembly application**. The two capstones apply those ideas to an application and a framework-quality contribution. LearnUno is independent of Uno Platform and Microsoft; it is not an official course or certification.
 
-## New in 0.3: source-connected reading
+## App-building edition (0.4 candidate)
+
+Thirty new lessons add five paths: **C# for app builders**, **Everyday Uno controls**, **MVVM patterns in practice**, **Navigation and user flows**, and **DI and service composition**. A task-oriented `#/app-building` roadmap connects the lessons into dependable forms, searchable workspaces, guarded document flows and testable service graphs. Prerequisites are explicit recommendations, not locks.
+
+The MVVM examples use actual CommunityToolkit.Mvvm classes, and the composition examples use Microsoft.Extensions.DependencyInjection and Options. The runner project now references **CommunityToolkit.Mvvm 8.4.2**, **Microsoft.Extensions.DependencyInjection 10.0.12** and **Microsoft.Extensions.Options 10.0.12**. Individual project exports include the same declared dependencies. Generator alternatives remain project-only; the runtime examples use explicit properties and commands.
+
+All thirty lessons have substantial source-connected chapters, four guided steps, two practice variations, a knowledge check and a distinct calculated visual model. The complete chapter build contains **65,258 authored words**, **191 documentation-passage placements**, and **117 code-excerpt placements**. These counts describe placements and authored-text fields, not unique files or evidence that word count alone proves teaching quality. Original lesson IDs, code, solutions and progress semantics are preserved.
+
+**Validation status:** the local source/model suite and strict source build pass; isolated component checks pass. The added .NET dependencies and C# examples still require package restore, compiler and real Uno/WebAssembly execution in the full CI environment. This source candidate has not been pushed or deployed by the authoring session. See [the app-building implementation and verification guide](docs/app-building-edition.md).
+
+## Introduced in 0.3: source-connected reading
 
 Every lesson now has a substantial guided chapter: a practical problem, vocabulary, four detailed steps with worked reasoning and recall questions, a phase-selectable inline infographic, the original runnable code, pinned Uno evidence, controlled practice variations and transfer work. An on-page outline keeps the longer material navigable. The atlas's optional reading companion follows its current step and links back to that position in the chapter.
 
@@ -33,12 +43,17 @@ Chapters load independently, so the entire text corpus does not enter the initia
 | Every platform, deliberately | Advanced | Target evidence, renderers, interop, ownership, assets, lifecycle |
 | Quality & production | Advanced | Unit/UI/visual tests, resilience, delivery gates, task-workspace capstone |
 | Framework internals | Expert | Source investigation, XAML generation, precedence, custom panels, damage, contribution capstone |
+| C# for app builders | Beginner | Input contracts, record identity, deferred LINQ, task failures, debounce and subscription ownership |
+| Everyday Uno controls | Beginner | TextBox, keyed ComboBox, ListView selection, NavigationView, ContentDialog and AutoSuggestBox |
+| MVVM patterns in practice | Intermediate | ObservableObject, RelayCommand, AsyncRelayCommand, ObservableValidator, messaging and edit transactions |
+| Navigation and user flows | Intermediate | Typed parameters, Frame history, route allowlists, deep-link contracts, exit guards and results |
+| DI and service composition | Advanced | Composition roots, scopes, captive dependencies, typed factories, decorators and options validation |
 
 The twelve fundamentals guides supplement these paths with identity, nullable contracts, closures, generic constraints, task outcomes, namescopes, layout units, binding contexts, properties and ownership. Their fragments are not advertised as twelve new complete applications.
 
 ## The studio
 
-**One lesson, one experiment.** Sixty explicit atlas assignments have their own input models, calculations, geometry and explanations. Tests guard against duplicated scenes disguised by different captions. Models declare their simplifications rather than pretending to be instrumented Uno traces.
+**One lesson, one experiment.** Ninety explicit atlas assignments have their own input models, calculations, geometry and explanations. Tests guard against duplicated scenes disguised by different captions. Models declare their simplifications rather than pretending to be instrumented Uno traces.
 
 **Controlled playback.** One seekable clock owns Previous/Next, pause/resume, replay, speed and optional looping. Manual edits take ownership from animation. Hidden/offscreen views and reduced-motion preferences are respected.
 

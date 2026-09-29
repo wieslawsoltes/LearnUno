@@ -53,5 +53,15 @@
       "why": "A command abstraction alone does not prevent duplicate external operations."
     }
   ],
-  "bridge": "The official counter tutorial supplies real Toolkit attribute usage and its required view-model context. The live exercise exposes the underlying validation rule without pretending that those generator-dependent members exist in the single-file runner."
+  "bridge": "The official counter tutorial supplies real Toolkit attribute usage and its required view-model context. The live exercise exposes the underlying validation rule without pretending that those generator-dependent members exist in the single-file runner.",
+  "continueWith": [
+    {
+      "id": "toolkit-commands",
+      "title": "Make command availability an observable contract"
+    },
+    {
+      "id": "toolkit-validation",
+      "title": "Model validation errors as observable data"
+    }
+  ]
 }

@@ -6,7 +6,7 @@ import {guides} from '../../site/src/learning/guides.mjs';
 test('lesson edition maps every lesson to a different authored visualization',async({page})=>{
  const observed=[];
  for(const lesson of lessons){await page.goto('./#/lesson/'+lesson.id+'/visualize');await expect(page.locator('.visual-lab')).toHaveAttribute('data-lab',labForLesson(lesson));observed.push(await page.locator('.visual-lab').getAttribute('data-lab'));}
- expect(new Set(observed).size).toBe(60);
+ expect(new Set(observed).size).toBe(90);
 });
 test('lesson edition exposes deeper reading and twelve foundation chapters',async({page})=>{
  await page.goto('./#/lesson/events/learn');await expect(page.locator('.lesson-depth')).toContainText('Who retains the event subscriber');await expect(page.locator('.lesson-depth .depth-steps article')).toHaveCount(4);

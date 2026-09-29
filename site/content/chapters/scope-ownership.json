@@ -1,0 +1,64 @@
+{
+  "id": "scope-ownership",
+  "scenario": "Two controls in one document should share the same editing session, while a second document needs an independent one. The application is not an HTTP server, so no request middleware will create that boundary for you. Create scopes explicitly, observe service identity, and verify disposal when the session closes.",
+  "vocabulary": [
+    {
+      "term": "Scoped lifetime",
+      "meaning": "One resolved instance per service scope for a given scoped registration."
+    },
+    {
+      "term": "Ownership boundary",
+      "meaning": "The object or operation responsible for keeping resources alive and disposing them at the correct time."
+    },
+    {
+      "term": "Transient lifetime",
+      "meaning": "A new instance for each resolution; disposable instances may still be tracked by the resolving container scope."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A scope should correspond to a meaningful application lifetime rather than an arbitrary block of code. A document, modal editing workflow, or workspace can be a good candidate when several collaborators need shared session state. The UI framework does not automatically equate Loaded/Unloaded, navigation, and document lifetime. Decide which owner creates and closes the scope.",
+      "worked": "Imagine two panels editing the same document. Resolving EditingSession twice inside the same scope gives both panels the same session instance. Opening another document with another scope gives a different session. Closing one document should not dispose the other document’s session or an application-wide immutable configuration service.",
+      "question": "Why not create a new scope for every property access?",
+      "answer": "It would create unrelated session objects and dispose them independently, breaking the intended shared workflow lifetime and adding unnecessary construction overhead."
+    },
+    {
+      "explain": "The lab compares object references, not just identical property values. AddScoped caches the constructed instance within the resolving scope. AddTransient constructs a new instance per resolution. Two objects can expose equal text and still be different sessions, which matters when subscriptions, caches, and pending operations belong to those instances.",
+      "worked": "Run the scoped starter and observe Same within scope: True. Change the registration to transient and run again: the two resolutions no longer share identity. The second explicit scope remains independent in both versions. Explain which behavior a document editor requires before selecting the lifetime.",
+      "question": "Can equal service property values prove that the same instance was shared?",
+      "answer": "No. Use reference identity or an intentionally assigned instance identifier when testing lifetime behavior. Value equality and object ownership answer different questions."
+    },
+    {
+      "explain": "Disposing a scope releases container-owned disposable services created through that scope. Feature code should not independently dispose a shared injected session while another component still uses it. For asynchronously disposable services, use an asynchronous scope and await disposal where the owner permits it. Disposal is a resource protocol, not a guarantee that the garbage collector immediately reclaims every object.",
+      "worked": "The example retains a reference only to inspect IsDisposed after the first scope exits. It does not continue using the closed session. In production, close the UI workflow, cancel session-owned operations, detach external subscriptions, and then dispose the owner in a documented order.",
+      "question": "Does a disposed object become inaccessible to all existing references?",
+      "answer": "No. References can still exist. Disposal marks the end of valid resource use; the application must stop using that object and release references according to its lifecycle policy."
+    },
+    {
+      "explain": "Resolving a scoped service directly from the root provider can extend its lifetime incorrectly or be rejected with scope validation enabled. A singleton must not capture a scoped editing session in its constructor. Keep the application provider at the composition boundary and pass correctly scoped collaborators to each feature.",
+      "worked": "Enable ValidateScopes and attempt a root resolution in a separate negative test. Then resolve inside CreateScope and verify success. Test two simultaneous documents and one document closing while the other continues; this catches ownership bugs that a single startup smoke test does not expose.",
+      "question": "What should a singleton use instead of retaining one document session?",
+      "answer": "Use a capability that creates or operates within an appropriate scope at a well-defined boundary, or move the consumer into the same session lifetime. Do not hide the capture behind service location."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use AddTransient instead of AddScoped",
+      "expected": "Repeated resolutions inside one scope produce distinct instances.",
+      "why": "Transient construction is per resolution, not per scope."
+    },
+    {
+      "change": "Dispose the first scope while keeping the second alive",
+      "expected": "Only the first session’s disposal state changes.",
+      "why": "Independent scopes define independent ownership boundaries."
+    }
+  ],
+  "bridge": "Give a multi-document Uno shell a scope per open document. Resolve its view model and session services from that scope, and dispose them when the document truly closes. Test shared identity within one document, isolation between documents, and deterministic cleanup without assuming navigation callbacks equal ownership.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

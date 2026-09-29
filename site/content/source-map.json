@@ -1456,5 +1456,623 @@
         "caption": "This repository UI-test example selects a sample and inspects a result. Read neighboring assertions and helpers and do not confuse retry infrastructure with proof that a flaky application is correct."
       }
     ]
+  },
+  "input-contracts": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/TextBox.md",
+        "expectedHash": "74501382902f4c32ca356c8aea04b3be7b4c85d3f8a00e39ce189b521f3a65e6"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "fence": 0,
+        "expectedHash": "b869ce498712ad7b6152ea1e545f556c3b6d97aa0600d9e42ae2cde547a058bd",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "record-identity": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/features/applicationdata.md",
+        "expectedHash": "0ae7314e067580728f085e63e7831deb492432c46937757f348aaad3a38024dd"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The tutorial view model is a compact state/action reference. Extend the capstone deliberately with stable IDs, draft validation and persistence rather than treating a generated counter as the finished task application."
+      }
+    ]
+  },
+  "linq-projections": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/ListViewBase.md",
+        "expectedHash": "aced5af09bfd15c280e76ba8557fae4808a49c559bdb0eb877b899ecc4b8e060"
+      },
+      {
+        "path": "doc/articles/uno-development/listviewbase-internals.md",
+        "expectedHash": "fba8754a3bad662028f1d757dcebb7de990ac44d94badf63cf4a88d6263c8acd"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 28,
+        "endLine": 55,
+        "expectedHash": "2ad575837dd91189e5b00c01b80de8e324263c7821fbb4c49a9dec5410ae566e",
+        "caption": "ItemsSource refers to one ObservableCollection and the UI offers Add, Remove and Replace operations. A collection notification is different from a property change inside an item.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "task-failure": {
+    "documents": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "expectedHash": "81e8729efb31ce125535c0fa89666724ad215ad58306405b1798f45019582c0d"
+      },
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "expectedHash": "05fb888de3f3aa50f6d959f1469cb44d5692e44b5cde86c89f7cf3196d03af18"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "fence": 45,
+        "expectedHash": "8b5080ce3dbbb75343ef0630ead3c470e1c0b31642b56a2fcfe2abe92c436a5f",
+        "caption": "The HTTP tutorial coordinates IsBusy with try/finally around loading. It does not pass cancellation in this fragment: identify that boundary and compare with the token-aware runnable lesson."
+      }
+    ]
+  },
+  "debounced-input": {
+    "documents": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "expectedHash": "81e8729efb31ce125535c0fa89666724ad215ad58306405b1798f45019582c0d"
+      },
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "expectedHash": "05fb888de3f3aa50f6d959f1469cb44d5692e44b5cde86c89f7cf3196d03af18"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/howto-consume-webservices.md",
+        "fence": 45,
+        "expectedHash": "8b5080ce3dbbb75343ef0630ead3c470e1c0b31642b56a2fcfe2abe92c436a5f",
+        "caption": "The HTTP tutorial coordinates IsBusy with try/finally around loading. It does not pass cancellation in this fragment: identify that boundary and compare with the token-aware runnable lesson."
+      }
+    ]
+  },
+  "subscription-lifetimes": {
+    "documents": [
+      {
+        "path": "doc/articles/features/routed-events.md",
+        "expectedHash": "925737637acd32520ee9f05d9aaaa22121fcf4aa70cb1f5437b0927d85cccfea"
+      },
+      {
+        "path": "doc/articles/features/pointers-keyboard-and-other-user-inputs.md",
+        "expectedHash": "1eb67bc0ad504001c8c0a666d188e8898072d38e1d41b9b0ca5e79e4ba8fd01f"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListViewItem_Click_Focus.xaml.cs",
+        "startLine": 1,
+        "endLine": 20,
+        "expectedHash": "dcb1b26c2cee102ce9ac73702c59f60cb598e925273ad9fe4ac4fa360c7a3993",
+        "caption": "The constructor registers Click and GettingFocus handlers on named controls created by InitializeComponent. Notice the captured output control and the source objects holding the delegates.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "textbox-editing": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/TextBox.md",
+        "expectedHash": "74501382902f4c32ca356c8aea04b3be7b4c85d3f8a00e39ce189b521f3a65e6"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/features/unhandled-exceptions.md",
+        "fence": 0,
+        "expectedHash": "b869ce498712ad7b6152ea1e545f556c3b6d97aa0600d9e42ae2cde547a058bd",
+        "caption": "Pinned Uno project example. Read the surrounding section for platform, package and omitted-member requirements; compare the relevant operation with the runnable lesson."
+      }
+    ]
+  },
+  "combobox-keys": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_Changing_Text.xaml",
+        "startLine": 1,
+        "endLine": 23,
+        "expectedHash": "fc581120143440ea08b15131c9ef98e3764afb9105e258a987d6288c2990edb2",
+        "caption": "A shared item template contains a named CheckBox and a binding to that row’s IsChecked. Each template instance has its own objects and context; the surrounding sample supplies the item collection.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "listview-selection": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/ListViewBase.md",
+        "expectedHash": "aced5af09bfd15c280e76ba8557fae4808a49c559bdb0eb877b899ecc4b8e060"
+      },
+      {
+        "path": "doc/articles/uno-development/listviewbase-internals.md",
+        "expectedHash": "fba8754a3bad662028f1d757dcebb7de990ac44d94badf63cf4a88d6263c8acd"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ListView/ListView_ObservableCollection_CreationCount.xaml.cs",
+        "startLine": 28,
+        "endLine": 55,
+        "expectedHash": "2ad575837dd91189e5b00c01b80de8e324263c7821fbb4c49a9dec5410ae566e",
+        "caption": "ItemsSource refers to one ObservableCollection and the UI offers Add, Remove and Replace operations. A collection notification is different from a property change inside an item.",
+        "kind": "Uno sample excerpt"
+      }
+    ]
+  },
+  "navigationview-shell": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 27,
+        "expectedHash": "1909e72d677e9ab159f3febe9cd2176e594b71908ecd0e48bffa854fa16bcda9",
+        "caption": "The pinned guide declares a NavigationView with stable menu tags and a Frame content region. The surrounding handler connects invocation to navigation; the lesson separates shell presentation from journal ownership."
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 28,
+        "expectedHash": "7a0720ab7cc14ff7f2e73b4db9566989d826588598ad5d749e74d0155a09ce4b",
+        "caption": "ItemInvoked reads the registered item tag. These page types belong to the guide’s project and are not auto-created in the single-file playground."
+      }
+    ]
+  },
+  "dialog-decisions": {
+    "documents": [
+      {
+        "path": "doc/articles/features/dialogs.md",
+        "expectedHash": "15d50d43182a053db26d798fb676f80e862e253dcf78beb9614c9ff196229cba"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/ContentDialogTests/ContentDialog_Simple.xaml.cs",
+        "startLine": 42,
+        "endLine": 55,
+        "expectedHash": "57658ecf5d4b7f28a723a0895f79f86379a5db3da11bc00de763ba3f5a5cc378",
+        "caption": "The real SamplesApp associates ContentDialog.XamlRoot with the active view before awaiting ShowAsync. Its named dialog is a project-defined control; the lesson builds its dialog explicitly in C#.",
+        "kind": "Pinned SamplesApp excerpt; enclosing project required"
+      }
+    ]
+  },
+  "autosuggest-search": {
+    "documents": [
+      {
+        "path": "doc/articles/controls/TextBox.md",
+        "expectedHash": "74501382902f4c32ca356c8aea04b3be7b4c85d3f8a00e39ce189b521f3a65e6"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/AutoSuggestBoxTests/BasicAutoSuggestBox.xaml.cs",
+        "startLine": 45,
+        "endLine": 71,
+        "expectedHash": "021f7aaec9fb18e96d93ede6564af312599cd1ff33cfa87b7d0e459ff1d7c4eb",
+        "caption": "The actual Uno sample distinguishes user, programmatic, and suggestion-driven text changes. Inspect the Reason switch; the named controls and suggestion class come from the enclosing SamplesApp project.",
+        "kind": "Pinned SamplesApp excerpt; enclosing project required"
+      }
+    ]
+  },
+  "toolkit-observable": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The pinned Uno counter tutorial uses CommunityToolkit source generators. Compare the generated property/command intent with this lesson’s explicit runtime implementations; source generation requires a normal project build."
+      }
+    ]
+  },
+  "toolkit-commands": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The pinned Uno counter tutorial uses CommunityToolkit source generators. Compare the generated property/command intent with this lesson’s explicit runtime implementations; source generation requires a normal project build."
+      }
+    ]
+  },
+  "toolkit-async-command": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The pinned Uno counter tutorial uses CommunityToolkit source generators. Compare the generated property/command intent with this lesson’s explicit runtime implementations; source generation requires a normal project build."
+      }
+    ]
+  },
+  "toolkit-validation": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The pinned Uno counter tutorial uses CommunityToolkit source generators. Compare the generated property/command intent with this lesson’s explicit runtime implementations; source generation requires a normal project build."
+      }
+    ]
+  },
+  "toolkit-messaging": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 39,
+        "expectedHash": "34ed01b1a2caa3a477644ff4fe753eaeb1e76707bbe0e5c6e085fa25bab301e4",
+        "caption": "The migration guide discusses messenger-based return communication. Compare this surrounding application example with the lesson’s deliberately local WeakReferenceMessenger instance and explicit recipient deactivation."
+      }
+    ]
+  },
+  "mvvm-drafts": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "expectedHash": "5f9ef39f999ec80bfff6ab293549651b3344add0efb2f3b442cb19c78b5b8e55"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/data-binding.md",
+        "expectedHash": "05298fe1b6654c68ca6765ab7697a38e6f42950d6021ebd997cb63fd068c8578"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/counterapp/includes/include-mvvm.md",
+        "fence": 3,
+        "expectedHash": "4db753fd28aa406e20607fcb3aa0a33a6faa86fe1dc34c9647ca120580a3b6f6",
+        "caption": "The pinned Uno counter tutorial uses CommunityToolkit source generators. Compare the generated property/command intent with this lesson’s explicit runtime implementations; source generation requires a normal project build."
+      }
+    ]
+  },
+  "frame-parameters": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 8,
+        "expectedHash": "c06952d44eb5b291f84f25cff37b8782e33c9e1d1bb3314f195ec5e8c7ff5c3a",
+        "caption": "The destination reads and checks NavigationEventArgs.Parameter. The surrounding page and type definitions are required; compare its simple integer with the lesson’s typed TaskTarget contract."
+      }
+    ]
+  },
+  "frame-history": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 3,
+        "expectedHash": "a2460d25840784b7ec4ad9fe47b68ad934dd71d945b9614d45e7a766818a7e66",
+        "caption": "The Frame back-navigation guard checks CanGoBack before GoBack. This does not itself integrate browser or operating-system back history."
+      }
+    ]
+  },
+  "route-registry": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 34,
+        "expectedHash": "bb02e3b7a8a054b946c9f17983ee18556379ef0b0b9b72b5d2cea6bd5460dfbc",
+        "caption": "The guide registers project-level routes. Compare this richer configured navigation system with the explicitly smaller allowlisted dictionary used by the live lesson."
+      }
+    ]
+  },
+  "deep-link-contracts": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 10,
+        "expectedHash": "ad0260254c503148b18d30735965652fd04adcf27f3d05c8618b696bc984e9eb",
+        "caption": "The guide passes typed navigation data to a Frame. This is internal dispatch after validation, not a parser or authorization mechanism for an external URI."
+      }
+    ]
+  },
+  "navigation-guards": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 37,
+        "expectedHash": "9debddb00cab8523314a3b339859d8641e71292b69e0657d348f591e0e2d9c9d",
+        "caption": "The guide cancels outgoing navigation while unsaved changes exist. The asynchronous confirmation and resumption policy still needs a central owner; compare it with the lab’s explicitly guarded Leave command."
+      }
+    ]
+  },
+  "navigation-results": {
+    "documents": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      },
+      {
+        "path": "doc/articles/controls/NavigationView.md",
+        "expectedHash": "a6d6f48257a1ac3596454e9df6f314e658579b5304b636c72c4eaad78b534c6a"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 32,
+        "expectedHash": "09d528e7f8fa48eda0342abe8f699c20c1d0f80a5c64c86fd85e23af0f7a3169",
+        "caption": "The guide uses an injected Uno.Extensions navigator in a model. The lesson’s TaskCompletionSource picker illustrates an event-to-task contract; it does not reproduce the full navigator or region system."
+      }
+    ]
+  },
+  "composition-root": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 31,
+        "expectedHash": "d0990579126ee13eb985a61b5fe6f6748c976bbcaa7db24ebde386ef350ec9d0",
+        "caption": "This pinned Uno guide injects a navigation capability into a view model. It demonstrates the constructor seam, not every lifetime policy. The chapter’s Microsoft primary reference defines DI scopes, factories, and ownership used by the runnable example."
+      }
+    ]
+  },
+  "scope-ownership": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 31,
+        "expectedHash": "d0990579126ee13eb985a61b5fe6f6748c976bbcaa7db24ebde386ef350ec9d0",
+        "caption": "This pinned Uno guide injects a navigation capability into a view model. It demonstrates the constructor seam, not every lifetime policy. The chapter’s Microsoft primary reference defines DI scopes, factories, and ownership used by the runnable example."
+      }
+    ]
+  },
+  "captive-dependencies": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 31,
+        "expectedHash": "d0990579126ee13eb985a61b5fe6f6748c976bbcaa7db24ebde386ef350ec9d0",
+        "caption": "This pinned Uno guide injects a navigation capability into a view model. It demonstrates the constructor seam, not every lifetime policy. The chapter’s Microsoft primary reference defines DI scopes, factories, and ownership used by the runnable example."
+      }
+    ]
+  },
+  "service-factories": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 31,
+        "expectedHash": "d0990579126ee13eb985a61b5fe6f6748c976bbcaa7db24ebde386ef350ec9d0",
+        "caption": "This pinned Uno guide injects a navigation capability into a view model. It demonstrates the constructor seam, not every lifetime policy. The chapter’s Microsoft primary reference defines DI scopes, factories, and ownership used by the runnable example."
+      }
+    ]
+  },
+  "service-decorators": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "expectedHash": "c310fdb1d79adafd9d2b416a8097687a3f3a489fb65b6e088988727686432e40"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/guides/xf-migration/navigation.md",
+        "fence": 31,
+        "expectedHash": "d0990579126ee13eb985a61b5fe6f6748c976bbcaa7db24ebde386ef350ec9d0",
+        "caption": "This pinned Uno guide injects a navigation capability into a view model. It demonstrates the constructor seam, not every lifetime policy. The chapter’s Microsoft primary reference defines DI scopes, factories, and ownership used by the runnable example."
+      }
+    ]
+  },
+  "options-validation": {
+    "documents": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "expectedHash": "d71bfe9ce19d32992ee8614a2cf58cb80eda4f1ab0bc3216aec5a1e269465160"
+      },
+      {
+        "path": "doc/articles/getting-started/wizard/includes/application.md",
+        "expectedHash": "f9b5f8200c45ffce7cf8a04dd8bc72bfce791b5ed29a07b966459a900fc66a82"
+      }
+    ],
+    "code": [
+      {
+        "path": "doc/articles/getting-started/wizard/includes/extensions.md",
+        "fence": 1,
+        "expectedHash": "96b8d58204e946b24ce1d22b2d78bcaf726106aea5e345610aa155811774a3f8",
+        "caption": "The pinned Uno wizard enables Configuration through a project option. This is project-setup CLI, not a validation implementation. Compare it with the lesson’s actual Microsoft.Extensions.Options configuration/Value-access experiment and external options documentation."
+      }
+    ]
   }
 }

@@ -1,0 +1,64 @@
+{
+  "id": "toolkit-commands",
+  "scenario": "A Save button must work from a toolbar, a keyboard gesture, and a context menu without duplicating the business rule. Represent the operation as a command owned by the view model, express its precondition in CanExecute, and explicitly notify observers when that precondition changes. Use the actual RelayCommand implementation and inspect the enabled-state feedback.",
+  "vocabulary": [
+    {
+      "term": "ICommand",
+      "meaning": "An action contract exposing Execute, CanExecute, and an availability-change event."
+    },
+    {
+      "term": "RelayCommand",
+      "meaning": "The MVVM Toolkit adapter from synchronous delegates to ICommand."
+    },
+    {
+      "term": "Availability invalidation",
+      "meaning": "A signal telling command consumers to reevaluate the current CanExecute result."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A command belongs to the presentation model that owns the operation’s state. Expose the same command instance to several controls instead of creating a new command every time a getter is read. The command can invoke an injected service, while controls remain adapters that present and trigger the action. This separation makes command behavior independently testable.",
+      "worked": "The model constructs Create once and the button receives it through Command. Typing updates Title, while executing Create changes Result. The button does not know how a task is created or which validation predicate applies. A keyboard accelerator could invoke the same command after checking availability.",
+      "question": "Why not return a new RelayCommand from every property getter?",
+      "answer": "It creates unstable identities and can leave controls observing different instances. Construct the command once for the owner’s lifetime unless replacement is explicitly intended."
+    },
+    {
+      "explain": "CanExecute should report whether an action is currently allowed; it should not mutate state or perform expensive I/O. The predicate may be evaluated frequently by different consumers. Keep it deterministic from current presentation state and enforce important business rules again at the trusted application boundary. A disabled button is not authorization.",
+      "worked": "The predicate uses the trimmed title length. Enter spaces and observe that Create remains unavailable, then enter a valid title. Increasing the threshold to five changes availability without touching the view. Update user-facing instructions to match the rule in a follow-up, and retain service-side validation for non-UI callers.",
+      "question": "Can a command predicate replace server authorization?",
+      "answer": "No. It controls client presentation and intent availability. Protected operations still need trusted validation and authorization at their execution boundary."
+    },
+    {
+      "explain": "The command cannot automatically infer every dependency captured by a delegate. When Title changes, call NotifyCanExecuteChanged on the existing command. The equality guard avoids raising it for unchanged input. Source-generation attributes can wire common relationships, but the generated behavior still raises an event that prompts consumers to reevaluate the predicate.",
+      "worked": "Temporarily remove the notification in a project variation. The model’s predicate can return true when called directly, while the button may remain disabled because it was not told to ask again. Test both the command’s direct result and the UI’s response to state changes.",
+      "question": "Why can CanExecute be correct while the button looks wrong?",
+      "answer": "The consumer may be displaying an earlier result. Availability must be invalidated when a dependency changes, not merely computed correctly when someone happens to call it."
+    },
+    {
+      "explain": "RelayCommand is for synchronous work. An async lambda passed to a void delegate can become async void and lose an awaitable operation boundary. Use AsyncRelayCommand for asynchronous actions and define busy, cancellation, and error behavior. Do not block with Result or Wait to force async work into a synchronous command.",
+      "worked": "Keep task creation synchronous in this fixture. In the next lesson, replace the operation with a cancellable Task and observe IsRunning. Write separate tests for availability before execution, during execution, and after failure so changing the command type does not silently change the interaction contract.",
+      "question": "What is unsafe about putting an async lambda in a void command delegate?",
+      "answer": "The caller may lose the Task representing completion and failures. Use an async command abstraction that exposes and owns the asynchronous operation."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use fewer than the required characters",
+      "expected": "The command reports unavailable and the button disables.",
+      "why": "CanExecute derives from validated presentation state."
+    },
+    {
+      "change": "Change the title to a valid value",
+      "expected": "The same button enables without being recreated.",
+      "why": "NotifyCanExecuteChanged prompts reevaluation on the same command instance."
+    }
+  ],
+  "bridge": "Expose Create from a tested view model and bind it to two controls. Assert command identity, preconditions, notification behavior, and the exact service request. Then compare the generated RelayCommand form in a complete Uno project; do not replace async operations with blocking calls.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/relaycommand",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

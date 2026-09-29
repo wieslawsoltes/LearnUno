@@ -53,5 +53,11 @@
       "why": "Item context and state are independent even when the template is shared."
     }
   ],
-  "bridge": "The upstream item-template sample supplies the full ItemsSource and DataTemplate context. Read the property path against the item type, not against the page by assumption. Any code-behind, custom item class or resource referenced by the excerpt remains part of that source project."
+  "bridge": "The upstream item-template sample supplies the full ItemsSource and DataTemplate context. Read the property path against the item type, not against the page by assumption. Any code-behind, custom item class or resource referenced by the excerpt remains part of that source project.",
+  "continueWith": [
+    {
+      "id": "combobox-keys",
+      "title": "Select values by key, not by display text"
+    }
+  ]
 }

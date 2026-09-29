@@ -1,0 +1,64 @@
+{
+  "id": "textbox-editing",
+  "scenario": "Create a task-title editor that is understandable before, during, and after typing. The field must preserve the draft, explain whether Save is available, and keep the last committed title separate. Test keyboard input, paste, whitespace, and a long title instead of assuming that a TextBox with a border is already a complete form interaction.",
+  "vocabulary": [
+    {
+      "term": "Draft",
+      "meaning": "The text currently being edited, which can temporarily be incomplete or invalid."
+    },
+    {
+      "term": "Persistent label",
+      "meaning": "A visible and accessible name that remains available after the placeholder disappears."
+    },
+    {
+      "term": "Commit boundary",
+      "meaning": "The action that converts a validated draft into accepted application state."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A Header describes the field, while PlaceholderText can show an example or short hint before input exists. Do not make disappearing text the only indication of the field’s purpose. Keep the wording concise and verify the accessible name on the actual platform. A character counter can be supplemental feedback, but it should not replace a meaningful label or overwhelm announcements.",
+      "worked": "The initial view shows Task title and an example instruction. Type a few characters: the placeholder disappears, but the Header remains. The character count updates independently of the saved label. This separation helps the learner identify editing state rather than confusing every text change with a successful save.",
+      "question": "Which text still explains the field after typing?",
+      "answer": "The persistent Header. A placeholder is an aid for empty input, not a substitute for a stable field label."
+    },
+    {
+      "explain": "TextChanged reports edits, including changes caused by programmatic assignments. A user may temporarily have an empty string while replacing a title, and an input method editor can produce composition-related transitions. Avoid rewriting the Text property on every event simply to enforce presentation preferences. Rewriting can move the caret, interfere with selection, or disrupt composition.",
+      "worked": "Enter three spaces, then a short word. The raw character counter counts what was typed, while Save uses Trim to evaluate useful content. The control preserves the original text until the explicit commit action. The example deliberately does not normalize whitespace by repeatedly assigning input.Text in the change handler.",
+      "question": "Why avoid assigning a normalized Text value on every change?",
+      "answer": "It can disturb editing mechanics and create event loops. Validate or normalize at a deliberate boundary unless live transformation is essential and carefully implemented."
+    },
+    {
+      "explain": "A disabled action should correspond to a rule the user can understand. This lab requires three trimmed characters and caps input length at the control. The view’s rule is a usability aid; the application service must still validate accepted data. Show the committed result separately so the user can see the difference between a draft and a saved value.",
+      "worked": "Type Plan and save, then edit the field to Review without saving. The saved label remains Plan while the draft changes. This simple difference is the basis for dirty-state indicators, Cancel behavior, and navigation guards. Recreating the entire screen after each keystroke would hide that useful state model.",
+      "question": "Should the saved label follow every draft change?",
+      "answer": "Not in an explicit-save workflow. It should reflect the committed value until Save succeeds, while the draft remains independently editable."
+    },
+    {
+      "explain": "Exercise paste, selection replacement, maximum length, whitespace, keyboard activation, and larger text scaling. MaxLength is a control constraint, not proof that every persisted title satisfies a domain rule. A programmatic caller or imported record can bypass the view, so retain validation at the application boundary and avoid interpreting visual success as cross-platform certification.",
+      "worked": "Increase MaxLength to sixty and paste a longer title. Then test the same title through a service-level unit test. A robust application applies the intended rule consistently and does not assume the browser’s editing behavior exactly matches every native input implementation. Inspect the Uno source notes for platform-specific input details.",
+      "question": "What does MaxLength fail to protect by itself?",
+      "answer": "Non-UI entry points such as imported data or service calls. Domain validation must not depend solely on one control’s input restrictions."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Edit after saving without pressing Save",
+      "expected": "The committed output remains unchanged.",
+      "why": "Draft state and committed state have separate owners."
+    },
+    {
+      "change": "Enter only spaces",
+      "expected": "Save stays disabled.",
+      "why": "The validation uses trimmed content rather than raw character count."
+    }
+  ],
+  "bridge": "Build a reusable title editor with a persistent label, visible validation, dirty state, Save, and Cancel. Test IME and paste behavior on your actual targets. Extract rules into a view model or application service while leaving focus, caret, and selection operations in the view layer.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/controls/text-box",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

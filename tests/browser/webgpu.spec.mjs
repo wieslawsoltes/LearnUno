@@ -35,10 +35,16 @@ test('WebGPU compute and render pipelines execute on a software test adapter', a
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   try {
-    await page.goto('./#/lesson/binding-flow/visualize');
+    await page.goto('./#/atlas/damage');
     await expect(page.locator('#visual-backend')).toHaveText('WebGPU · compute + render', {timeout: 30000});
-    await page.waitForFunction(() => gpuEvidence.submissions >= 2, {}, {timeout: 15000});
-    await page.locator('#visual-play').click();
+    await page.waitForFunction(() => gpuEvidence.submissions >= 1, {}, {timeout: 15000});
+    await expect(page.locator('#gpu-result')).toContainText('exact CPU match');
+    await page.getByLabel('Tile size').selectOption('16');
+    await page.waitForFunction(() => {const e=JSON.parse(document.querySelector('.visual-lab').dataset.gpuEvidence || '{}');return e.tiles===800 && e.mismatches===0;});
+    const previousRevision = await page.locator('.visual-lab').evaluate(e => JSON.parse(e.dataset.gpuEvidence).revision);
+    await page.getByRole('button',{name:'Separated',exact:true}).click();
+    await page.waitForFunction(previous => {const e=JSON.parse(document.querySelector('.visual-lab').dataset.gpuEvidence || '{}');return e.revision>previous && e.tiles===800 && e.mismatches===0;}, previousRevision);
+    await expect(page.locator('#gpu-result')).toContainText('exact CPU match');
     const evidence = await page.evaluate(() => gpuEvidence);
     expect(evidence.computePipelines).toBe(1);
     expect(evidence.renderPipelines).toBe(1);

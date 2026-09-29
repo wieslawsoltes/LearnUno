@@ -5,6 +5,10 @@
 
 [![Build, validate and publish](https://github.com/wieslawsoltes/LearnUno/actions/workflows/ci.yml/badge.svg)](https://github.com/wieslawsoltes/LearnUno/actions/workflows/ci.yml)
 
+## The visual edition
+
+Explore the [visual atlas](https://wieslawsoltes.github.io/LearnUno/#/atlas): eleven inspectable labs for layout, binding, visual trees, spacing, state machines, async races, virtualization, invalidation, dirty tiles, easing and value precedence. The redesigned studio connects each experiment to a real Uno playground. See [design and model documentation](docs/visual-edition.md).
+
 ## Learn by making something happen
 
 Predict the result, explore the visual model, edit the code, and run it in a **real Uno WebAssembly application**. Then explain the result, complete a knowledge check, and revisit the idea through a local review queue.
@@ -34,7 +38,7 @@ The guided material contains about 13.5 hours of author-estimated lesson time. I
 
 **A responsive learning interface.** Light and dark themes, keyboard-accessible navigation, reduced-motion support, global lesson search, saved lessons, personal notes, and portable progress files.
 
-**Interactive explanations.** Step through eight visual-model families. Explore notification flow, star sizing, and virtualized ranges. WebGPU uses actual compute and render passes when available; Canvas 2D and accessible HTML preserve the explanation without a GPU.
+**Interactive explanations.** Explore eleven different labs with direct manipulation, scenario presets, equation readouts, event traces, linked code, shared inputs and explicit model boundaries. The dirty-tile lab runs actual WebGPU compute and rendering, then checks every output against a CPU reference. SVG and accessible HTML keep the explanations usable without a GPU.
 
 **A real editor and runtime.** Desktop Monaco connects to in-browser Roslyn for C# member completion, diagnostics, hover information, local definitions, method signatures, and formatting. XAML completion reads reflected Uno types and properties. The lesson extension adds focused line decorations, CodeLens hints, shortcuts, and exercise checks. Narrow screens use an accessible text-editor fallback with the same execution engine.
 
@@ -93,7 +97,9 @@ site/src/course/       Ten authored learning paths and shared lesson helpers
 site/src/app.mjs       Routing, lessons, quizzes, notes, search, and review
 site/src/workspace.mjs Editor/preview composition and lesson-aware coaching
 site/src/editor.mjs    Monaco and language-service adapters
-site/src/visuals.mjs   WebGPU/Canvas visual models and HTML experiments
+site/src/atlas/        Eleven SVG/HTML labs, pure models and GPU tile classification
+site/design/          Editorial shell, lab styling and responsive layouts
+site/src/visuals.mjs   Lesson-to-atlas integration
 site/src/reference.mjs Pinned documentation and source browser
 runtime/              Actual Uno app, Roslyn engine, metadata schema, JS bridge
 scripts/              Static build, reference import, development server

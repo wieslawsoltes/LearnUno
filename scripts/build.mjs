@@ -6,7 +6,8 @@ import {buildCatalog} from './catalog.mjs';
 import {relocateRuntime} from './relocate-runtime.mjs';
 
 await mkdir('dist/assets', {recursive: true});
-for (const file of ['index.html', 'styles.css', 'favicon.svg']) await cp('site/' + file, 'dist/' + file);
+for (const file of ['index.html', 'styles.css', 'visual.css', 'favicon.svg']) await cp('site/' + file, 'dist/' + file);
+await cp('site/design', 'dist/design', {recursive: true});
 await writeFile('dist/.nojekyll', '');
 await build({
   entryPoints: {

@@ -17,7 +17,7 @@ function control(c,s){
  if(c.type==='toggle')return `<label class="v-toggle" for="${id}"><input id="${id}" data-control="${c.key}" type="checkbox" ${value?'checked':''} /><span>${h(c.label)}</span></label>`;
  if(c.type==='select')return `<label class="v-control" for="${id}"><span>${h(c.label)}</span><select id="${id}" data-control="${c.key}">${c.options.map(v=>`<option ${String(value)===v?'selected':''}>${h(v)}</option>`).join('')}</select></label>`;
  if(c.type==='text')return `<label class="v-control" for="${id}"><span>${h(c.label)}</span><input id="${id}" data-control="${c.key}" type="text" maxlength="80" value="${h(value)}" autocomplete="off" spellcheck="false" /></label>`;
- return `<label class="v-control v-range" for="${id}"><span>${h(c.label)}<output data-value="${c.key}" for="${id}">${h(value)} ${c.unit}</output></span><input id="${id}" data-control="${c.key}" type="range" min="${c.min}" max="${c.max}" step="${c.step}" value="${value}" /></label>`;
+ return `<label class="v-control v-range" for="${id}"><span>${h(c.label)}<output data-value="${c.key}" for="${id}">${h(value)} ${c.unit}</output></span><input id="${id}" data-control="${c.key}" aria-label="${h(c.label)}" type="range" min="${c.min}" max="${c.max}" step="${c.step}" value="${value}" /></label>`;
 }
 const initialState=lab=>({...lab.defaults,revision:0,trace:[],status:'idle',sequence:0});
 export function mountLab(root,id,{motion=true,lesson=null,query=''}={}){

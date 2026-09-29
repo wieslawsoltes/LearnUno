@@ -1,0 +1,58 @@
+name: Recover reviewed app-building work
+on:
+  push:
+    branches: [feat/learning-refinement]
+    paths: ['.github/workflows/recover-app-building.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  recover:
+    if: github.repository == 'wieslawsoltes/LearnUno' && github.ref == 'refs/heads/feat/learning-refinement'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Recover only the reviewed patch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,json,lzma,subprocess,os,urllib.request
+          parts=[('98d15d147ca611fe7a994b105ac54d386a630b06',6144),('412a7ef5156d182f69b409470c6fd0d7a8e00f66',6144),('a929745dc6dc2f190e972df5cbaf2afef79c4a4b',12288),('d40364ce8325e4ffce698b0193c99967e1e39303',12288),('42527fd7130a1a0bb5aba29f44b7935da66d0b14',6144),('b1be390dd891510867345ec293e4b12320d0bfe0',6144),('9683d99bae6822dc6061645d2ef1ca623c96f87d',12288),('152b15d2f104d5a21f1cbd2515f1cd12d4b560b5',12288),('1ec9391069ad4ac972acca17bf3f92d924324149',12288),('7512d383d2f14f2119a949ea929ca0bd53723b4e',12288),('695a5cad2ac623531301ac9ffd561ed20fd47480',12288),('4b3e05af2c1637b7bc4083d978bbe5a000fed13a',12288),('25e96494cabdb6f72c40d5b0cf9831fc79d556c0',6476)]
+          data=bytearray()
+          for sha,size in parts:
+              req=urllib.request.Request('https://api.github.com/repos/wieslawsoltes/LearnUno/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req,timeout=30) as response: result=json.load(response)
+              value=base64.b64decode(result['content'])
+              assert len(value)==size, 'Unexpected blob size: '+sha
+              assert hashlib.sha1(('blob '+str(size)+'\0').encode()+value).hexdigest()==sha, 'Unexpected Git object'
+              data.extend(value)
+          assert hashlib.sha256(data).hexdigest()=='ac807c8bd46382caa1a6d4ecc4504f74ef199e1cf652507d8e27857ff9438e27', 'Archive checksum mismatch'
+          patch=lzma.decompress(data)
+          assert hashlib.sha256(patch).hexdigest()=='d106081572c1a728b696d1d9514f3201191002127b4eea30f7f5f74fdd0344d0', 'Patch checksum mismatch'
+          open('/tmp/reviewed.patch','wb').write(patch)
+          subprocess.run(['git','apply','--check','/tmp/reviewed.patch'],check=True)
+          subprocess.run(['git','apply','--index','/tmp/reviewed.patch'],check=True)
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert len(paths)==84 and all(not p.startswith('.github/') for p in paths), 'Unexpected changed paths'
+          print('Recovered 84 source files. Full runtime validation is a separate gate.')
+          PY
+      - run: npm ci
+      - run: npm test
+      - name: Commit recovered candidate on the feature branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: recover 30 app-building lessons with chapters and distinct visual models'
+          git push origin HEAD:feat/learning-refinement
+      - name: Validate the source commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref feat/learning-refinement

@@ -52,10 +52,19 @@ test('common controls actual Uno inline text preserves content and activates loc
  await runCurrentCode(page,starter);
  await expect(frame.getByText('Help topic: none',{exact:true})).toBeVisible();
  const keyboardLink=await expectRichTextContent(frame);
- // Start before the inline link, then reach it using genuine keyboard navigation.
- await keyboardLink.focus();await keyboardLink.press('Shift+Tab');
- await page.keyboard.press('Tab');await expect(keyboardLink).toBeFocused();
- await keyboardLink.press('Enter');
+ // Enter from the preceding toolbar with real Tab events. The Uno root
+ // has an intermediate stop; Shift+Tab from a programmatically focused inline
+ // is not an inverse traversal guarantee. Never patch or directly focus the link.
+ await page.locator('iframe[title="Real Uno WebAssembly preview"]').scrollIntoViewIfNeeded();
+ await page.getByRole('button',{name:'Fluid preview',exact:true}).focus();
+ for(let attempt=0;attempt<8;attempt++){
+  await page.keyboard.press('Tab');
+  if(await keyboardLink.evaluate(node=>document.activeElement===node))break;
+ }
+ await expect(keyboardLink).toBeFocused();
+ const frameUrl=await keyboardLink.evaluate(()=>location.href);
+ await page.keyboard.press('Enter');
+ expect(await keyboardLink.evaluate(()=>location.href)).toBe(frameUrl);
  await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible();
  await expectRichTextContent(frame);
  await page.screenshot({path:'artifacts/evidence/common-richtext-live-contract.png',fullPage:true});

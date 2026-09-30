@@ -112,16 +112,19 @@ code:prefix+`public static class Lesson
         link.Inlines.Add(new Run { Text = "Read keyboard guidance" });
         void ShowHelp() => help.Text = "Help topic: keyboard navigation and visible focus";
         link.Click += (_, _) => ShowHelp();
-        // Pinned-browser adapter: Hyperlink has no KeyDown in the reference API.
-        // Observe routed input on its owning TextBlock, only for the focused link.
-        // Keep this workaround in the browser example, not the project comparison.
-        paragraph.KeyDown += (_, args) =>
+        // Compatibility adapter for this pinned browser NativeRenderer only.
+        // Its inline object is a UIElement at runtime, unlike the portable API.
+        // Keep this implementation detail out of the project-only comparison.
+        if (OperatingSystem.IsBrowser() && (object)link is UIElement browserLink)
         {
-            if (args.Key != Windows.System.VirtualKey.Enter ||
-                link.FocusState == FocusState.Unfocused) return;
-            args.Handled = true;
-            ShowHelp();
-        };
+            browserLink.SetHtmlAttribute("tabindex", "0");
+            browserLink.KeyDown += (_, args) =>
+            {
+                if (args.Key != Windows.System.VirtualKey.Enter) return;
+                args.Handled = true; // Suppress the anchor's default navigation.
+                ShowHelp();
+            };
+        }
         paragraph.Inlines.Add(link);
         paragraph.Inlines.Add(new Run { Text = " before publishing." });
         var reminder = new TextBlock

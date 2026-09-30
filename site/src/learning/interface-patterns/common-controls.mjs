@@ -108,8 +108,19 @@ code:prefix+`public static class Lesson
         paragraph.Inlines.Add(new Run { Text = "Release review: " });
         paragraph.Inlines.Add(new Run { Text = "keep the whole instruction readable. ", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
         var link = new Hyperlink();
+        link.IsTabStop = true;
         link.Inlines.Add(new Run { Text = "Read keyboard guidance" });
-        link.Click += (_, _) => help.Text = "Help topic: keyboard navigation and visible focus";
+        void ShowHelp() => help.Text = "Help topic: keyboard navigation and visible focus";
+        link.Click += (_, _) => ShowHelp();
+        // Browser-specific adapter: this pinned renderer exposes Hyperlink as a
+        // UIElement, but Enter does not raise its managed Click event by default.
+        // Keep this handler in the browser example, not the portable project one.
+        link.KeyDown += (_, args) =>
+        {
+            if (args.Key != Windows.System.VirtualKey.Enter) return;
+            args.Handled = true;
+            ShowHelp();
+        };
         paragraph.Inlines.Add(link);
         paragraph.Inlines.Add(new Run { Text = " before publishing." });
         var reminder = new TextBlock

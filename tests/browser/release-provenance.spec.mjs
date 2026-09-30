@@ -1,8 +1,8 @@
 import {test, expect} from '@playwright/test';
 
-// Check the deployed revision as well as its behavior; a stale working site is
-// not evidence that the current release was published successfully.
-test('release artifact matches the source revision and contains the Fluent styles', async ({page}) => {
+// This release-only test intentionally requires the complete Uno artifact.
+// Its title is outside the interface workflow's UI-test name filters.
+test('release artifact matches the source revision and current presentation assets', async ({page}) => {
   const expected = process.env.GITHUB_SHA;
   const readManifest = async () => {
     const suffix = expected ? '?revision=' + encodeURIComponent(expected) : '';

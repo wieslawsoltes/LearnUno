@@ -19,8 +19,8 @@
       "fileSha256": "9704fd2b6d145e55104c2cd103814f6919d4ef5bc63b70d3f6ba4ae0bc9b2693",
       "sha256": "0683a6f7d92d46f59782df3d02ba94b96a54e613da89bd0a07b9c1687e1b7748",
       "language": "xml",
-      "caption": "The multiple-link example groups Runs and Hyperlinks inside one Paragraph. Compare the descriptive labels with the earlier sample\u2019s generic here label.",
-      "boundary": "This fragment belongs to a compiled SamplesApp UserControl. It has external navigation targets; the course exercise uses a local click response so it stays deterministic and sandbox-compatible."
+      "caption": "The multiple-link example groups Runs and Hyperlinks inside one Paragraph. Compare the descriptive labels with the earlier sample’s generic here label.",
+      "boundary": "This fragment belongs to the newer pinned SamplesApp revision and has external navigation targets. It does not establish support in the separate Uno 6.7.135 browser host, where RichTextBlock is unimplemented. The live exercise uses real TextBlock.Inlines with local help; the RichTextBlock equivalent is labeled project-only."
     },
     "gridview-identity": {
       "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/GridView/GridViewSelection.xaml",
@@ -30,7 +30,7 @@
       "sha256": "68f50bc197ce03faba3074619909e7dafa34155666f6f1e10bf469175e4a1ca1",
       "language": "xml",
       "caption": "GridView consumes separate ItemsSource, SelectionMode, ItemsPanel and ItemTemplate values. Follow those four contracts rather than confusing it with the Grid layout panel.",
-      "boundary": "The SamplesApp uses a special dictionary-like binding context and an ItemsWrapGrid setting for this test. It is not a standalone page, and the excerpt does not implement the course\u2019s key-restoration logic."
+      "boundary": "The SamplesApp uses a special dictionary-like binding context and an ItemsWrapGrid setting for this test. It is not a standalone page, and the excerpt does not implement the course’s key-restoration logic."
     },
     "numberbox-boundaries": {
       "path": "src/Uno.UI/UI/Xaml/Controls/NumberBox/NumberBox.mux.cs",

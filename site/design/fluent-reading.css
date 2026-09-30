@@ -1,0 +1,135 @@
+/* Content hierarchy: compact chrome and generous, opaque reading surfaces. */
+:root[data-fluent] .page-heading { padding: 4px 0 19px; }
+:root[data-fluent] .page-heading h1 { font-size: 32px; margin-bottom: 12px; }
+:root[data-fluent] .page-heading p { font-size: 14px; margin-bottom: 10px; }
+:root[data-fluent] .path-hero { padding: 26px; background: var(--surface); border-radius: 12px; }
+:root[data-fluent] .path-hero h1 { font-size: 32px; }
+:root[data-fluent] .lesson-row { padding: 19px 22px; gap: 16px; }
+:root[data-fluent] .lesson-row h3 { font-size: 17px; }
+:root[data-fluent] .lesson-row p { font-size: 13px; line-height: 1.7; }
+:root[data-fluent] .lesson-breadcrumb { margin-bottom: 14px; font-size: 12px; }
+:root[data-fluent] .lesson-heading { margin-bottom: 20px; }
+:root[data-fluent] .lesson-heading h1 { font-size: 32px; line-height: 1.17; letter-spacing: -.03em; margin-bottom: 10px; }
+:root[data-fluent] .lesson-heading p { font-size: 14px; line-height: 1.65; }
+:root[data-fluent] .lesson-kicker { margin-bottom: 11px; font-size: 11px; }
+:root[data-fluent] .lesson-tabs {
+  position: sticky; top: var(--chrome-height); z-index: 30; background: var(--bg); padding-top: 8px;
+  gap: 25px; margin-bottom: 21px; border-bottom: 1px solid var(--line);
+}
+:root[data-fluent] .lesson-tabs a { padding: 9px 1px 12px; min-height: 39px; font-size: 12px; position: relative; border-bottom: 0; }
+:root[data-fluent] .lesson-tabs a[aria-current]::after { content: ''; position: absolute; height: 3px; left: 7px; right: 7px; bottom: 0; border-radius: 3px; background: var(--purple); }
+:root[data-fluent] .study-layout { grid-template-columns: minmax(0,1fr) 210px; gap: 23px; }
+:root[data-fluent] .study-main { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 25px 28px; }
+:root[data-fluent] .study-main p { font-size: 15px; line-height: 1.84; max-width: 82ch; }
+:root[data-fluent] .study-main h2 { font-size: 25px; line-height: 1.3; }
+:root[data-fluent] .study-main h3 { font-size: 21px; line-height: 1.3; }
+:root[data-fluent] .study-intro { background: transparent; border: 0; border-radius: 0; padding: 0 0 17px; border-bottom: 1px solid var(--line); }
+:root[data-fluent] .study-intro h2 { font-size: 26px; }
+:root[data-fluent] .study-intro-meta { gap: 16px; margin-bottom: 14px; }
+:root[data-fluent] .study-intro-meta>.eyebrow { color: var(--purple); font-size: 10px; }
+:root[data-fluent] .study-intro-meta>span:last-child { font-size: 10px; max-width: 180px; }
+:root[data-fluent] .study-objectives { margin-top: 17px; gap: 9px; }
+:root[data-fluent] .study-objectives span { font-size: 12px; line-height: 1.6; }
+:root[data-fluent] .study-vocabulary { gap: 15px; padding: 19px 0; margin: 0 0 16px; border-bottom: 1px solid var(--line); }
+:root[data-fluent] .study-vocabulary dt { color: var(--text); font-size: 12px; margin-bottom: 6px; }
+:root[data-fluent] .study-vocabulary dd { font-size: 12px; line-height: 1.7; }
+:root[data-fluent] .study-concepts>section { margin: 23px 0; gap: 14px; }
+:root[data-fluent] .study-concepts h3 { font-size: 22px; margin-bottom: 10px; }
+:root[data-fluent] .study-section-heading { margin-top: 26px; padding-top: 22px; }
+:root[data-fluent] .study-section-heading h2 { margin-bottom: 14px; }
+:root[data-fluent] .study-section-heading .eyebrow { font-size: 9px; margin-bottom: 9px; }
+:root[data-fluent] .study-main :is(.study-intro[id],.study-section-heading[id],article[data-chapter-step][id]) { scroll-margin-top: var(--reading-offset); }
+:root[data-fluent] .study-main .lesson-depth { margin: 23px 0; padding: 0; border: 0; }
+:root[data-fluent] .study-step-intro { font-size: 13px; line-height: 1.75; }
+:root[data-fluent] .study-main .study-steps>article { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; margin: 17px 0; padding: 21px; }
+:root[data-fluent] .study-steps>article>header { gap: 13px; margin-bottom: 16px; }
+:root[data-fluent] .study-step-number { width: 32px; height: 32px; border-radius: 7px; background: var(--lavender); color: var(--purple); }
+:root[data-fluent] .study-steps header h3 { font-size: 23px; margin: 0; }
+:root[data-fluent] .study-steps header .eyebrow { font-size: 9px; }
+:root[data-fluent] .study-worked { background: var(--surface-2); border-left: 3px solid var(--purple); border-radius: 0 6px 6px 0; padding: 18px 20px; margin: 17px 0; }
+:root[data-fluent] .study-worked p { font-size: 14px; line-height: 1.8; }
+:root[data-fluent] .study-recall { background: var(--surface-2); border: 1px solid var(--line); border-radius: 7px; padding: 0 15px; }
+:root[data-fluent] .study-recall summary { font-size: 13px; line-height: 1.7; padding: 15px 0; cursor: pointer; }
+:root[data-fluent] .study-recall summary>span { font-size: 11px; color: var(--purple); }
+:root[data-fluent] .study-step-links { margin-top: 17px; gap: 13px; flex-wrap: wrap; }
+:root[data-fluent] .study-step-links :is(a,button) { font-size: 11px; min-height: 30px; }
+:root[data-fluent] .study-infographic { border-radius: 10px; margin: 19px 0; }
+:root[data-fluent] .study-figure-top { padding: 14px 16px; background: var(--surface-2); }
+:root[data-fluent] .study-figure-top strong { font-size: 13px; }
+:root[data-fluent] .study-figure-controls { padding: 10px; gap: 6px; background: var(--surface-2); }
+:root[data-fluent] .study-figure-controls button { border-radius: 5px; padding: 10px; font-size: 11px; min-height: 44px; }
+:root[data-fluent] .study-figure-controls button[aria-pressed=true] { background: var(--surface); color: var(--purple); border-color: var(--border-hover); box-shadow: 0 1px 3px #13213c12; }
+:root[data-fluent] .study-metrics { padding: 18px; gap: 13px; }
+:root[data-fluent] .study-metrics output { font-size: 23px; }
+:root[data-fluent] .study-infographic>figcaption { padding: 17px; }
+:root[data-fluent] .study-infographic>figcaption p { font-size: 13px; }
+:root[data-fluent] .study-source { padding: 20px; border-radius: 8px; background: var(--surface); }
+:root[data-fluent] .study-code { border: 1px solid var(--line); border-radius: 8px; }
+:root[data-fluent] .study-code figcaption { padding: 11px 15px; background: var(--surface-2); font-size: 11px; }
+:root[data-fluent] .study-code pre { padding: 19px; line-height: 1.7; font-size: 12px; }
+:root[data-fluent] .study-code .study-code-note { padding: 10px 15px; font-size: 11px; }
+:root[data-fluent] .study-outline { position: sticky; top: var(--reading-offset); align-self: start; max-height: calc(100dvh - var(--reading-offset) - 20px); overflow: auto; }
+:root[data-fluent] .study-outline-inner { padding: 10px; border: 0; background: transparent; }
+.chapter-contents { border: 1px solid var(--line); border-radius: 9px; background: var(--surface); overflow: hidden; }
+.chapter-contents>summary { display: flex; flex-direction: column; gap: 5px; list-style: none; padding: 15px 16px 7px; cursor: pointer; font-size: 12px; font-weight: 650; }
+.chapter-location { font-size: 10px; color: var(--muted); font-weight: 400; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+:root[data-fluent] .study-outline .eyebrow { display: none; }
+:root[data-fluent] .study-outline nav { display: block; }
+:root[data-fluent] .study-outline nav button { min-height: 32px; padding: 8px 9px; font-size: 11px; line-height: 1.5; border-radius: 5px; }
+:root[data-fluent] .study-outline nav button[aria-current] { color: var(--purple); background: var(--lavender); border-color: var(--purple); }
+:root[data-fluent] .study-outline nav ol { display: block; margin: 0 0 8px 9px; padding-left: 16px; }
+:root[data-fluent] .study-outline ol button { font: 11px/1.6 var(--font-ui); padding: 7px 5px; }
+:root[data-fluent] .study-outline-note { margin: 12px 3px; padding-top: 13px; }
+:root[data-fluent] .study-outline-note p { font-size: 11px; }
+.chapter-reading-position { height: 3px; margin: 0 1px 8px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.chapter-reading-position>i { height: 100%; background: var(--purple); display: block; }
+:root[data-fluent] .study-table-scroll { margin-top: 16px; }
+:root[data-fluent] .study-variation-table { font-size: 12px; line-height: 1.75; }
+:root[data-fluent] .study-variation-table :is(td,th) { padding: 14px; }
+:root[data-fluent] .study-transfer { padding-top: 24px; }
+:root[data-fluent] .study-transfer h3 { font: 650 24px/1.3 var(--font-ui); }
+:root[data-fluent] .study-next { margin-bottom: 0; }
+:root[data-fluent] :is(.notes-layout,.quiz-layout,.about-grid) { gap: 23px; }
+:root[data-fluent] .quiz-card { border-radius: 12px; padding: 25px; }
+:root[data-fluent] .quiz-option { border-radius: 7px; font-size: 14px; padding: 14px; }
+:root[data-fluent] .quiz-option:has(input:checked) { border-color: var(--purple); background: var(--lavender); }
+:root[data-fluent] .reference-card { border-radius: 8px; padding: 18px; }
+:root[data-fluent] .reference-card h3 { font-size: 17px; }
+:root[data-fluent] .reference-card p { font-size: 13px; line-height: 1.75; }
+:root[data-fluent] .reference-card small { font-size: 10px; }
+:root[data-fluent] .atlas-page-heading { margin: 6px 0 20px; padding-bottom: 20px; }
+:root[data-fluent] .atlas-page-heading h1 { font-size: 40px; margin: 14px 0 17px; }
+:root[data-fluent] .atlas-page-heading h1 em { font: inherit; color: var(--purple); }
+:root[data-fluent] .atlas-heading-note { display: none; }
+:root[data-fluent] .atlas-breadcrumb { margin-bottom: 20px; }
+:root[data-fluent] .visual-title { margin-bottom: 22px; }
+:root[data-fluent] .visual-title :is(h1,h2) { font-size: 29px; }
+:root[data-fluent] .v-workbench { border-radius: 11px; }
+:root[data-fluent] .v-toolbar { padding: 10px; }
+:root[data-fluent] .v-stages button { font-size: 11px; border-radius: 5px; }
+:root[data-fluent] .v-inspector { background: var(--surface-2); }
+:root[data-fluent] .v-inspector-body { padding: 18px; }
+:root[data-fluent] .v-control { margin-bottom: 19px; }
+:root[data-fluent] .v-metrics { padding: 19px; }
+:root[data-fluent] .v-metrics output { font-size: 23px; }
+:root[data-fluent] .visual-lab .stage-explanation { border-radius: 8px; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--purple); }
+:root[data-fluent] .visual-transfer h2 { font: 650 25px/1.3 var(--font-ui); }
+:root[data-fluent] .workspace-pane-switch { display: none; }
+:root[data-fluent] .lab-toolbar { padding: 11px 14px; }
+:root[data-fluent] :is(.lab-toolbar,.lab-grid) { border-radius: 9px; }
+:root[data-fluent] .lab-grid { border-top: 1px solid var(--line); margin-top: 7px; }
+:root[data-fluent] .coach-panel { padding: 19px; margin-top: 17px; border-radius: 9px; }
+:root[data-fluent] .runtime-intro p { color: #626b78; }
+:root[data-fluent] .runtime-intro small { color: #667080; }
+:root[data-fluent] .runtime-intro .secondary { background: #eef5ff; color: #135a9b; border-color: #bacde2; }
+:root[data-fluent] .playground-select { gap: 13px; margin-bottom: 17px; }
+:root[data-fluent] .runtime-package-note { font-size: 12px; line-height: 1.75; }
+:root[data-fluent] :is(.guide-card,.ab-card,.dw-card,.ip-card) { padding: 22px; }
+:root[data-fluent] :is(.guide-card,.ab-card,.dw-card,.ip-card) h2 { font-size: 22px; }
+:root[data-fluent] .ip-heading h1, :root[data-fluent] .dw-heading h1 { font-size: 32px; }
+/* Extra density only affects spacing, never shrinks reading text or examples. */
+:root[data-fluent][data-density=comfortable] .study-main { padding: 33px; }
+:root[data-fluent][data-density=comfortable] .study-main p { font-size: 16px; line-height: 1.9; }
+:root[data-fluent][data-density=comfortable] .study-section-heading { margin-top: 36px; padding-top: 28px; }
+:root[data-fluent][data-density=comfortable] .study-main .study-steps>article { padding: 28px; margin: 25px 0; }
+:root[data-fluent][data-density=comfortable] .lesson-row { padding-block: 25px; }

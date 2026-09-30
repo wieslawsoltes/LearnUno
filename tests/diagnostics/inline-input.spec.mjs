@@ -3,46 +3,56 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {commonControlLessons} from '../../site/src/learning/interface-patterns/common-controls.mjs';
 import {runWorkspaceCode} from '../browser/workspace-driver.mjs';
 
-// Temporary observation, not a release gate. All input setup is authored C#;
-// no DOM properties or listeners are patched by the test.
-test('inspect managed inline focus and offscreen iframe actionability',async({page})=>{
- const results=[];
+const original=commonControlLessons.find(l=>l.id==='richtext-reading').code;
+const adapter=`link.IsTabStop = true;
+        // This pinned NativeRenderer exposes inlines as UIElement at runtime.
+        if (OperatingSystem.IsBrowser() && (object)link is UIElement browserLink)
+        {
+            browserLink.SetHtmlAttribute("tabindex", "0");
+            browserLink.KeyDown += (_, args) =>
+            {
+                if (args.Key != Windows.System.VirtualKey.Enter) return;
+                args.Handled = true;
+                ShowHelp();
+            };
+        }`;
+const variants=[
+ ['native-tab-index',original.replace('link.IsTabStop = true;','link.IsTabStop = true;\n        ((UIElement)(object)link).SetHtmlAttribute("tabindex", "0");')],
+ ['native-key-adapter',original.replace('link.IsTabStop = true;',adapter)]
+];
+// A broken anchor can navigate its frame. Each hypothesis has a fresh browser
+// context, so that one failure cannot poison the remaining measurements.
+for(const [name,code]of variants)test(name,async({page})=>{
+ const result={name};
  try{
   await page.goto('./#/design-labs/richtext-reading/playground');
-  const frame=page.frameLocator('iframe[title="Real Uno WebAssembly preview"]');
-  const original=commonControlLessons.find(l=>l.id==='richtext-reading').code;
-  const variants=[
-   ['explicit-tab-index',original.replace('link.IsTabStop = true;','link.IsTabStop = true;\n        link.TabIndex = 0;')],
-   ['paragraph-tab-stop',original.replace('link.IsTabStop = true;','link.IsTabStop = true;\n        link.TabIndex = 0;\n        paragraph.IsTabStop = true;')],
-   ['loaded-tab-index',original.replace('return root;','root.Loaded += (_, _) => { link.IsTabStop = false; link.TabIndex = 0; link.IsTabStop = true; };\n        return root;')],
-   ['native-tab-index',original.replace('link.IsTabStop = true;','link.IsTabStop = true;\n        ((UIElement)(object)link).SetHtmlAttribute("tabindex", "0");')]
-  ];
-  for(const [name,code]of variants){
-   try{
-    await runWorkspaceCode(page,code);
-    await page.locator('iframe[title="Real Uno WebAssembly preview"]').scrollIntoViewIfNeeded();
-    const link=frame.getByRole('link',{name:'Read keyboard guidance',exact:true});
-    const before=await link.evaluate(e=>({html:e.outerHTML,tabIndex:e.tabIndex,rects:[...e.getClientRects()].map(r=>r.toJSON())}));
-    await link.focus();await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
-    const focused=await link.evaluate(e=>document.activeElement===e);
-    await link.focus();await page.keyboard.press('Enter');
-    const help=await frame.getByText('Help topic:',{exact:false}).allTextContents();
-    results.push({name,before,focused,help});
-   }catch(error){results.push({name,error:error.message,output:await page.locator('#run-output').textContent()});}
-  }
-  await page.setViewportSize({width:390,height:844});
-  await runWorkspaceCode(page,original);
+  await runWorkspaceCode(page,code);
   const iframe=page.locator('iframe[title="Real Uno WebAssembly preview"]');
-  const beforeScroll=await iframe.boundingBox();
   await iframe.scrollIntoViewIfNeeded();
+  const frame=page.frameLocator('iframe[title="Real Uno WebAssembly preview"]');
   const link=frame.getByRole('link',{name:'Read keyboard guidance',exact:true});
-  let clicked=false,error=null;
-  try{await link.click({timeout:10000});clicked=true;}catch(e){error=e.message;}
-  results.push({name:'mobile-scrolled-preview',beforeScroll,clicked,error,help:await frame.getByText('Help topic:',{exact:false}).allTextContents()});
-  await expect(page.locator('#run-output')).toHaveClass(/success/);
- }finally{
-  await mkdir('artifacts/inline',{recursive:true});
-  await writeFile('artifacts/inline/behavior.json',JSON.stringify(results,null,2));
-  console.log('INLINE_BEHAVIOR '+JSON.stringify(results));
- }
+  result.before=await link.evaluate(e=>({html:e.outerHTML,tabIndex:e.tabIndex,url:location.href}));
+  await link.focus();await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
+  result.focused=await link.evaluate(e=>document.activeElement===e);
+  await expect(link).toBeFocused();await page.keyboard.press('Enter');
+  await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible({timeout:10000});
+  result.activated=true;result.after=await link.evaluate(()=>location.href);
+  await runWorkspaceCode(page,code);result.rerun=true;
+ }catch(error){result.error=error.message;throw error;}
+ finally{await mkdir('artifacts/inline',{recursive:true});await writeFile('artifacts/inline/'+name+'.json',JSON.stringify(result,null,2));}
+});
+
+test('mobile preview reveal permits normal pointer activation',async({page})=>{
+ const result={name:'mobile-preview'};
+ try{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('./#/design-labs/richtext-reading/playground');
+  const frame=await runWorkspaceCode(page,original);
+  result.preview=await page.locator('iframe[title="Real Uno WebAssembly preview"]').boundingBox();
+  const link=frame.getByRole('link',{name:'Read keyboard guidance',exact:true});
+  await link.click({timeout:15000});
+  await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible();
+  result.activated=true;
+ }catch(error){result.error=error.message;throw error;}
+ finally{await mkdir('artifacts/inline',{recursive:true});await writeFile('artifacts/inline/mobile.json',JSON.stringify(result,null,2));}
 });

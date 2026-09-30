@@ -3,3 +3,10 @@
 @import url('./fluent-surfaces.css');
 @import url('./fluent-reading.css');
 @import url('./fluent-mobile.css');
+
+/* Keep explicit mobile pane selection below the fixed reading chrome. */
+@media (max-width: 720px) {
+  :root[data-fluent] .workspace-pane-switch {
+    scroll-margin-top: calc(var(--chrome-height) + 10px);
+  }
+}

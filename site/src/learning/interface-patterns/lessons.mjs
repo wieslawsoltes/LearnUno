@@ -1,3 +1,4 @@
+import {commonControlLessons} from "./common-controls.mjs";
 /** Original source-informed design lessons. Mockups and Uno execution are explicitly separate. */
 export const interfaceLessons = [
   {
@@ -769,4 +770,6 @@ export const interfaceLessons = [
     "pitfall": "The HTML mockup is a design experiment, not an Uno renderer. The separate C# playground creates actual Uno controls; validate native devices and assistive technology independently.",
     "transfer": "Make a settings card with semantic text roles and a compact/comfortable layout. Test theme changes after editing content and at increased text scale."
   }
+,
+  ...commonControlLessons
 ];

@@ -1,0 +1,46 @@
+name: Apply reviewed Fluent input regressions
+on:
+  push:
+    branches: [design/fluent-learning-shell]
+    paths: ['.github/workflows/finalize-fluent-input.yml']
+permissions:
+  contents: write
+jobs:
+  source:
+    if: github.repository == 'wieslawsoltes/LearnUno'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/fluent-learning-shell
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply exact six-file regression patch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor c4189ba984a1397378bd8f9cd6d861de660a98e3 HEAD
+          gh api repos/$GITHUB_REPOSITORY/git/blobs/85d6f820740bda4b8bffc845989827e2692ac552 --jq .content | base64 --decode > /tmp/fixes.gz
+          echo '4caa785b6f5a44e6c8440c97f3e39773f9c716a93c72b39e3317664d18b67625  /tmp/fixes.gz' | sha256sum -c -
+          gzip -dc /tmp/fixes.gz > /tmp/fixes.patch
+          echo '65b785d2b8afdeca422bd3c99a2da43008c50c2b20d0c64a86d0a1685b675d0b  /tmp/fixes.patch' | sha256sum -c -
+          git apply --check /tmp/fixes.patch
+          git apply --index /tmp/fixes.patch
+          python - <<'PY'
+          import subprocess
+          expected = {'site/src/learning/interface-patterns/common-controls.mjs', 'site/src/learning/interface-patterns/rich-text-contract.mjs', 'tests/browser/common-controls.spec.mjs', 'tests/browser/fluent-touch.spec.mjs', 'tests/fluent-input.test.mjs', 'docs/fluent-validation.md'}
+          actual = set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          if actual != expected: raise SystemExit('Unexpected patch paths')
+          PY
+      - run: npm ci
+      - run: npm test
+      - name: Commit reviewed source changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: preserve mobile Run presentation and support explicit inline keyboard activation'
+          git push origin HEAD:design/fluent-learning-shell

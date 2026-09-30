@@ -112,12 +112,13 @@ code:prefix+`public static class Lesson
         link.Inlines.Add(new Run { Text = "Read keyboard guidance" });
         void ShowHelp() => help.Text = "Help topic: keyboard navigation and visible focus";
         link.Click += (_, _) => ShowHelp();
-        // Browser-specific adapter: this pinned renderer exposes Hyperlink as a
-        // UIElement, but Enter does not raise its managed Click event by default.
-        // Keep this handler in the browser example, not the portable project one.
-        link.KeyDown += (_, args) =>
+        // Pinned-browser adapter: Hyperlink has no KeyDown in the reference API.
+        // Observe routed input on its owning TextBlock, only for the focused link.
+        // Keep this workaround in the browser example, not the project comparison.
+        paragraph.KeyDown += (_, args) =>
         {
-            if (args.Key != Windows.System.VirtualKey.Enter) return;
+            if (args.Key != Windows.System.VirtualKey.Enter ||
+                link.FocusState == FocusState.Unfocused) return;
             args.Handled = true;
             ShowHelp();
         };

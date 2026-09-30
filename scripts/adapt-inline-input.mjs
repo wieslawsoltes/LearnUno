@@ -1,8 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 
-// One-time guarded application of the implementation exercised by the real
-// browser probe. The normal full suite will validate the committed result.
+// Apply only the source adaptation that the actual browser probe just verified.
 const result=JSON.parse(await readFile('artifacts/inline/native-key-adapter.json','utf8'));
 if(!result.reachable||!result.activated||!result.rerun||result.error)throw new Error('Inline keyboard contract was not proven.');
 const path='site/src/learning/interface-patterns/common-controls.mjs';
@@ -32,6 +31,27 @@ const after=`        // Compatibility adapter for this pinned browser NativeRend
             };
         }`;
 if(source.split(before).length!==2)throw new Error('Ambiguous inline adapter source.');
-source=source.replace(before,after);
-await writeFile(path,source);
-console.log('Applied the observed browser inline keyboard adapter.');
+await writeFile(path,source.replace(before,after));
+
+const testPath='tests/browser/common-controls.spec.mjs';
+let test=await readFile(testPath,'utf8');
+const oldTest=` // Start before the inline link, then reach it using genuine keyboard navigation.
+ await keyboardLink.focus();await keyboardLink.press('Shift+Tab');
+ await page.keyboard.press('Tab');await expect(keyboardLink).toBeFocused();
+ await keyboardLink.press('Enter');`;
+const newTest=` // Enter from the preceding toolbar with real Tab events. The Uno root
+ // has an intermediate stop; Shift+Tab from a programmatically focused inline
+ // is not an inverse traversal guarantee. Never patch or directly focus the link.
+ await page.locator('iframe[title="Real Uno WebAssembly preview"]').scrollIntoViewIfNeeded();
+ await page.getByRole('button',{name:'Fluid preview',exact:true}).focus();
+ for(let attempt=0;attempt<8;attempt++){
+  await page.keyboard.press('Tab');
+  if(await keyboardLink.evaluate(node=>document.activeElement===node))break;
+ }
+ await expect(keyboardLink).toBeFocused();
+ const frameUrl=await keyboardLink.evaluate(()=>location.href);
+ await page.keyboard.press('Enter');
+ expect(await keyboardLink.evaluate(()=>location.href)).toBe(frameUrl);`;
+if(test.split(oldTest).length!==2)throw new Error('Ambiguous keyboard regression anchor.');
+await writeFile(testPath,test.replace(oldTest,newTest));
+console.log('Applied the proven inline adapter and genuine forward-Tab regression.');

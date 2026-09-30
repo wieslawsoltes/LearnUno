@@ -38,7 +38,7 @@ jobs:
           npm test
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add site/src/learning/interface-patterns/common-controls.mjs
+          git add site/src/learning/interface-patterns/common-controls.mjs tests/browser/common-controls.spec.mjs
           git commit -m 'fix: enable native inline tab navigation and managed Enter activation'
           git push origin HEAD:design/fluent-learning-shell
       - uses: actions/upload-artifact@v4

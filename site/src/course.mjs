@@ -1,3 +1,8 @@
+import csharpApps from './course/csharp-apps.mjs';
+import everydayControls from './course/everyday-controls.mjs';
+import mvvmPatterns from './course/mvvm-patterns.mjs';
+import navigationPatterns from './course/navigation-patterns.mjs';
+import appComposition from './course/app-composition.mjs';
 import foundations from './course/foundations.mjs';
 import layout from './course/layout.mjs';
 import binding from './course/binding.mjs';
@@ -18,9 +23,26 @@ const definitions=[
 ['performance','Performance engineering','Advanced','Understand layout and rendering costs. Measure, optimize, and verify.','bolt',performance],
 ['platforms','Every platform, deliberately','Advanced','Work with renderers, interop, capabilities, assets, and deployment lifecycles.','monitor',platforms],
 ['quality','Quality & production','Advanced','Build evidence with tests, resilience, reproducible delivery, and a complete project.','target',quality],
-['internals','Framework internals','Expert','Read the implementation, write a panel, reason about invalidation, and contribute a tested change.','code',internals]
+['internals','Framework internals','Expert','Read the implementation, write a panel, reason about invalidation, and contribute a tested change.','code',internals],
+["csharp-apps","C# for app builders","Beginner","Validate input, preserve identity, own asynchronous work and make application boundaries explicit.","code",csharpApps],
+["everyday-controls","Everyday Uno controls","Beginner","Build editable forms, keyed selections, navigation shells, dialogs and searchable pickers.","grid",everydayControls],
+["mvvm-patterns","MVVM patterns in practice","Intermediate","Use actual CommunityToolkit observable objects, commands, validation, messaging and edit transactions.","layers",mvvmPatterns],
+["navigation-patterns","Navigation and user flows","Intermediate","Pass typed data, inspect journals, validate links, guard exits and return explicit results.","arrow",navigationPatterns],
+["app-composition","DI and service composition","Advanced","Compose real service graphs, document scopes, validate lifetimes and own factories, decorators and settings.","tree",appComposition]
 ];
-export const tracks=definitions.map(([id,title,level,summary,icon,items],index)=>({id,title,level,summary,icon,index,prerequisites:index?[definitions[index-1][0]]:[],lessons:items.map((lesson,order)=>({...lesson,track:id,level,order,number:index*6+order+1})),minutes:items.reduce((sum,l)=>sum+l.minutes,0)}));
+const prerequisiteOverrides={
+ 'csharp-apps':['foundations'], 'everyday-controls':['foundations','layout'],
+ 'mvvm-patterns':['binding','csharp-apps'], 'navigation-patterns':['architecture','everyday-controls'],
+ 'app-composition':['architecture','mvvm-patterns']
+};
+let nextNumber=1;
+export const tracks=definitions.map(([id,title,level,summary,icon,items],index)=>({
+ id,title,level,summary,icon,index,
+ prerequisites:prerequisiteOverrides[id]??(index?[definitions[index-1][0]]:[]),
+ lessons:items.map((lesson,order)=>({...lesson,track:id,level,order,number:nextNumber++})),
+ minutes:items.reduce((sum,l)=>sum+l.minutes,0)
+}));
+export const appBuildingTrackIds=Object.freeze(['csharp-apps','everyday-controls','mvvm-patterns','navigation-patterns','app-composition']);
 export const lessons=tracks.flatMap(track=>track.lessons);
 export const lessonMap=new Map(lessons.map(lesson=>[lesson.id,lesson]));
 export const trackMap=new Map(tracks.map(track=>[track.id,track]));

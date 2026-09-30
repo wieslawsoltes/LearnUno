@@ -1,0 +1,64 @@
+{
+  "id": "mvvm-drafts",
+  "scenario": "An edit form needs Cancel that genuinely restores the last accepted value and Save that does not lie about persistence. Build a draft model with explicit dirty state and commands derived from it. The lesson commits to an in-memory snapshot; later repository integration must preserve the same distinction across asynchronous success, failure, and concurrent edits.",
+  "vocabulary": [
+    {
+      "term": "Committed snapshot",
+      "meaning": "The most recent value accepted by the chosen persistence or transaction boundary."
+    },
+    {
+      "term": "Dirty state",
+      "meaning": "Whether the editable draft differs from the committed baseline under the application’s comparison policy."
+    },
+    {
+      "term": "Rollback",
+      "meaning": "Restoring the draft or accepted state according to an explicit transaction policy, not merely hiding the editor."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "An editor’s current text is not the same as accepted domain state. Keep a baseline and a draft, then derive dirty state from their comparison. This makes Cancel meaningful and prevents every keystroke from mutating a shared record displayed elsewhere. Choose whether comparison occurs before or after normalization and keep that rule consistent with the save behavior.",
+      "worked": "The model starts with Original title in both fields. Typing a replacement changes Draft and IsDirty while Summary still reports the old saved title. The view synchronizes the TextBox when Cancel changes the model, but the equality check avoids a pointless text-assignment loop.",
+      "question": "Why does Cancel need a separate baseline?",
+      "answer": "Without a preserved accepted value, the editor cannot distinguish what to restore from the text currently being modified."
+    },
+    {
+      "explain": "Save requires a dirty and valid draft; Cancel requires a dirty draft. Both predicates should observe the same model state and be invalidated after every relevant transition. Avoid separate manually maintained flags that drift apart, such as Save enabled while IsDirty is false. Calculated properties and command notifications must be kept coherent.",
+      "worked": "Enter two characters. The draft is dirty, so Cancel is available, but Save remains unavailable because the validation rule fails. Enter a valid longer title and both commands become available. This distinction gives useful feedback: invalid edits can still be discarded without ever becoming committed state.",
+      "question": "Should an invalid draft disable Cancel?",
+      "answer": "Usually no. The user must be able to abandon invalid edits. Cancel depends on whether there are changes, not on whether those changes pass save validation."
+    },
+    {
+      "explain": "The fixture’s Save action trims and replaces its in-memory baseline synchronously. A real repository save must be awaited before declaring success, and failures should preserve the draft. If the user can keep editing during the request, capture the submitted snapshot and avoid replacing a newer draft with an older accepted result. Use versions for concurrent writers.",
+      "worked": "Commit a title and then edit it again. Discard edits returns to the most recently committed title, not necessarily the original startup value. In an asynchronous extension, submit revision one, type revision two while waiting, and decide whether accepting revision one updates only the baseline or also the visible draft.",
+      "question": "What bug occurs when a late save overwrites current Draft?",
+      "answer": "The application can erase edits typed after the request started. Capture request identity and keep accepted baseline updates separate from newer in-progress edits."
+    },
+    {
+      "explain": "A navigation guard can ask whether a dirty draft should be saved, discarded, or kept. It should await a typed decision and only then change destination. The guard must not assume that choosing Save means the repository already succeeded. Keep Cancel editing distinct from Cancel navigation and test both so a rejected transition does not silently clear the draft.",
+      "worked": "Use the navigation-guards lesson to connect this model to a leave request. Test invalid drafts, failed saves, discard, and staying on the page. Reopen the same record with a newer version and define conflict handling rather than treating a stable task ID as permission to overwrite every external update.",
+      "question": "Does accepting a Save prompt guarantee navigation can proceed?",
+      "answer": "Only after the actual save succeeds under the application’s policy. A user choice to save is intent; persistence acceptance is a later result."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Edit to an invalid short title",
+      "expected": "Cancel is available while Save is unavailable.",
+      "why": "Dirty state and validation are different conditions."
+    },
+    {
+      "change": "Commit, edit again, then discard",
+      "expected": "The draft returns to the latest committed baseline.",
+      "why": "Cancel restores accepted state rather than the initial constructor value."
+    }
+  ],
+  "bridge": "Add a repository, a versioned baseline, and an asynchronous Save command. Test failed saves, concurrent typing, cancel, and guarded navigation. Keep UI focus behavior in the view while the model owns draft state, validation, and the accepted transaction result.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/observableobject",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

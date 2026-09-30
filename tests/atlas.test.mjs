@@ -5,7 +5,7 @@ import {lessons} from '../site/src/course.mjs';
 import {scene} from '../site/src/atlas/scenes.mjs';
 import {gridLayout,boxGeometry,visibleRange,bindingTransition,rebind,effectiveValue,easing,raceState,stateTransition,damageTiles} from '../site/src/atlas/models.mjs';
 
-test('sixty distinct visual labs cover every existing lesson',()=>{assert.equal(labs.length,60);assert.equal(new Set(labs.map(l=>l.id)).size,60);for(const lesson of lessons)assert(labs.some(l=>l.id===labForLesson(lesson)));});
+test('ninety distinct visual labs cover every existing lesson',()=>{assert.equal(labs.length,90);assert.equal(new Set(labs.map(l=>l.id)).size,90);for(const lesson of lessons)assert(labs.some(l=>l.id===labForLesson(lesson)));});
 for(const lab of labs)test('render contract and bounded shared inputs: '+lab.id,()=>{
  const s={...lab.defaults,revision:0,trace:[],status:'idle',sequence:0};
  const result=scene(lab,s);

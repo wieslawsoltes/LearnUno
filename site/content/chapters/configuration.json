@@ -53,5 +53,11 @@
       "why": "Downloadable code and configuration are not a confidential server-side store."
     }
   ],
-  "bridge": "The pinned application/server examples show real configuration boundaries. The lesson dictionary isolates precedence only; it is not a substitute for the hosting provider, options validation or secret-management architecture used in a production app."
+  "bridge": "The pinned application/server examples show real configuration boundaries. The lesson dictionary isolates precedence only; it is not a substitute for the hosting provider, options validation or secret-management architecture used in a production app.",
+  "continueWith": [
+    {
+      "id": "options-validation",
+      "title": "Validate typed settings at the configuration boundary"
+    }
+  ]
 }

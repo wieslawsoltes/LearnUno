@@ -1,0 +1,302 @@
+[
+  {
+    "id": "one-codebase",
+    "codeHash": "cd0738e778d8d5b00c22419d818ad3301ffa7daefd3c123c3e699ed99a3034f1",
+    "solutionHash": "26c9a606bd530d7d5b98045994e981370974a9e8691c07f2c54b440f3c97e225"
+  },
+  {
+    "id": "csharp-essentials",
+    "codeHash": "93acda5a03061a6a8cfb5e7a2a29dad68c779f3db12d1e391ccbda52c57d6e66",
+    "solutionHash": "c4180891ac5ba7d3b2f73afec33b15850d4ea230ac88a2b29beb62f9a6cdb214"
+  },
+  {
+    "id": "project-setup",
+    "codeHash": "a10ab0692aec6d1b1fd864feb3eba6e3e61f718373d152e795d437bcbca24005",
+    "solutionHash": "ccfb3c8ab809a4d7e16b1dbfcd1c92263cdccd07aa700c6c5980a1aa5a14dee3"
+  },
+  {
+    "id": "xaml-first",
+    "codeHash": "a1cb7d14848d59b16f6ccb549e4f8d916029abd8d12fb54f84d40bceb035e783",
+    "solutionHash": "3c35a557cb69839f57b6387d7f9d7599a612a69a1f421b70140247927f96330a"
+  },
+  {
+    "id": "events",
+    "codeHash": "283c40e01d2161bacafe647e9d019d101c53e0b723f726b7e248f71f3628ca12",
+    "solutionHash": "9754e2c8612af366d64d7f2b6e20cf3ea58237447a230380812fc20713987fa0"
+  },
+  {
+    "id": "debug-loop",
+    "codeHash": "5f21bc4d9b5a11827af63a00d6e860cfa05b53b84049d061d3b489e271cba64a",
+    "solutionHash": "f9fafc7eebad731513a17edba19761d0a066f1a39a36fe4e0a208c1f3cc1d05d"
+  },
+  {
+    "id": "layout-panels",
+    "codeHash": "f9476c7a78d27f39f9f2481dfad90aa82e330db501b929557baaf244f83c3bab",
+    "solutionHash": "861ec1fc2dc510f9692265b8582f09a331ad4a5b48182c0f742788c489727eed"
+  },
+  {
+    "id": "grid-sizing",
+    "codeHash": "57d78d93ffaca2a5806d0a02effbb51253061780d3f3ae6b7af43c12e0f55c91",
+    "solutionHash": "39897bbbbef03ad1bb8c6a3a44b4f15731e2749571fcfcef6df3671787047d66"
+  },
+  {
+    "id": "spacing-alignment",
+    "codeHash": "e470d2eadc1af97d3567b5549a7ea76c4943ccae649d9c1594f8fc6a7520caa5",
+    "solutionHash": "1b52e785840fe0229e6f57067adcac5c39029690523a7fe64569c3115fac1555"
+  },
+  {
+    "id": "resources",
+    "codeHash": "6444b61a1941caaa23ef9f3fa7a0091689dfd0354283cc2a84842d109fc9d733",
+    "solutionHash": "88f958ebf9c45c86df0cde07cbf2108fe5a6fbe7f0e5d76aedfd7cdb81a11980"
+  },
+  {
+    "id": "data-templates",
+    "codeHash": "7747ec8ffbd79318a8284c6afce00181251fe67125dc846810523f36f79701c9",
+    "solutionHash": "7dba73a376d5f35453de3100cfbc31ffee7e4f2e4654b136a9283dace2d091c3"
+  },
+  {
+    "id": "responsive-layout",
+    "codeHash": "537ef1264284bb5a625ab9c70d70793324e2c08074e509c7fe2c6a3b5f1dd8ea",
+    "solutionHash": "378d859312b530da2f53f429ea197633bb403866b12bfc97f8d649a366d8f2e0"
+  },
+  {
+    "id": "binding-flow",
+    "codeHash": "6d02c239b7b4ef01d87a2276a48c55b8be23edd0db7b616755040e821d73557d",
+    "solutionHash": "6f0ac7b12b291ed00fb0f0766f551f6f4546d1d3f90c2ce753e49452d7023550"
+  },
+  {
+    "id": "change-notification",
+    "codeHash": "0f8cacb49effce1eacffc9dab6364132a1c1314440de10febaed3ed2891f1544",
+    "solutionHash": "373ba6615184e9c0e94d068d3f68e466d7ba34d16204ba5f9ffe110534081208"
+  },
+  {
+    "id": "two-way",
+    "codeHash": "3b6cfe6cebe51e3f187d2bd3d902ad6e90e4876bfb2ce0052e70385d56d70002",
+    "solutionHash": "e4699e91ae04cfb52a3d5ad6e71586cfec610f83c91e344aa39c87d6eaef0399"
+  },
+  {
+    "id": "compiled-binding",
+    "codeHash": "33bdf7cf89cdc066d12d018064276b4dba423f600586469cc3339911cf094ca5",
+    "solutionHash": "86a9947ebfac0abb70f5cdf1275a50c69d2eafef6d8ceb3f0ae238d9668025f3"
+  },
+  {
+    "id": "observable-collections",
+    "codeHash": "389f84cedabf09c240f9285ba7053edaabd52534263c06e407dc17d715100ece",
+    "solutionHash": "03963a415a0127a8b8934d51e5a5d15f3f79f3b980314b727b58f79ab8080f48"
+  },
+  {
+    "id": "commands-validation",
+    "codeHash": "5417ded5e8f49a2b315eb5a86fbf8eaa6590d3c46d554af209b926691133187b",
+    "solutionHash": "f112a0c0133a46de6ef721b9ddf81c60ccd2244036beed28af232d788c33c75b"
+  },
+  {
+    "id": "mvvm",
+    "codeHash": "65c0451ed1d851ca8ebbe78ce0f61b3c905cda5dc216819bfb43c5d52a86dbbb",
+    "solutionHash": "6f50e5d06140a16e7d487c3ff6c3431c164a1a7dceb183fc217f4897538373fe"
+  },
+  {
+    "id": "mvux",
+    "codeHash": "1394a87dbf09c34935af8cda16415a3fc130955c738522f95fd5412914b80f6f",
+    "solutionHash": "6f430ff9855ca0c0f1921f3ca3a7ec0d7ab677dbed67c7ad81643d2aed150c32"
+  },
+  {
+    "id": "dependency-injection",
+    "codeHash": "3015cf31fc743a656a95eaab18af7b0f47f3fb84b7348c1cbefd15f700312540",
+    "solutionHash": "2801cb91f6ca563af16ea3476cb1e891440dbdc2f5b8f95e48626944be779ec0"
+  },
+  {
+    "id": "navigation",
+    "codeHash": "c1122bc96f63edbf71b0246d9ad87477bb11e5b062d6b814b5026f843a7d6a0b",
+    "solutionHash": "e477d52faf7abcbb06ac2311ed5b8515a7b3a60d8da5bffc10872a2a47c1e21f"
+  },
+  {
+    "id": "async-cancellation",
+    "codeHash": "95b7f5289af856d7fb1770c938e9219cc0247d6175bdd031ebde172ac5d66ab1",
+    "solutionHash": "f3f0a2dc46f264cb0f2572b0a4a11745f78bda13fb5c7dc611e50afa65617aa0"
+  },
+  {
+    "id": "persistence",
+    "codeHash": "9350d2b3d8463d5bd72de9b6d17f96dce92ddee8d0411f7a6527a7918288441d",
+    "solutionHash": "531d629f487080e478f5dab17a20e45376efb838b2ff0f293d292c7ed6520f07"
+  },
+  {
+    "id": "http-data",
+    "codeHash": "9ac39fa51895f256786ee11d3d52414637f1317bcc0817ed3668abc2bb70bda0",
+    "solutionHash": "d0c3577d41d007d109d994459a62d271d1559003d5909b31ec316712c9bd2766"
+  },
+  {
+    "id": "configuration",
+    "codeHash": "53324f5ecf838b196e6134a3501a04d4fd9fd380fff9c6e6bf1039039dc9ccc5",
+    "solutionHash": "c007192aa70f3b1c9d3e663d9491a9e09eb7a9aaca3c593b541481a53dae3f76"
+  },
+  {
+    "id": "localization",
+    "codeHash": "84293d1aa64028009158a300048c46425c09f9e1e25b0b82e653a89f1466109f",
+    "solutionHash": "ec556ae3a38243260d301a4ccfd1937a7fb240bde32854eee31ae917fc9c7ffe"
+  },
+  {
+    "id": "authentication",
+    "codeHash": "5f92f0298a964b1c763007fdd1151061651f630bff377b5d2a2df6a421e006e8",
+    "solutionHash": "7ce1ed049e89a70d34fa00803eda6fd40dbd91612f745b932c40aeb13f216a03"
+  },
+  {
+    "id": "logging",
+    "codeHash": "2086870b849a829bec198978b2fa778bf737194c74ea1540981f4c3ca0aae8f5",
+    "solutionHash": "909ee2325104f6927ab84a441c675da6e58dcb87e753d7a0729633368404be3b"
+  },
+  {
+    "id": "ecosystem",
+    "codeHash": "5750051fc873cbe23f2b24ae803462251a76d71c4ba0e7d7b2a34258d47ef4bb",
+    "solutionHash": "e2e7d28fb26adcb8be646081e6e146adfb959c6324d4bdb448bbfce1f31cf84f"
+  },
+  {
+    "id": "dependency-properties",
+    "codeHash": "3e3e11d8a602457ee32c831a7d22f1b2d07a19a9e753cdf7d05a300f8f170435",
+    "solutionHash": "d7d1610a8387fe7e9588ffcb4d8e42fb6cffe2d932aa1deeeea6fbcc6f6909c5"
+  },
+  {
+    "id": "control-templates",
+    "codeHash": "4f5575fe519acaabdd3a01c18633a1eaea94d0fe767a25730d146d8175ed1f2a",
+    "solutionHash": "7099c631e13e6c1b6f8f5bc37c1bcd0a6e0438e7c32ffd3f43e841afc19c4e48"
+  },
+  {
+    "id": "pointer-input",
+    "codeHash": "a6ace02b1ce60b8136749a13c938c97e7a383dcc0bbd480cd0e60a27a625753e",
+    "solutionHash": "38e8c458a0bf1ce7ea997c0c06525acf8a2b9a3262685ae92696e41d09f31d84"
+  },
+  {
+    "id": "accessibility",
+    "codeHash": "4a65a32e559545965e4593ea530210017a7acda41ad0645878ae370868ece48b",
+    "solutionHash": "24e4ddb4de9836556b1e199b83f34d18f701c6890da3a875780ccc5b01a3d21c"
+  },
+  {
+    "id": "animation",
+    "codeHash": "9b806b24a8269ccd70688cae5e15ffc5cc57ee171d50f854bbdc6d4a6ceaebab",
+    "solutionHash": "e0df4eeef5ff83c86f73dc7a8bf974107cade6857bc4e800dc1e72f13da8066b"
+  },
+  {
+    "id": "vector-graphics",
+    "codeHash": "51a86d584cb7a947acc4b89dd585e670c16de414652c825de179e9133f960fdd",
+    "solutionHash": "5bd1c21e523a9457af84b1e2a73a17bac0f73f58c2ce3d55a1de515f2f652349"
+  },
+  {
+    "id": "measure-arrange",
+    "codeHash": "d7fce9272a96aca55a0f9db5538f9578d0e2588b490dc3a83ae74170278d5df3",
+    "solutionHash": "fb5c111275f6f7cf941e54b02da38cfc5e3b920be348093cbedc904c5646ad30"
+  },
+  {
+    "id": "virtualization",
+    "codeHash": "82b668dd4ea9c10b5c2a05f9090e05348e12cc9107649ff84cb6532240a1144d",
+    "solutionHash": "82afcc6b6034931259671caf50b4f484ab5274c3e2454700c56881c4095df8a4"
+  },
+  {
+    "id": "allocation-budget",
+    "codeHash": "be94bd1a47604960098a3c7b77cf120f08dce79d68f3035ebe068b89c063195a",
+    "solutionHash": "8bd84aa92cbfaaa28170d62e9292fc37afaf99e6bc00bd41ed03c8a66207a7bf"
+  },
+  {
+    "id": "ui-thread",
+    "codeHash": "5eb21edd270566b07f3aa183ef78d44f0f83a8ebba48a198ee2c0a713b994f7c",
+    "solutionHash": "a7885bd53da685efb606705059df0db5745ad2b052f30c48327f7f57a23f5771"
+  },
+  {
+    "id": "profiling",
+    "codeHash": "2e41240fe4b4c73fe6f9272b49e2e135c88f283bc043e887f111f831bb5af0d8",
+    "solutionHash": "5c27a7d1ce4bb960f7d2653b668e59ba17d423f3533946123a3cf8badbbe1e27"
+  },
+  {
+    "id": "wasm-delivery",
+    "codeHash": "8430c51a040c6eac20046723e665a358dcf2b351044488d7735dd96d119f0801",
+    "solutionHash": "ef593bdd4ef029233773ef3509c9444c37ace76ff0d4341f6a53c12380e34237"
+  },
+  {
+    "id": "target-matrix",
+    "codeHash": "a381b4752ebb543b9906db2fd796e8c2c689dffee24a7878b8f9dc29765b86a0",
+    "solutionHash": "ca963dde3f9bd235f53f43417af72b2a9fbea8218d226c63a49b74a97172377f"
+  },
+  {
+    "id": "renderers",
+    "codeHash": "be1efb50bf022ea8379695a2023559785c020a48d7057693c813c7eb6f234a48",
+    "solutionHash": "ab057c0b5fe985de77745af6e3b1855f7ab79402624e7ceb14873a465a256bf3"
+  },
+  {
+    "id": "browser-interop",
+    "codeHash": "5f2fdd433a1190334cb0a071117d5062f2040dffe1908b161df8f99063e3e712",
+    "solutionHash": "61fec3d6404a90ccbe37a41be6d7cac8b427e73fc2c91ad92bf51f3756e811c8"
+  },
+  {
+    "id": "native-integration",
+    "codeHash": "38ba405feab4bb5dbbd7808c18be3122bb1eba94ad04e24af482b91fca39ba1c",
+    "solutionHash": "1f5fe2722c22e0ab2db07d14151f40eff48e881624c217f8f8ac20374af241dc"
+  },
+  {
+    "id": "assets-fonts",
+    "codeHash": "b7038cc86688f074e9b5d504b94612a015f7f22755bc18344ff02e6e16eee011",
+    "solutionHash": "ccd914d59e1a5c665f31a208952ab93fd86ac74e05aac5dfea4f17cc442af76a"
+  },
+  {
+    "id": "deployment-lifecycle",
+    "codeHash": "84ac81bf5490b0d4a2b89f210a1deadb854e97856e1b8bb22c71abf8d9a28698",
+    "solutionHash": "c3f89a97a2b9e149e50ba47048119c79d20a85eff0963c8cd784020464eba359"
+  },
+  {
+    "id": "unit-tests",
+    "codeHash": "96353a318eb11ef3128ffdbcfd9becf667415b49b9d7879ab0b7e711d94675e4",
+    "solutionHash": "29804baac212a8ffb279424733e59998c723d92ba86471cfc99a3485d529b3c8"
+  },
+  {
+    "id": "ui-tests",
+    "codeHash": "1e878b3613df51517d1b2ecc17e63241d9328a6be7193f28e3e85c8471fd3e0e",
+    "solutionHash": "5714d6d9ccaceb4a4b03c6879db92ad9c1aa82985b8bc3bdaae8397fa550a6fd"
+  },
+  {
+    "id": "visual-regression",
+    "codeHash": "88ec5887fb97fa175662a5eda1c6812eb0ec89273eed2fe7fd9df92b5d3141ac",
+    "solutionHash": "cae46a8f4ef1bcc1b99ed05fdcac57c02972df173b49657414a3b6d87da63c79"
+  },
+  {
+    "id": "resilience",
+    "codeHash": "f65dbd3eda67ddaf6dc6b31a4bae56c5c4219fd1e9191575ef519d8e17c5d0a4",
+    "solutionHash": "7a60d91a0da0d7645cfc1260f1f503e8892598f20e127334eaddf6558ca46a5d"
+  },
+  {
+    "id": "continuous-delivery",
+    "codeHash": "5c34668cbf5a97a464252a37948a68712596fa95955fbe832d7ddf42c3674df0",
+    "solutionHash": "93acd54d5f6db3d38217288005c4752d41f90ed97b040c0fc3d9fb30de96d667"
+  },
+  {
+    "id": "capstone-app",
+    "codeHash": "b2cf52fd27cfca8a48bbffd20c31e5bf21241b43287f5ec7d8ad705ada705968",
+    "solutionHash": "68d175bc9398534372344b63b01ef4e496bf19baf4a164a3053ca064b83e06a5"
+  },
+  {
+    "id": "read-the-source",
+    "codeHash": "129270a81a1b7bac6f5977f749b751f82b073c0eb2f52a9b3a63c6c52fa9d1b0",
+    "solutionHash": "4b2522424b694df9c6e4a8ae4969e7155da873c7e2b8c44ed12d4fdc6a0ae6d9"
+  },
+  {
+    "id": "xaml-pipeline",
+    "codeHash": "9c6b447bb4d43feac31cb3f0c236ef01c8009c3d30092290408a63eecc268a54",
+    "solutionHash": "8c0a584047e852bfe933edc3605d44f3aae669864133e3ddcf5728587cee8d8d"
+  },
+  {
+    "id": "value-precedence",
+    "codeHash": "88089e94c4c60764c5519c916927ed515cab30e73c712f4f074d9550cae12e7a",
+    "solutionHash": "0f1d21f4f6a3684d655994b94cf9f80b199ef5921e9c9f43c1ddb7147f13f6d5"
+  },
+  {
+    "id": "custom-panel",
+    "codeHash": "63f775578df1438c63813d9718bbd08bd7ee96918eb5148afd1a15a9ce40010c",
+    "solutionHash": "78ffe410a64d5c0b1e1021348aeacef55903b49097ea88b1951058231e71e922"
+  },
+  {
+    "id": "rendering-invalidation",
+    "codeHash": "faab84fc1bc7e9b13c67aa80f39da6903e85960e81ca5a2657b295a40c915061",
+    "solutionHash": "f7864bc2f4d46a7d934ef0ffb4b949575620945accc965a8b7c461bc808978c5"
+  },
+  {
+    "id": "contribution-capstone",
+    "codeHash": "0365fecba2a1aa4237df00b2785aab926592e4052affaf995b46efccff6b48ed",
+    "solutionHash": "3cb6e69ba1f14e2e58848ef56116761e5a7a9d4ce49f128bee5dde73ef11e18b"
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "id": "deep-link-contracts",
+  "scenario": "An external link can arrive before the app’s normal menu flow and can contain malformed, obsolete, or unauthorized data. Parse it into a typed request before activating a view. Define the supported scheme, host, path, and optional fields explicitly, then test decoding and rejection behavior rather than treating any URI-shaped string as a trustworthy destination.",
+  "vocabulary": [
+    {
+      "term": "URI contract",
+      "meaning": "The accepted scheme, authority, path, and parameter grammar for an application link."
+    },
+    {
+      "term": "Canonical destination",
+      "meaning": "A validated internal representation of navigation intent, independent of the original textual spelling."
+    },
+    {
+      "term": "Trust boundary",
+      "meaning": "The point where externally supplied data must be checked before it affects application behavior."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A deep link may come from a browser, another application, a document, or copied text. Its presence does not prove it was created by your UI. Parse with a URI API, bound its size at the application boundary, and allow only the schemes and route shapes your product supports. Keep arbitrary type activation and command execution out of the parser.",
+      "worked": "The fixture accepts learnuno://task/42 and rejects an unrelated scheme or host. It does not register an operating-system protocol handler; it validates a string supplied in the browser lesson. A full app must additionally configure platform activation and route the parsed request through its normal navigation service.",
+      "question": "What does this browser parser not demonstrate?",
+      "answer": "Operating-system registration or platform activation delivery. Those require a configured application and target-specific integration tests in addition to parsing."
+    },
+    {
+      "explain": "Percent decoding, path separators, query fields, and fragments can change interpretation. Decode at a deliberate point and validate the resulting path shape. This simple grammar accepts one positive Int32 task identifier and rejects query strings and fragments. Expanding the grammar later should be a reviewed contract change, not an accidental side effect of permissive parsing.",
+      "worked": "Try a nonnumeric path, a negative identifier, and a query string. The parser rejects them under the declared grammar. Then test a percent-encoded digit and inspect the one decoding step. Avoid repeatedly decoding text until it happens to match, because layered decoding can turn an apparently harmless value into another structure.",
+      "question": "Why reject fields the example does not understand?",
+      "answer": "An explicit rejection avoids silently assigning meaning to unsupported input. It keeps the contract narrow and makes later extensions intentional."
+    },
+    {
+      "explain": "A parsed task key is only a request. Load the entity, verify authorization, and handle missing or deleted data before presenting an editable view. Authentication may need to complete first, after which the original validated destination can be resumed. Avoid trusting an ID simply because it came from your own application’s custom scheme.",
+      "worked": "Create a deterministic repository with task 42 present and task 84 absent. Both links can pass syntax validation, but only one resolves data. The UI should show not found for the missing task without confusing that outcome with malformed syntax or granting access based on route recognition.",
+      "question": "Why separate parser errors from not-found outcomes?",
+      "answer": "They occur at different boundaries and need different feedback. One describes an invalid request shape; the other describes a valid request for unavailable data."
+    },
+    {
+      "explain": "A link can arrive while the app is starting or while another editor is active. Queue or coordinate activation through the composition root and navigation policy. Preserve unsaved work and avoid navigating before required services and the target host exist. Test repeated links and out-of-order loads rather than only launching a fresh app once.",
+      "worked": "Open a dirty editor, then deliver a validated task link in a full-project test. Apply the same navigation guard used for a menu request. Next deliver two links quickly and require the final view to match the newest accepted intent. Parsing correctness is necessary but does not solve lifecycle or concurrency.",
+      "question": "Should a deep link bypass the normal unsaved-changes guard?",
+      "answer": "Not automatically. External navigation is still navigation and should follow the product’s state-preservation and authorization policies."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use an unsupported host or extra query",
+      "expected": "The fixture rejects the link.",
+      "why": "Only the explicitly documented grammar is accepted."
+    },
+    {
+      "change": "Use a valid but missing task ID",
+      "expected": "Parsing can succeed while data resolution later fails.",
+      "why": "Representation validity is separate from existence and authorization."
+    }
+  ],
+  "bridge": "Build a typed deep-link parser with a table of accepted and rejected cases, then integrate it with Uno.Extensions DataViewMap query conversion in a configured project. Test cold startup, warm activation, dirty-state guards, missing data, and superseded requests. Never pass raw route strings directly into reflection.",
+  "references": [
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Navigation/HowTo-DefineRoutes.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "toolkit-validation",
+  "scenario": "A form should explain why a value is invalid while preserving the text being edited. ObservableValidator represents errors through INotifyDataErrorInfo as well as ordinary property changes. Learn when validation runs, how errors are read, and why draft validation must remain separate from the trusted service’s validation and authorization rules.",
+  "vocabulary": [
+    {
+      "term": "Validation attribute",
+      "meaning": "Metadata describing a rule such as Required or MinLength; it must be evaluated to produce errors."
+    },
+    {
+      "term": "ErrorsChanged",
+      "meaning": "The notification that a property’s validation-error collection changed."
+    },
+    {
+      "term": "HasErrors",
+      "meaning": "The model’s aggregate validation state, not a guarantee that every external business rule has been checked."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A user may need to see and correct an invalid value. ObservableValidator can update the property and record validation errors rather than silently refusing every intermediate input. This is useful for forms with explicit Save. A TrySetProperty policy is different: it can reject an assignment. Choose the behavior that matches the task and explain it to the user.",
+      "worked": "The field starts empty. Check evaluates its annotations and Render displays the resulting messages. Typing a short name preserves that draft while showing why it is not ready. The model is an actual toolkit ObservableValidator instance; the view merely projects its error collection into a TextBlock for this lesson.",
+      "question": "Why preserve a short invalid name instead of erasing it?",
+      "answer": "The user needs the draft and specific feedback to correct it. Silent rejection can make editing confusing and hide what the application considered invalid."
+    },
+    {
+      "explain": "Setting a property through the validating SetProperty overload evaluates its attributes when the value changes. Initial values may need explicit validation because an equal assignment can be skipped. Cross-property rules need invalidation when any dependency changes. Do not assume attributes run continuously or that HasErrors proves untouched fields were evaluated.",
+      "worked": "Increase MinLength to five and run the initial state before typing. Check must still reveal Required. Enter four characters and then five; the error state should transition. In a password-confirmation project exercise, changing the original password must also reevaluate the confirmation rule.",
+      "question": "What can leave HasErrors misleadingly false?",
+      "answer": "Rules that have not yet been evaluated, including untouched initial fields or dependent fields not revalidated after another property changes."
+    },
+    {
+      "explain": "GetErrors exposes recorded validation results and ErrorsChanged tells the view when to read them again. Keep property-specific messages close to the corresponding field and provide an aggregate summary for submission. Avoid disabling Save without explanation, and avoid treating a lack of local annotation errors as proof that a server accepted the operation.",
+      "worked": "The sample renders Name errors and a Ready to submit label when none remain. That label means the demonstrated local rules pass. A real workspace service may still reject duplicate names or permissions. Map those outcomes back into useful presentation feedback without pretending the annotations checked remote state.",
+      "question": "Does Ready to submit mean the workspace has been created?",
+      "answer": "No. It means this local validation passed. Submission, remote validation, authorization, and durable creation are later operations with their own outcomes."
+    },
+    {
+      "explain": "Test initial validation, invalid-to-valid, valid-to-invalid, equal assignments, and submission with untouched fields. Verify the exact errors, not only a red border. Production forms need appropriate automation semantics and announcement behavior for errors; a colored TextBlock alone is not an accessibility audit. Keep validation deterministic and move slow remote checks into an asynchronous policy.",
+      "worked": "Build a table of empty, short, valid, and whitespace-only names. Required and MinLength have specific semantics, so add a custom trimmed-content rule when the domain requires it. Test that rule independently rather than assuming a length annotation normalizes input automatically.",
+      "question": "Do length attributes automatically trim user input?",
+      "answer": "No. Normalization and whitespace rules must be explicit. Validate the actual domain representation and keep the UI’s explanation consistent with it."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Leave the initial value untouched",
+      "expected": "Explicit Check still records validation errors.",
+      "why": "Attribute metadata must be evaluated; it does not run merely because a field exists."
+    },
+    {
+      "change": "Enter a value satisfying both attributes",
+      "expected": "The error list clears and the ready label appears.",
+      "why": "ErrorsChanged and HasErrors expose the current local validation result."
+    }
+  ],
+  "bridge": "Add validation to the task editor, including initial validation and a cross-property rule. Connect errors to accessible field feedback, test annotation semantics, and keep remote validation asynchronous and cancellable. The source sample explains MVVM wiring; Microsoft’s ObservableValidator contract supplies the validation-specific API details.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/observablevalidator",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

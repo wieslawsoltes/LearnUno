@@ -30,7 +30,6 @@ public static class Program
         TaskScheduler.UnobservedTaskException += (_, error) => Console.Error.WriteLine(error.Exception);
 
         // NativeRenderer resolves HtmlElementAttribute by scanning loaded assemblies.
-        // This hand-authored host has no generated App.xaml reference to force that load.
         Assembly.Load("Uno.UI.Runtime.WebAssembly");
         Report("Browser renderer assembly loaded");
         Application.Start(_ =>
@@ -90,10 +89,8 @@ public sealed class App : Application
 public static partial class Bridge
 {
     private static readonly Lazy<LanguageEngine> Engine = new(() => new LanguageEngine());
-
     [JSImport("globalThis.learnUnoRuntimeReady")]
     internal static partial void Ready();
-
     [JSImport("globalThis.learnUnoBootError")]
     internal static partial void BootFailed(string message);
 
@@ -113,7 +110,9 @@ public static partial class Bridge
             var request = JsonSerializer.Deserialize<EngineRequest>(json, LanguageEngine.JsonOptions)
                 ?? throw new ArgumentException("A request is required.");
             if (request.Code.Length > 100_000) throw new ArgumentException("Keep a lesson below 100,000 characters.");
-            var result = await Engine.Value.HandleAsync(request);
+            var result = request.Method == "inspect"
+                ? RuntimeInspector.Capture()
+                : await Engine.Value.HandleAsync(request);
             return JsonSerializer.Serialize(new { ok = true, result }, LanguageEngine.JsonOptions);
         }
         catch (Exception error)

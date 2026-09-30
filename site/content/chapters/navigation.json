@@ -53,5 +53,31 @@
       "why": "Visual lifetime and navigation lifetime are related but distinct."
     }
   ],
-  "bridge": "The upstream Frame/navigation samples contain the page and history context omitted by the tiny starter. Use them to inspect parameters and lifecycle behavior, while keeping browser deep-link and platform-back integration as explicit additional tests."
+  "bridge": "The upstream Frame/navigation samples contain the page and history context omitted by the tiny starter. Use them to inspect parameters and lifecycle behavior, while keeping browser deep-link and platform-back integration as explicit additional tests.",
+  "continueWith": [
+    {
+      "id": "navigationview-shell",
+      "title": "Build an adaptive NavigationView shell"
+    },
+    {
+      "id": "frame-parameters",
+      "title": "Navigate with a typed parameter"
+    },
+    {
+      "id": "frame-history",
+      "title": "Design back navigation as a history contract"
+    },
+    {
+      "id": "route-registry",
+      "title": "Register routes instead of activating arbitrary names"
+    },
+    {
+      "id": "navigation-guards",
+      "title": "Protect drafts with an awaited navigation guard"
+    },
+    {
+      "id": "navigation-results",
+      "title": "Return a typed result from a selection flow"
+    }
+  ]
 }

@@ -1,0 +1,64 @@
+{
+  "id": "navigation-guards",
+  "scenario": "A user has edited a draft and clicks another destination. A guard must not destroy the draft before the user decides, and repeated clicks must not open overlapping prompts. Build a real Frame transition with an awaited ContentDialog decision, then distinguish staying, discarding, saving, and failing as separate outcomes.",
+  "vocabulary": [
+    {
+      "term": "Navigation guard",
+      "meaning": "A policy that determines whether a requested transition may leave the current state."
+    },
+    {
+      "term": "Pending transition",
+      "meaning": "An intent awaiting a decision or prerequisite; it is not yet the active destination."
+    },
+    {
+      "term": "Serialized decision",
+      "meaning": "A workflow allowing one outstanding decision at a time so competing prompts do not race."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "The current editor exposes whether its draft differs from the baseline. The navigation request asks the guard before replacing the page. Keep that state in a model in a production app rather than extracting arbitrary controls from the visual tree. A guard is part of navigation policy and should apply consistently to menu, back, and external-link requests.",
+      "worked": "Edit Original to Revised and click Leave editor. The Frame still contains the editor while the dialog is open. Choosing Stay keeps the draft visible. If the page were replaced before the prompt completed, the supposedly safe choice could no longer preserve the user’s work.",
+      "question": "Why is prompting after navigation too late?",
+      "answer": "The old state or its owner may already have been discarded. The decision must precede the transition that can lose the draft."
+    },
+    {
+      "explain": "A dialog result is asynchronous. Await it from a Task-aware navigation operation and avoid blocking the UI thread with Result or Wait. Synchronous framework cancellation hooks cannot simply be turned into asynchronous approval by adding an unobserved async handler; use the framework’s supported deferral mechanism or coordinate the request before navigation.",
+      "worked": "The button handler awaits ShowAsync before calling Frame.Navigate. It is an explicit request adapter, not an attempt to await inside a synchronous Frame event contract. The UI remains responsive, and the result determines whether the method returns early or proceeds with the transition.",
+      "question": "Why not use a blocking wait for the dialog?",
+      "answer": "It can block the UI context needed to process the dialog and complete its Task. Await preserves responsiveness and the correct completion boundary."
+    },
+    {
+      "explain": "Disable or gate navigation requests while a decision is pending. In a larger shell, use a centralized transition coordinator because multiple buttons and deep links can request navigation concurrently. Decide whether a newer request replaces, queues behind, or is rejected by the pending one. A local disabled button alone does not govern every possible input path.",
+      "worked": "The lesson disables Leave during its own request and restores it in finally. Extend the project with a keyboard shortcut and verify both paths share the same gate. Otherwise two independent callers can open two prompts or navigate to different destinations after inconsistent decisions.",
+      "question": "What must a global navigation gate cover?",
+      "answer": "All relevant request sources, not only one button. The policy must coordinate menu, keyboard, back, deep-link, and programmatic requests that can compete."
+    },
+    {
+      "explain": "This fixture offers Discard or Stay. Adding Save introduces another asynchronous operation whose success must be observed before leaving. A user choosing Save does not prove that the repository accepted the data. Preserve the draft on failure, keep feedback visible, and update shell selection only after the destination is actually accepted.",
+      "worked": "Add a Save and leave option with a deterministic failing repository. The correct result is to remain in the editor with the draft and error feedback intact. Then retry successfully and navigate. Test that a failed save neither clears IsDirty nor makes the menu highlight a page that never opened.",
+      "question": "What should a failed save do to a pending leave request?",
+      "answer": "Under a save-before-leave policy, it should stop the transition and preserve the draft so the user can correct or retry the operation."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Dirty draft and safe dismissal",
+      "expected": "The editor and its draft remain active.",
+      "why": "The transition waits for an accepted decision."
+    },
+    {
+      "change": "Accept discard",
+      "expected": "The destination opens after the decision completes.",
+      "why": "Discard authorization and navigation are separate ordered steps."
+    }
+  ],
+  "bridge": "Extract an awaitable guard interface from the view, use a dialog adapter for decisions, and test all navigation sources through one coordinator. Add a Save path with failure tests and preserve the distinction between cancelling navigation, cancelling editing, and cancelling I/O.",
+  "references": [
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Navigation/NavigationOverview.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

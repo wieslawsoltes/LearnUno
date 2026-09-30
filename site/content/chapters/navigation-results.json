@@ -1,0 +1,64 @@
+{
+  "id": "navigation-results",
+  "scenario": "A settings screen asks a nested flow to choose a workspace and then continues with a result. Returning only a nullable string can confuse cancellation with a missing value, so define an explicit result contract. The lab uses a ContentControl picker and TaskCompletionSource to expose the underlying pattern; Uno.Extensions provides result-navigation abstractions in a configured project.",
+  "vocabulary": [
+    {
+      "term": "Result contract",
+      "meaning": "A typed description of accepted data versus cancellation or other completion outcomes."
+    },
+    {
+      "term": "TaskCompletionSource",
+      "meaning": "An adapter that lets event-driven code complete an awaitable Task under explicit control."
+    },
+    {
+      "term": "Single completion",
+      "meaning": "The invariant that one request has one accepted terminal outcome even when several paths attempt to finish it."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "The caller starts a selection workflow and awaits one result before applying the choice. Keep the requested operation distinct from the visual mechanism used to display it: a dialog, page, flyout, or inline picker can implement the same result contract. This makes the caller testable without constructing the picker UI.",
+      "worked": "Click Choose workspace and inspect the new picker while No result yet remains unchanged. Accept Design or cancel, then observe the caller’s output. The result is not stored in a global variable that the caller polls; completion flows through one Task associated with that request.",
+      "question": "Why is an awaitable result preferable to polling a global selection field?",
+      "answer": "It ties completion and data to a specific request, avoids hidden shared state, and gives tests an explicit operation boundary."
+    },
+    {
+      "explain": "An accepted result and a cancelled workflow have different meaning. A nullable payload alone can be ambiguous when null is also a legitimate value. Use an outcome type or discriminated representation that makes acceptance explicit, then validate required data on the accepted path. Dismissal should not accidentally apply a default choice.",
+      "worked": "Cancel picker and verify that the caller reports Picker cancelled rather than Chosen: Design. The ComboBox still had an initial selection, but the user did not accept it. This is the same distinction required when a modal picker closes through Escape or an external navigation event.",
+      "question": "Does an initially selected item authorize the caller to apply it after cancellation?",
+      "answer": "No. Initial selection is presentation state. Only an accepted result permits the caller to treat the choice as committed intent."
+    },
+    {
+      "explain": "Event-based workflows can receive Accept, Cancel, and owner-unload signals. TrySetResult allows the first terminal path to win without throwing when another path arrives later. RunContinuationsAsynchronously avoids running the caller’s continuation inline inside the button event that completes the Task, reducing surprising reentrancy while the picker is still handling input.",
+      "worked": "Double-click an action or cancel while the owner is closing in a project test. The request must complete once, the pending reference must clear, and a later callback must not finish a new request accidentally. Capture the local completion object in handlers instead of dereferencing a shared field that may already point elsewhere.",
+      "question": "Why capture the local completion object in each handler?",
+      "answer": "It binds the callback to the request that created it. An old callback must not complete a newer pending selection stored in the same field."
+    },
+    {
+      "explain": "Uno.Extensions can register result data and return values through its navigation abstractions. Use the actual ResultDataViewMap and navigator APIs in a project with Navigation enabled rather than assuming the browser’s small picker reproduces the full region system. Preserve the same accepted/cancelled contract and test owner disposal, back navigation, and rejected results.",
+      "worked": "Replace the inline picker with a page-based flow in a full app. The caller should not need to know whether the result came from a page or dialog. Add tests for accept, cancel, duplicate completion, and leaving the owner, then verify that no unresolved Task retains the abandoned workflow.",
+      "question": "What must happen when the owner abandons the picker?",
+      "answer": "The pending request must reach an explicit terminal outcome and release its references. Leaving a Task unresolved can retain state and strand the caller’s workflow."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Cancel with an item initially selected",
+      "expected": "The result is cancelled, not an accepted default.",
+      "why": "Selection state and accepted intent are separate."
+    },
+    {
+      "change": "Attempt completion twice",
+      "expected": "The first terminal result wins.",
+      "why": "TrySetResult does not overwrite an already completed Task."
+    }
+  ],
+  "bridge": "Create an injected selection service returning a typed result and test it without UI. Implement adapters for ContentDialog and Uno.Extensions result navigation, then test duplicate completion and abandoned owners. Keep the local TaskCompletionSource example scoped as an event-to-task pattern rather than a full navigation framework.",
+  "references": [
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Navigation/HowTo-DefineRoutes.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

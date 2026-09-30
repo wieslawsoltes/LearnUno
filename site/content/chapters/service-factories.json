@@ -1,0 +1,64 @@
+{
+  "id": "service-factories",
+  "scenario": "A details view model needs a repository from DI and a document identifier chosen by the user. Registering the selected identifier globally makes simultaneous documents interfere with each other. Use a typed construction boundary that combines stable service dependencies with per-request data without exposing a service provider to the feature’s normal behavior.",
+  "vocabulary": [
+    {
+      "term": "Typed factory",
+      "meaning": "An interface or class whose creation method states which runtime data is required to construct a specific feature."
+    },
+    {
+      "term": "ActivatorUtilities",
+      "meaning": "A Microsoft DI utility that constructs a type using supplied arguments together with services resolved from a provider."
+    },
+    {
+      "term": "Runtime argument",
+      "meaning": "Data determined by the current operation, such as a selected document ID, rather than a globally registered service."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A report title belongs to one request; a clock capability can be shared and replaced in tests. Treating both as arbitrary global services hides which values vary per operation. An explicit Create(title) method communicates that distinction and makes simultaneous reports possible without mutating a singleton settings object.",
+      "worked": "Create two ReportModel instances with different titles while resolving the same clock service. Their captions differ because the arguments differ, not because a shared title service was overwritten between calls. The clock fixture returns Training day so this example does not depend on the learner’s real wall clock.",
+      "question": "Why should the selected document identifier not usually be registered as global mutable state?",
+      "answer": "Several documents or operations can coexist. Per-operation arguments need independent identity rather than a shared value that changes beneath existing consumers."
+    },
+    {
+      "explain": "ReportFactory is intentionally a composition adapter. It may know IServiceProvider because its single job is construction; ReportModel does not. ActivatorUtilities combines the explicit string argument with IReportClock from the provider. Keep constructor selection unambiguous and prefer a clear typed factory contract over passing an unstructured object array through the application.",
+      "worked": "Change Weekly learning to Release readiness at the Create call. No changes to ReportModel or the container registrations are needed. In a test, construct ReportModel directly to verify its caption, and separately test that the factory resolves the expected dependency graph.",
+      "question": "Does this example recommend injecting IServiceProvider into every view model?",
+      "answer": "No. It confines service resolution to an explicit construction adapter. Ordinary behavior depends on typed collaborators, not a general-purpose service locator."
+    },
+    {
+      "explain": "An object created by ActivatorUtilities is not automatically a normal container-tracked registration instance. A disposable product needs a caller or explicit owner responsible for cleanup. Services resolved from the provider keep their own container lifetimes, so disposing the product must not arbitrarily dispose a shared singleton collaborator.",
+      "worked": "Extend ReportModel into a document controller with its own subscription token. The document owner should dispose that token when the controller closes. If the controller requires scoped services, create it through the correct scoped factory and keep the scope alive until the document finishes; do not create it from a disposed scope.",
+      "question": "Why must a factory describe more than how to call a constructor?",
+      "answer": "It also needs an ownership and lifetime contract. Correct construction with incorrect disposal can still leak resources or leave a feature using closed services."
+    },
+    {
+      "explain": "DI does not validate arbitrary user-selected arguments. Parse and authorize a document identifier before it reaches a trusted repository operation, and validate presentation inputs when constructing a feature. A factory can enforce an argument contract, but should not silently turn missing data into an unrelated default document.",
+      "worked": "Add a rejected empty-title case and a valid-title case to a factory test. Then replace FixedReportClock with a deterministic test clock and verify both captions without sleeping. When using Uno navigation, pass typed route data to a construction boundary rather than relying on a hidden global current-item singleton.",
+      "question": "Does successful factory resolution prove that the selected document is authorized?",
+      "answer": "No. Construction and service wiring do not establish business authorization. The trusted data service must validate access to the selected resource."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Create two reports with different titles",
+      "expected": "Each caption retains its own title.",
+      "why": "The title is a constructor argument for that instance."
+    },
+    {
+      "change": "Make the created feature disposable",
+      "expected": "Its explicit owner must dispose it.",
+      "why": "Direct ActivatorUtilities construction does not automatically define product ownership."
+    }
+  ],
+  "bridge": "Introduce an IDetailsFactory.Create(documentId) boundary for an Uno details feature. Keep the view model container-independent, validate the ID before loading, and document how the caller owns both the feature and any required scope. Test direct construction, factory wiring, and teardown separately.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

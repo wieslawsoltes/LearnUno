@@ -1,0 +1,64 @@
+{
+  "id": "toolkit-messaging",
+  "scenario": "Two independently owned components need to learn that a task changed, but neither should locate the other’s view controls. Use a typed messenger notification for that boundary and define when the recipient is active. The example creates its own WeakReferenceMessenger so experiments do not leave registrations in an application-wide default instance.",
+  "vocabulary": [
+    {
+      "term": "Typed message",
+      "meaning": "A payload type that describes an event or notification without exposing a control instance."
+    },
+    {
+      "term": "Recipient activation",
+      "meaning": "The explicit period during which a component is intended to receive messages."
+    },
+    {
+      "term": "Weak registration",
+      "meaning": "A reference policy that does not by itself keep a recipient alive indefinitely; it is not a delivery guarantee."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Constructor injection is clearer for a direct required dependency. Messaging can be useful when independently owned components publish notifications without knowing every listener. Avoid using a global bus for every property assignment or as an undocumented service locator. Define the message’s meaning, sender expectations, and whether a recipient needs current state or only future notifications.",
+      "worked": "The sample sends a ValueChangedMessage<string> into a local messenger and updates a recipient model. No view references cross the message boundary. In a real task app, a domain-specific TaskChanged message with an ID and revision would communicate a clearer contract than a generic string shared across unrelated workflows.",
+      "question": "When is direct injection often preferable?",
+      "answer": "When one component requires a specific collaborator to perform an operation. An explicit constructor contract is easier to discover and test than a hidden request through a bus."
+    },
+    {
+      "explain": "The typed Register overload passes the recipient into the handler, allowing a static lambda that does not capture external state. This helps make retention and ownership easier to inspect. The messenger invokes the handler according to its own contract; it does not automatically dispatch UI-bound work onto the correct thread or turn a notification into durable storage.",
+      "worked": "The static handler assigns target.Text from message.Value. The view binds to that property separately. A background publisher in a production app would require a deliberate UI scheduling boundary before mutating UI-bound state. The browser fixture sends from a button event, so the handler runs on the current UI context.",
+      "question": "Does a messenger automatically make a background message safe for controls?",
+      "answer": "No. Thread affinity and scheduling remain explicit responsibilities. A handler should marshal only the necessary presentation update to the owning UI context."
+    },
+    {
+      "explain": "Weak retention is not the same as a component being inactive. A recipient can remain alive through another reference and still receive messages unless unregistered. Explicit deactivation prevents hidden screens from performing work and makes tests deterministic. Reactivation should avoid duplicate registration and should decide how to obtain any state missed while inactive.",
+      "worked": "Send a notice, deactivate the recipient, and send another notice. The displayed value should not change after deactivation. The root still retains the recipient through bindings or closures, which demonstrates why weak registration alone is not an activation policy. A later activation would need a new registration and possibly a fresh data read.",
+      "question": "Will a still-reachable hidden recipient necessarily stop receiving weak messages?",
+      "answer": "No. Weak references concern retention, not whether a live component should be active. Unregister or otherwise gate delivery when the component’s activation ends."
+    },
+    {
+      "explain": "Test that active recipients react once, inactive recipients do not react, and repeated activation does not duplicate handlers. Keep important state in a repository or owner rather than relying on a notification stream to reconstruct it after arbitrary missed messages. For cross-process communication, a local messenger is not a durable or distributed event bus.",
+      "worked": "Replace the string with TaskChanged(Id, Revision) in a project exercise. On activation, load current task state; while active, use messages to request refresh. Test a notification arriving during refresh and define whether revisions coalesce or trigger another read. Do not mistake a local callback for exactly-once distributed delivery.",
+      "question": "Where should authoritative state live?",
+      "answer": "In the appropriate model, repository, or service. A transient notification informs listeners of change; it is not automatically a durable source of truth."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Deactivate then send",
+      "expected": "The old recipient no longer updates.",
+      "why": "UnregisterAll ends its delivery registration even while other references keep it alive."
+    },
+    {
+      "change": "Use a domain-specific message type",
+      "expected": "The contract becomes easier to discover and test.",
+      "why": "Payload types communicate meaning more clearly than unrelated string conventions."
+    }
+  ],
+  "bridge": "Add task-change notifications between two view models using an injected IMessenger instance, explicit activation, and a typed payload. Keep state reload separate from notification delivery. Test active, inactive, reactivated, and background-publisher cases without relying on forced garbage collection for correctness.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/messenger",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

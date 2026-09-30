@@ -1,0 +1,64 @@
+{
+  "id": "record-identity",
+  "scenario": "A task changes its title while a details pane and a filtered list both refer to it. The old and new records can represent the same entity without being equal snapshots. Use this distinction to keep selection and routing stable as immutable data flows through an Uno application, especially when sorting and filtering change the visible positions.",
+  "vocabulary": [
+    {
+      "term": "Entity identity",
+      "meaning": "The stable key used to refer to the same logical item across edits and reloads."
+    },
+    {
+      "term": "Value equality",
+      "meaning": "An equality relationship based on a value’s fields rather than only its allocation or business identifier."
+    },
+    {
+      "term": "Snapshot",
+      "meaning": "A representation of state at a particular point; copying a record does not recursively freeze referenced mutable objects."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Ask separately whether two values describe the same entity and whether their current contents are equal. A record supplies useful value equality, but it does not choose the identity rule for your application. A task identifier can remain constant while its title, status, or revision changes. Use the question that matches the operation instead of applying one equality test everywhere.",
+      "worked": "The example has Id 7 in both snapshots but different titles. The entity comparison is true and the record comparison is false. A details route keyed by Id can still locate the edited task, while a change detector comparing record values can correctly notice that the presentation needs an update.",
+      "question": "Can both comparisons be correct when they disagree?",
+      "answer": "Yes. They answer different questions: stable business identity versus equality of the current snapshot. Disagreement is expected after a legitimate edit."
+    },
+    {
+      "explain": "A with-expression copies a record and changes the specified members. The original remains available for comparison or undo when its members are themselves immutable values. A record containing a mutable List would still share that reference unless you replace it. State what is immutable rather than treating the record keyword as a universal deep-copy operation.",
+      "worked": "Change the edited Title back to the original string. Record equality becomes true again, although the two record-class instances need not be the same reference. Then imagine both contained the same mutable Tags list: mutating that list could affect both snapshots and invalidate a naive history design.",
+      "question": "Does equal record content imply the same object reference?",
+      "answer": "No. Two independently allocated record objects can compare equal by value. Reference identity, record equality, and domain identity are separate relationships."
+    },
+    {
+      "explain": "A sorted or filtered view is a projection, not the authoritative owner of identity. Store the selected task key, then resolve it in the current projection. Preserve the selected key when a title changes; clear or explicitly retain it when the item disappears. Avoid using the selected index as a durable reference to an entity.",
+      "worked": "Suppose task 7 moves from row one to row four after sorting by its edited title. An index-based details lookup would show a different task. A key-based lookup continues showing task 7 and can refresh its value from the repository without making the old record instance a global singleton.",
+      "question": "What changes when sorting moves an item?",
+      "answer": "Its position changes, not necessarily its logical identity. Persist a stable key for selection, routing, and updates, and derive the visible index from the current list."
+    },
+    {
+      "explain": "Use value comparison for snapshot change detection, key comparison for entity lookup, and reference comparison only where instance ownership matters. Include a revision in update contracts when concurrent edits require conflict detection. A stable identifier prevents addressing the wrong item; it does not by itself prevent one writer from overwriting another writer’s changes.",
+      "worked": "Create two edits from the same initial snapshot, each with Id 7 and a different title. Both target the same entity. Add a version field in an independent exercise and reject a save based on an obsolete version instead of treating the shared identifier as proof that the update is safe.",
+      "question": "Does a stable identifier solve concurrent update conflicts?",
+      "answer": "No. It identifies the target. A separate version, timestamp, or domain-specific merge policy is needed to detect and resolve competing updates."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Use the original title in the copy",
+      "expected": "Record equality is true while the key comparison remains true.",
+      "why": "All positional record values now match."
+    },
+    {
+      "change": "Change only the identifier",
+      "expected": "The copy represents a different entity under the chosen rule.",
+      "why": "A stable key is the application’s identity contract."
+    }
+  ],
+  "bridge": "Add stable IDs to the task capstone, retain selection across title edits, and test sorting, filtering, deletion, and reload. Use record snapshots for undo only after reviewing every nested member’s mutability. Connect this to the source collection examples: visible order and domain identity should not be coupled.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/records",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

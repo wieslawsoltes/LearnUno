@@ -12,7 +12,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,10 +52,10 @@ jobs:
         with:
           path: artifacts/runtime
           key: ${{ steps.runtime-cache.outputs.cache-primary-key }}
-      - name: Compile every C# starter and solution against the actual runtime references
+      - name: Compile every core and workshop C# variant against the actual runtime
         run: |
           mkdir -p artifacts/evidence
-          node --input-type=module -e "import {lessons} from './site/src/course.mjs'; import {writeFileSync} from 'node:fs'; writeFileSync('artifacts/lessons.json',JSON.stringify(lessons));"
+          node --input-type=module -e "import {validationLessons as lessons} from './scripts/validation-lessons.mjs'; import {writeFileSync} from 'node:fs'; writeFileSync('artifacts/lessons.json',JSON.stringify(lessons));"
           dotnet run --project tests/CompilerTests -c Release -- artifacts/runtime/compiler-metadata.dll artifacts/lessons.json | tee artifacts/evidence/compiler-tests.log
       - run: npm run build
         env:
@@ -107,7 +107,7 @@ jobs:
   verify-public:
     needs: deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -1,0 +1,69 @@
+{
+  "id": "route-registry",
+  "scenario": "A route name should describe an approved destination, not serve as an arbitrary reflection instruction. Build a small registry over real Frame navigation, then compare it with Uno.Extensions.Navigation: ViewMap associates view and model types, while RouteMap describes named and nested routes. The browser experiment demonstrates the core contract without pretending that the extensions package is installed.",
+  "vocabulary": [
+    {
+      "term": "Route registry",
+      "meaning": "An explicit mapping from accepted navigation names to supported destination definitions."
+    },
+    {
+      "term": "ViewMap",
+      "meaning": "An Uno.Extensions.Navigation association between a view and optional view-model/data contracts."
+    },
+    {
+      "term": "RouteMap",
+      "meaning": "An Uno.Extensions.Navigation definition of route paths, nesting, defaults, and related navigation structure."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A stable route name can survive a view-class rename and can be validated before activation. Keep the accepted names in an explicit registry. Do not call Type.GetType on untrusted route input and instantiate whatever it resolves. The registry is a structural boundary that makes supported destinations discoverable and testable.",
+      "worked": "Enter Tasks and resolve it. The dictionary returns a known Page type and Frame performs real navigation. Enter an unknown value and observe Unknown route without attempting activation. This shows a whitelist-style lookup rather than a string-to-reflection shortcut hidden inside a generic navigation method.",
+      "question": "Why not expose CLR type names directly as public routes?",
+      "answer": "It couples navigation contracts to implementation details and can create unsafe or unpredictable activation paths. Public route names should resolve through controlled application metadata."
+    },
+    {
+      "explain": "Uno.Extensions separates view/model association from route topology. ViewMap connects types; RouteMap can describe names, nested regions, default destinations, and dependencies. The tiny dictionary lab intentionally omits that full region system. Read the official extension documentation when moving from a core Frame example to a project configured with Navigation.",
+      "worked": "Imagine TasksPage paired with TasksViewModel and a nested Details destination. The view map identifies which view presents the model, while the route map describes where Details belongs. A single flat dictionary can teach lookup but cannot claim to reproduce nested region selection or generated view-model activation.",
+      "question": "Does a flat dictionary implement all Uno.Extensions navigation behavior?",
+      "answer": "No. It demonstrates explicit lookup over Frame. Regions, view-model construction, data maps, results, and route qualifiers belong to the actual extensions configuration."
+    },
+    {
+      "explain": "A route can be known while its transition is rejected or fails. Check both lookup and navigation outcome. Keep menu selection aligned with the accepted destination, and avoid marking a route active before the host confirms the transition. Parameter validation and authorization remain independent even when the route itself is registered.",
+      "worked": "The fixture reports Accepted only when Frame.Navigate returns true. In a full project, add a guard or failure handler and verify the shell does not claim success for a rejected request. A registered Reports route should still fail safely when its required data cannot be loaded or access is denied.",
+      "question": "What does successful lookup prove?",
+      "answer": "Only that the application recognizes the destination. It does not prove that navigation, data loading, or authorization will succeed."
+    },
+    {
+      "explain": "Test duplicate names, unknown routes, expected view associations, and nested defaults during startup or in CI. Prefer deterministic registration to discovering important routes through uncontrolled reflection. Document which part of the route can be serialized and how old links migrate when names change. A typo in a route is a configuration defect, not something to conceal with an unrelated fallback page.",
+      "worked": "Create a route-table test that enumerates every menu destination and requires a registered mapping. Then rename one route deliberately and confirm the test catches the broken link. For Uno.Extensions, test ViewMap/RouteMap registration with the matching package version and project features.",
+      "question": "Why test menu-to-route coverage?",
+      "answer": "It catches navigable-looking controls that point to missing or renamed destinations before a user discovers them at runtime."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Enter an unknown route",
+      "expected": "No Page type is activated and feedback explains the failure.",
+      "why": "Lookup is constrained to the explicit registry."
+    },
+    {
+      "change": "Start with Reports",
+      "expected": "The Reports destination is selected through the same lookup path.",
+      "why": "Public route identity is separate from the menu’s presentation."
+    }
+  ],
+  "bridge": "Create an Uno project with the Navigation feature and translate the explicit mappings into ViewMap and RouteMap registrations. Add typed data maps only where needed, test unknown and nested routes, and keep the browser dictionary example labeled as a core-Frame teaching subset.",
+  "references": [
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Navigation/HowTo-DefineRoutes.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    },
+    {
+      "url": "https://platform.uno/docs/articles/external/uno.extensions/doc/Learn/Navigation/HowTo-NavigateInCode.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "toolkit-observable",
+  "scenario": "You already know INotifyPropertyChanged. Now use CommunityToolkit.Mvvm to remove boilerplate while keeping the contract visible. Build a counter whose displayed Summary depends on Count, then inspect exactly which notifications must be raised. The live example uses the real ObservableObject class, not a locally renamed imitation or a source generator that never ran.",
+  "vocabulary": [
+    {
+      "term": "ObservableObject",
+      "meaning": "The MVVM Toolkit base class implementing property-changing and property-changed notifications."
+    },
+    {
+      "term": "SetProperty",
+      "meaning": "A helper that checks equality, updates a field, and raises the property notifications."
+    },
+    {
+      "term": "Dependent notification",
+      "meaning": "A notification for a calculated property whose result changes because another property changed."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "The view model owns Count and the derived Summary; the TextBlock only displays Summary. This makes the state transition testable without constructing a Window. ObservableObject reduces repetitive event code but does not decide which properties belong together or where domain rules should live. Keep UI handles and renderer-specific objects out of the presentation state.",
+      "worked": "The button changes model.Count, not output.Text. Binding reads Summary through the actual model and listens for notifications. In a unit test, construct CounterViewModel, subscribe to PropertyChanged, set Count, and verify both the new Summary and the emitted property names. No visual tree is required for those assertions.",
+      "question": "What does the toolkit remove, and what remains your responsibility?",
+      "answer": "It removes notification boilerplate. You still own state design, dependent-property relationships, validation, threading, and lifecycle."
+    },
+    {
+      "explain": "SetProperty returns whether the value actually changed. Guard follow-up notifications and expensive recomputation with that result so assigning the same Count does not create redundant work. Equality is part of the model contract: reference equality, record equality, and custom comparers can have different meanings for larger property values. Do not turn every assignment into a mandatory redraw.",
+      "worked": "Assign Count its current value in a project test. The setter returns without raising Summary again. Then assign a different value and capture the event order. This distinguishes a meaningful state change from merely executing the setter and gives a deterministic test for duplicate notification regressions.",
+      "question": "Should Summary be announced after an equal assignment?",
+      "answer": "Not for this model. Its result did not change, so an equality-guarded setter can avoid unnecessary notifications and downstream work."
+    },
+    {
+      "explain": "A calculated getter is not automatically observable just because it uses observable properties. Raise Summary when Count changes; for a total depending on Quantity and Price, either setter must notify Total. Source generators can express these relationships declaratively, but the generated code still implements this underlying notification contract.",
+      "worked": "Change the increment from one to three. The displayed count and doubled result should change together because Summary is invalidated once for the new Count. Temporarily remove the dependent notification in a full-project variation: Count can change correctly while the bound Summary remains stale. That is a notification defect, not a renderer defect.",
+      "question": "Why can a correct calculated getter still show stale text?",
+      "answer": "The binding may not know it must read the getter again. A dependency changed without a corresponding notification for the bound property."
+    },
+    {
+      "explain": "A normal project can use ObservableProperty and NotifyPropertyChangedFor attributes on a partial class. The build generates properties and notifications; a single-file runtime compiler does not automatically execute that project generator. The browser lab therefore uses explicit properties with the real toolkit base class. Keep the project variant labeled and inspect generated code when diagnosing a build issue.",
+      "worked": "Move the model into a full Uno project with the Mvvm feature and use the provided generated variant. Confirm that the generated Count property raises Summary and that both forms pass the same behavior tests. Do not paste generator attributes into the runtime lab and assume an absent generated member exists.",
+      "question": "What must happen for ObservableProperty to create a property?",
+      "answer": "The appropriate source generator must run during the project build, with a compatible partial type and package configuration. An attribute alone is not a runtime property factory."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Assign the same Count twice",
+      "expected": "The second equal assignment produces no new dependent update.",
+      "why": "SetProperty reports whether the field actually changed."
+    },
+    {
+      "change": "Remove Summary notification",
+      "expected": "The bound summary can stay stale while Count changes.",
+      "why": "The binding observes the property it targets, not arbitrary getter dependencies."
+    }
+  ],
+  "bridge": "Extract the counter model into a test project and assert value changes and notification names. Then implement a Quantity/Price/Total model in both handwritten and generated forms. Keep the same tests and inspect the generated output rather than attributing correctness to syntax alone.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/observableobject",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

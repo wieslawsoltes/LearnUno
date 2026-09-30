@@ -1,0 +1,64 @@
+{
+  "id": "debounced-input",
+  "scenario": "An app filters as the user types, but each key should not start an expensive request and an old response must not overwrite the newest phrase. Build a local debounce first, then identify the additional contracts needed when the delay becomes real I/O. The browser lab uses a deterministic delay and never sends the search phrase to a remote server.",
+  "vocabulary": [
+    {
+      "term": "Debounce",
+      "meaning": "Waiting until input has remained unchanged for a specified interval before starting the next action."
+    },
+    {
+      "term": "Generation",
+      "meaning": "A monotonically changing request identity used to reject results for obsolete intent."
+    },
+    {
+      "term": "Cancellation ownership",
+      "meaning": "The rule that identifies which operation may cancel and dispose a particular CancellationTokenSource."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Read the input into a local query at the start of the operation. That snapshot describes the intent being processed; rereading the TextBox after an await could accidentally mix a newer phrase with an older request. Increment a generation and create a token source owned by this operation before awaiting the quiet interval.",
+      "worked": "Type A and quickly add B. The second event captures AB, cancels the first interval, and advances the generation. The first operation may still run cleanup, but it must not clear the second operation’s source. The reference comparison in finally separates those two owners.",
+      "question": "Why capture input before awaiting?",
+      "answer": "The operation needs a stable description of what it was asked to process. Reading mutable UI state later can combine different user intents in one result."
+    },
+    {
+      "explain": "CancellationTokenSource.Cancel requests cancellation; it is not a synchronous kill switch for arbitrary work. Task.Delay observes its token, so an obsolete wait normally completes by throwing OperationCanceledException. Treat that expected path separately and dispose each source only when its own asynchronous operation has finished using it.",
+      "worked": "Increase the debounce interval to 500 ms and type several letters quickly. Intermediate waits are cancelled; only the last quiet interval can publish. Then type slowly enough to finish each interval. Multiple outputs are now expected because the user provided several completed pauses, not because debounce malfunctioned.",
+      "question": "Does debounce guarantee exactly one operation for a whole typing session?",
+      "answer": "No. It groups changes separated by less than the quiet interval. Longer pauses can legitimately produce several operations."
+    },
+    {
+      "explain": "Even cancellable work can complete before it notices cancellation, and not every service honors a token. Compare the captured generation with the current one before publishing. This second condition protects the state transition rather than merely reducing work. Keep both checks when the debounce later starts a real search service.",
+      "worked": "The atlas can make request A slow and B fast to demonstrate why completion order is unsafe. The live delay is simpler, but the generation check preserves the same intent rule. Add an intentionally noncancellable service fake in a project test and verify that its late result is ignored.",
+      "question": "Why keep a generation check when a token exists?",
+      "answer": "Cancellation and result acceptance solve different problems. A token requests less obsolete work; the generation comparison enforces which result is allowed to become current state."
+    },
+    {
+      "explain": "When a view leaves the visual tree, invalidate its outstanding generation and request cancellation. Reusable view models should tie this to their own activation or navigation lifetime rather than assuming every Unloaded event means permanent disposal. Keep expensive or long-running work out of the UI thread and avoid publishing to a detached owner.",
+      "worked": "Navigate away while the delay is pending. The sample increments generation and cancels the owned wait. Its finally block performs per-operation disposal. In a cached page, decide whether reactivation starts a new query or restores previous results; do not depend on one universal lifecycle event sequence.",
+      "question": "Should every Unloaded event permanently destroy a view model?",
+      "answer": "Not necessarily. Reparenting, templates, and page caching can detach and later reactivate visuals. The application must define an ownership and activation policy."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Type faster than the quiet interval",
+      "expected": "Only the newest completed pause publishes its query.",
+      "why": "Earlier delays observe cancellation and earlier generations cannot become current."
+    },
+    {
+      "change": "Navigate away during a pending delay",
+      "expected": "The detached view does not receive a new accepted query.",
+      "why": "Its lifetime handler advances the generation and requests cancellation."
+    }
+  ],
+  "bridge": "Move debounce and search into a view-model service with an injected clock or delay abstraction. Test rapid input, slow input, ignored cancellation, navigation away, and late cleanup. Use a request identity that cannot be overwritten by an older operation’s finally block.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/standard/threading/cancellation-in-managed-threads",
+      "title": "Cooperative cancellation and token-source ownership",
+      "kind": "External primary reference"
+    }
+  ]
+}

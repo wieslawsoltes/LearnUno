@@ -1,0 +1,64 @@
+{
+  "id": "input-contracts",
+  "scenario": "Build a reservation field that must accept a small positive whole number. Empty text, a malformed number, and an out-of-range number are different situations even though none may be submitted. Follow the boundary from editable text to a validated value, then decide where the application should show feedback without erasing what the user typed.",
+  "vocabulary": [
+    {
+      "term": "Nullable contract",
+      "meaning": "A compile-time description of whether a reference is allowed to be null, not a sanitizer for external data."
+    },
+    {
+      "term": "Parsing",
+      "meaning": "Converting a textual representation into a typed value according to an explicit format and culture."
+    },
+    {
+      "term": "Domain invariant",
+      "meaning": "A condition that must remain true for accepted application data, such as a bounded seat count."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A TextBox owns editable text, including intermediate states that are not yet valid domain values. Nullable annotations help the compiler reason about references, while TryParse addresses representation and a range check addresses the business rule. These are separate contracts. Keep the original input until a successful commit so feedback can explain the problem without destroying the evidence.",
+      "worked": "Type an empty string, then 0, then 3. All three are real editing states. The first fails conversion, the second converts but violates the lower bound, and the third satisfies both checks. The output should explain what to enter, not report a null-reference exception or substitute an unexplained zero.",
+      "question": "Why should an empty field not silently become zero?",
+      "answer": "Zero is a real numeric value with different meaning. Silently substituting it collapses absence and invalidity into apparently valid data and can hide the source of a later business-rule failure."
+    },
+    {
+      "explain": "Use a Try-style conversion when malformed user input is an expected event. Choose NumberStyles and CultureInfo deliberately rather than inheriting an arbitrary machine setting for a protocol-like integer field. A successful conversion proves only that the representation fits the target type. It does not prove that the requested operation is allowed.",
+      "worked": "Paste a number larger than Int32.MaxValue. TryParse returns false instead of overflowing into a small number. Then paste a negative value: parsing succeeds, but the positive-count rule rejects it. Keep the two decisions close enough that the success path cannot accidentally use the out value after failure.",
+      "question": "Does successful TryParse mean the reservation is acceptable?",
+      "answer": "No. It only means the text represents an Int32 under the selected format. The application must still enforce capacity, permissions, inventory, and any other domain constraints."
+    },
+    {
+      "explain": "Treat submission as a transition from an editable representation to a trusted local value. The sample uses short-circuit Boolean evaluation so range checks operate only on a successful parse. For a larger form, collect validation results into presentation state and perform one save action rather than writing every keystroke to durable storage.",
+      "worked": "Reduce the maximum from twelve to eight, run, and try 8 and 9. Eight reaches the accepted branch; nine remains editable with feedback. The feedback message interpolates the same constant, so the instruction changes with the rule. A correct predicate paired with outdated instructions would still be a usability defect.",
+      "question": "Why must validation instructions change with the rule?",
+      "answer": "The user needs an actionable explanation of the same contract the program enforces. Contradictory copy turns a correct rejection into a confusing interaction."
+    },
+    {
+      "explain": "Build a small table of boundary inputs: empty, whitespace, alphabetic text, minimum, maximum, one below, one above, and overflow. Test conversion separately from business constraints so a change in one does not mask errors in the other. InputScope can request a convenient keyboard, but it cannot replace validation of paste or programmatic input.",
+      "worked": "Add a test for a string containing leading whitespace. Decide whether the current NumberStyles policy should accept it. Compare that decision with a culture-specific decimal field, where separators matter. Document the intended representation rather than guessing from the appearance of one keyboard on one device.",
+      "question": "Does a numeric keyboard guarantee numeric input?",
+      "answer": "No. Paste, accessibility tools, programmatic updates, and platform behavior can supply unexpected text. Validation belongs at the data boundary regardless of the keyboard hint."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Enter 2147483648",
+      "expected": "The field rejects the value without an arithmetic overflow.",
+      "why": "The requested value cannot be represented by Int32."
+    },
+    {
+      "change": "Change the maximum to eight",
+      "expected": "Eight is accepted and nine is rejected.",
+      "why": "The domain range is independent of whether both strings can be parsed."
+    }
+  ],
+  "bridge": "Extract a pure TryCreateReservationCount function and table-test the boundaries. Keep TextBox editing and feedback in the view or view model, but pass only a validated count to the reservation service. Compare the upstream TextBox keyboard/input guidance with this validation contract; neither source claims that keyboard configuration enforces domain rules.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

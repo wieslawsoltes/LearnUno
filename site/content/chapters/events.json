@@ -53,5 +53,19 @@
       "why": "Visibility and strong-reference ownership are separate concerns."
     }
   ],
-  "bridge": "The upstream event documentation explains routing while SamplesApp shows concrete handlers. Identify the publisher, handler and arguments in the excerpt, then compare its lifecycle with the smaller local counter. Routing through a tree is a separate question from whether a long-lived publisher retains a subscriber."
+  "bridge": "The upstream event documentation explains routing while SamplesApp shows concrete handlers. Identify the publisher, handler and arguments in the excerpt, then compare its lifecycle with the smaller local counter. Routing through a tree is a separate question from whether a long-lived publisher retains a subscriber.",
+  "continueWith": [
+    {
+      "id": "subscription-lifetimes",
+      "title": "Own subscriptions as disposable resources"
+    },
+    {
+      "id": "dialog-decisions",
+      "title": "Use ContentDialog for an explicit decision"
+    },
+    {
+      "id": "toolkit-messaging",
+      "title": "Use messages at deliberate component boundaries"
+    }
+  ]
 }

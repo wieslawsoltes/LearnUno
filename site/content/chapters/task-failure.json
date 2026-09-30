@@ -1,0 +1,64 @@
+{
+  "id": "task-failure",
+  "scenario": "A Save button works until a service rejects the request. Without an awaited boundary, the failure may escape the place that should restore the enabled state and preserve the user’s draft. Trace success and failure through the same operation, and make the UI recover to a usable state without pretending that a failed save succeeded.",
+  "vocabulary": [
+    {
+      "term": "Faulted task",
+      "meaning": "A Task that completed with an exception rather than a successful result."
+    },
+    {
+      "term": "Observation",
+      "meaning": "Awaiting or otherwise inspecting task completion so faults are not silently abandoned."
+    },
+    {
+      "term": "Finally invariant",
+      "meaning": "A state relationship restored on all paths, such as reenabling an action after its operation ends."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A Task represents completion, not just the fact that work started. An async method can return before its awaited work finishes, so a try block that only calls it without awaiting may not observe a later failure. Event handlers may need async void signatures, but their bodies should still await Task-returning operations and handle expected failures explicitly.",
+      "worked": "Run the fixture with failure enabled. The event handler disables the button, awaits a delay, and observes the deliberately thrown InvalidOperationException. The recovery message remains visible and finally reenables the same button. No remote service is contacted, making the failure reproducible in browser tests.",
+      "question": "Why is an async event handler different from an ordinary service method?",
+      "answer": "The event signature may require void, whereas reusable service operations should return Task so their callers can await, cancel, compose, and test completion."
+    },
+    {
+      "explain": "Catch failures you can interpret at the chosen boundary. Cancellation, validation errors, connectivity problems, and programming defects may require different treatment. A blanket catch that displays success hides corruption; a blanket rethrow from every UI event can make expected service failures unusable. Preserve diagnostic context while presenting a safe, actionable explanation.",
+      "worked": "The example catches only its deliberate InvalidOperationException fixture. A real app would map known service outcomes to domain or presentation errors and log unexpected exceptions without exposing credentials. Compare this with the cancellation lesson: a cancelled operation should not automatically display the same red error as a rejected save.",
+      "question": "Should every exception become a success result?",
+      "answer": "No. Recovery means restoring usable state and explaining the outcome, not inventing successful data or silently discarding failures."
+    },
+    {
+      "explain": "Place symmetric cleanup in finally when it must happen after success, failure, or cancellation. Restore command availability, release the operation’s owned resources, and avoid clearing a newer operation’s state by mistake. If overlapping operations are permitted, the cleanup must identify which operation it owns rather than blindly resetting a shared field.",
+      "worked": "Uncheck the failure box and run again. The successful path and the failed path both restore IsEnabled, but they show different outcomes. Extend the sample with cancellation and check that an early exit still runs finally. Use a generation token when a new request can supersede the one completing now.",
+      "question": "What bug appears when old cleanup blindly clears current state?",
+      "answer": "An older operation may erase the busy indicator or cancellation source of a newer operation. Cleanup must apply to its own operation identity."
+    },
+    {
+      "explain": "Write tests that await the operation, assert the visible outcome, and verify the action can run again. Do not rely on sleeps or assume a green render test exercises event handlers. Inject a deterministic failing service and complete its Task under test control. Keep a test for the second successful attempt after an initial failure.",
+      "worked": "The controlled fixture makes a useful browser journey: trigger failure, inspect the feedback, switch to success, run again, and inspect Completed. This catches a stuck-disabled button that a construction-only test would miss. Separate these behavior assertions from screenshots that only prove the label occupied a rectangle.",
+      "question": "Why test the operation after recovery?",
+      "answer": "A correct error label is insufficient if the view is left unusable. A second attempt verifies that cleanup and availability were restored."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Enable failure and run",
+      "expected": "A recoverable message appears and the action reenables.",
+      "why": "The fault is observed and finally restores availability."
+    },
+    {
+      "change": "Disable failure and run again",
+      "expected": "Completed appears without recreating the view.",
+      "why": "Recovery preserved an operational UI rather than leaving a permanent error state."
+    }
+  ],
+  "bridge": "Extract the operation into a Task-returning view-model method and inject a deterministic fake service. Test success, known failure, cancellation, and a second attempt. Keep the event adapter thin and compare your error policy with the source examples rather than copying async void into application services.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

@@ -53,5 +53,11 @@
       "why": "Projection membership and domain existence are different states."
     }
   ],
-  "bridge": "The MVVM, application-data and ListView samples supply real building blocks, but the capstone requires integrating their ownership and failure contracts. The online seed is deliberately smaller than the independent project. Keep that difference visible in your completion evidence."
+  "bridge": "The MVVM, application-data and ListView samples supply real building blocks, but the capstone requires integrating their ownership and failure contracts. The online seed is deliberately smaller than the independent project. Keep that difference visible in your completion evidence.",
+  "continueWith": [
+    {
+      "id": "record-identity",
+      "title": "Separate record equality from entity identity"
+    }
+  ]
 }

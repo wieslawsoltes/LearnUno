@@ -1,58 +1,77 @@
 <p align="center"><img src="site/favicon.svg" width="64" height="64" alt="LearnUno" /></p>
 <h1 align="center">LearnUno</h1>
-<p align="center"><strong>Build once. Understand every layer.</strong><br />An interactive, source-connected learning studio for Uno Platform.</p>
-<p align="center"><a href="https://wieslawsoltes.github.io/LearnUno/">Course</a> · <a href="https://wieslawsoltes.github.io/LearnUno/#/atlas">Visual atlas</a> · <a href="https://wieslawsoltes.github.io/LearnUno/#/fundamentals">Fundamentals</a> · <a href="docs/expanded-chapters.md">Guided chapters</a> · <a href="docs/architecture.md">Architecture</a></p>
+<p align="center"><strong>Build once. Understand every layer.</strong><br />A source-connected, interactive learning studio for Uno Platform.</p>
+<p align="center"><a href="https://wieslawsoltes.github.io/LearnUno/">Course</a> · <a href="https://wieslawsoltes.github.io/LearnUno/#/app-building">Build applications</a> · <a href="https://wieslawsoltes.github.io/LearnUno/#/atlas">Visual atlas</a> · <a href="https://wieslawsoltes.github.io/LearnUno/#/design-labs">UI design labs</a> · <a href="https://wieslawsoltes.github.io/LearnUno/#/feature-map">Source coverage</a></p>
 
 [![Build, validate and publish](https://github.com/wieslawsoltes/LearnUno/actions/workflows/ci.yml/badge.svg)](https://github.com/wieslawsoltes/LearnUno/actions/workflows/ci.yml)
 
 ## Learn the mechanism, not just the name
 
-**60 guided lessons · 240 expanded explanation steps · 60 lesson-specific visual experiments · 12 fundamentals chapters · 120 runnable starter/solution variants**
+**90 core lessons · 15 paths · 360 expanded core steps · 90 lesson-specific atlas experiments · 18 fundamentals chapters**
 
-Predict a result, change an assumption, inspect the outcome, and test it in a **real Uno WebAssembly application**. The two capstones apply those ideas to an application and a framework-quality contribution. LearnUno is independent of Uno Platform and Microsoft; it is not an official course or certification.
+**Plus 6 data-workspace workshops and 8 UI design lessons: 104 runnable learning units, 416 guided steps and 208 authored starter/solution variants overall.**
 
-## New in 0.3: source-connected reading
+Predict a result, change an assumption, inspect the outcome, and test it in a **real Uno WebAssembly application**. Two independent capstones connect the ideas to an application and a framework-quality contribution. LearnUno is independent of Uno Platform and Microsoft; it is not an official course or certification.
 
-Every lesson now has a substantial guided chapter: a practical problem, vocabulary, four detailed steps with worked reasoning and recall questions, a phase-selectable inline infographic, the original runnable code, pinned Uno evidence, controlled practice variations and transfer work. An on-page outline keeps the longer material navigable. The atlas's optional reading companion follows its current step and links back to that position in the chapter.
+## App-building edition
 
-The expansion adds **over 43,000 words of original learning material**, **131 documentation passages** and **86 code excerpts** from the pinned Uno repository. Actual SamplesApp code and runtime tests are distinguished from tutorial fragments and the course's runnable examples. Every excerpt has an exact source-line link and integrity hashes; project and version boundaries remain explicit.
+Thirty additional core lessons provide five paths: **C# for app builders**, **Everyday Uno controls**, **MVVM patterns in practice**, **Navigation and user flows**, and **DI and service composition**. The task-oriented app-building roadmap connects these lessons into dependable forms, searchable workspaces, guarded document flows and testable service graphs. Prerequisites are recommendations, not locks.
 
-Chapters load independently, so the entire text corpus does not enter the initial JavaScript bundle. Reading does not start Monaco or Uno. Existing IDs, notes, bookmarks, drafts and completion criteria are preserved. See [chapter architecture, provenance and authoring](docs/expanded-chapters.md).
+The MVVM exercises use actual **CommunityToolkit.Mvvm 8.4.0** classes. The composition exercises use **Microsoft.Extensions.DependencyInjection 10.0.12** and **Microsoft.Extensions.Options 10.0.12**. Minimal lesson exports include the required declared packages. Generator alternatives remain project-only; runtime examples use explicit properties and commands. The isolated host disables optional Hot Design tooling with the supported UnoDisableHotDesign property rather than suppressing a dependency downgrade. See [runtime package boundaries](docs/runtime-package-boundaries.md).
+
+All core lessons have source-connected chapters, four guided steps, two practice variations, a knowledge check and a distinct calculated model. Their chapter build contains **65,258 authored words**, **191 documentation-passage placements** and **117 code-excerpt placements**. These are placements, not unique source-file counts; word count is not a measure of teaching quality. Stable lesson IDs and original progress semantics are retained.
+
+## Workshops and design practice
+
+The **data-workspace** workshops teach converters, paging with identity, accepted content versus request status, optimistic concurrency, collection notifications and bounded undo/redo. Each includes four developed steps, controlled practice, an interactive model and real C# starter/solution code. These workshops have separate drafts and do not silently award core lesson completion.
+
+The **eight UI design labs** cover bounded scrolling, choice semantics, command surfaces, status with content, keyboard-first forms, adaptive details, image presentation, and theme/density. Inspect responsive HTML mockups, compare text scale and spacing, review design tips, then switch to the actual Uno exercise. A mockup is explicitly labelled as HTML—not advertised as the Uno renderer.
+
+The **eighteen fundamentals chapters** include value/reference identity, nullable contracts, closures, generic constraints, async outcomes, namescopes, layout units, binding contexts, properties and ownership. Six additions explain item-versus-collection notifications, focus versus selection, culture and typed values, command invalidation, resource/style/template boundaries and asynchronous readiness. Each new guide has two inspectable scenarios with accessible comparison tables. Guide snippets remain labelled fragments, not eighteen extra complete apps. See [application fundamentals](docs/application-fundamentals.md).
+
+## A source-connected course
+
+The reader combines a practical problem, vocabulary, four detailed steps with worked reasoning and recall questions, inline diagrams, the original runnable code, pinned Uno evidence and transfer work. A focus-aware outline keeps long chapters navigable. The atlas reading companion follows playback and links to the corresponding chapter step.
+
+Actual SamplesApp fragments and runtime tests are distinguished from tutorial excerpts and the course's runnable code. Source cards include exact paths, line links and integrity hashes; a strict build rejects missing or changed evidence. Chapters load independently, so reading does not load all chapter text, Monaco or the .NET runtime at startup.
+
+The reference library contains **420 Markdown documents** and **19,024 source/sample/test paths** from the pinned repository. External DocFX repositories are not silently copied. A generated feature map surveys **559 public types** and **1,542 sample XAML files**, connects relevant lessons and exposes reference-only gaps. These lexical counts describe the snapshot, not popularity or implementation parity. See [source priorities and limitations](docs/source-priorities.md).
 
 ## Curriculum
 
-| Path | Level | Topics |
+| Path | Level | Main subjects |
 | --- | --- | --- |
-| First principles | Beginner | Uno mental model, C#, project structure, XAML, events, debugging |
-| Layout & visual language | Beginner | Panels, Grid sizing, spacing, resources, templates, responsive layouts |
-| Data, binding & state | Intermediate | Binding direction, notifications, editing, x:Bind, collections, commands |
+| First principles | Beginner | Uno, C#, projects, XAML, events, debugging |
+| Layout and visual language | Beginner | Panels, Grid, spacing, resources, templates, responsiveness |
+| Data, binding and state | Intermediate | Notifications, editing, x:Bind boundaries, collections, commands |
 | Application architecture | Intermediate | MVVM, MVUX concepts, injection, navigation, cancellation, serialization |
-| Connected applications | Intermediate | HTTP, configuration, localization, authentication, logging, package choices |
-| Crafting custom UI | Advanced | Dependency properties, templates, pointer coordinates, accessibility, animation, geometry |
-| Performance engineering | Advanced | Layout invalidation, virtualization, caching, dispatch, profiling, browser delivery |
-| Every platform, deliberately | Advanced | Target evidence, renderers, interop, ownership, assets, lifecycle |
-| Quality & production | Advanced | Unit/UI/visual tests, resilience, delivery gates, task-workspace capstone |
-| Framework internals | Expert | Source investigation, XAML generation, precedence, custom panels, damage, contribution capstone |
+| Connected applications | Intermediate | HTTP, configuration, culture, authentication boundaries, logging |
+| Crafting custom UI | Advanced | Properties, templates, input, accessibility, animation, geometry |
+| Performance engineering | Advanced | Layout, virtualization, caches, dispatch, profiling, delivery |
+| Every platform, deliberately | Advanced | Target evidence, renderers, interop, assets, lifecycle |
+| Quality and production | Advanced | Tests, resilience, delivery gates, application capstone |
+| Framework internals | Expert | Source investigation, generated XAML, panels, damage, contribution |
+| C# for app builders | Beginner | Contracts, identity, LINQ, failures, debounce, subscription ownership |
+| Everyday Uno controls | Beginner | TextBox, ComboBox, ListView, NavigationView, ContentDialog, AutoSuggestBox |
+| MVVM patterns in practice | Intermediate | ObservableObject, commands, validation, messaging, edit transactions |
+| Navigation and user flows | Intermediate | Parameters, history, route contracts, deep links, guards, results |
+| DI and service composition | Advanced | Composition roots, scopes, captive dependencies, factories, decorators, options |
 
-The twelve fundamentals guides supplement these paths with identity, nullable contracts, closures, generic constraints, task outcomes, namescopes, layout units, binding contexts, properties and ownership. Their fragments are not advertised as twelve new complete applications.
+## Tools for understanding
 
-## The studio
+**One core lesson, one visual experiment.** Ninety explicit atlas assignments have independent models, controls and calculations. Tests guard against duplicated geometry disguised by different captions. Scope statements distinguish models from instrumented framework traces.
 
-**One lesson, one experiment.** Sixty explicit atlas assignments have their own input models, calculations, geometry and explanations. Tests guard against duplicated scenes disguised by different captions. Models declare their simplifications rather than pretending to be instrumented Uno traces.
+**Controlled playback.** One seekable clock owns previous/next, pause/resume, replay, speed and optional looping. Manual edits take ownership from animation. Hidden/offscreen views and reduced-motion preferences are respected.
 
-**Controlled playback.** One seekable clock owns Previous/Next, pause/resume, replay, speed and optional looping. Manual edits take ownership from animation. Hidden/offscreen views and reduced-motion preferences are respected.
+**Meaningful GPU work.** The dirty-tile lab performs actual WebGPU compute and rendering, then compares every output with a CPU reference. Readback is a validation aid, not a proposed production frame loop. SVG and text preserve the explanation without a GPU.
 
-**Actual GPU work.** The dirty-tile lab runs WebGPU classification and rendering, then checks every output against a CPU reference. Readback is a teaching/validation aid, not a proposed production rendering loop. SVG/text explanations remain available without a GPU.
+**Code coloring throughout.** A locally bundled worker supports 26 modes, including explicit plaintext, without loading Monaco. It colors static/dynamic snippets, source excerpts, solutions and reference fences while preserving exact text. Grammar coloring is lexical, not semantic analysis.
 
-**Code coloring throughout.** A locally bundled worker supports 26 modes, including the explicit plaintext fallback, without loading Monaco. It covers lessons, inline code, source excerpts, atlas output, solution dialogs, fundamentals and reference fences. Source text is preserved; unknown languages and oversized inputs remain complete plaintext. Grammar coloring is lexical, not semantic analysis.
+**Real Uno and Roslyn.** Desktop Monaco connects to in-browser Roslyn for completion, diagnostics, hover, local definitions, signatures and formatting. XAML suggestions use reflected Uno metadata. Narrow screens use a text-editor fallback with the same execution engine. The preview is Uno NativeRenderer/WebAssembly, not a reimplementation in HTML.
 
-**A real playground.** Desktop Monaco connects to in-browser Roslyn for C# completion, diagnostics, hover, local definitions, signatures and formatting. XAML suggestions use reflected Uno metadata. A lesson-aware extension supplies hints and focus decorations. Narrow screens use a text-editor fallback with the same execution engine.
+## Build and validate
 
-**Source at your fingertips.** The complete reference library contains 420 Markdown documents and 19,024 source/sample/test paths from the pinned Uno checkout, with original Markdown, source links and attribution. External DocFX repositories are not silently copied.
-
-## Development
-
-Requires Node.js 22+, .NET SDK **10.0.401** and the WebAssembly workload. The runner pins **Uno.Sdk 6.7.30** and **Roslyn 5.9.0**.
+Requires Node.js 22+, .NET SDK **10.0.401**, the WebAssembly workload, **Uno.Sdk 6.7.30** and **Roslyn 5.9.0**. Versions are pinned in source.
 
 ```sh
 git clone https://github.com/wieslawsoltes/LearnUno.git
@@ -70,7 +89,7 @@ npm run build
 npm run dev
 ```
 
-Open `http://localhost:4173`. Fragment routes and relative assets support the `/LearnUno/` Pages subpath. Interface-only builds can omit the runtime/source checkout, but imported evidence is then unavailable. Production requires both and rejects missing or changed source selections.
+Open `http://localhost:4173`. Fragment routes and relative assets support `/LearnUno/` hosting. Interface-only builds can omit the runtime/source checkout; the unavailable parts are not fabricated. Production sets `REQUIRE_RUNTIME=1` and `REQUIRE_SOURCES=1` and refuses incomplete output.
 
 ```sh
 npm test
@@ -78,33 +97,29 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-Node tests cover authored-content contracts, model invariants, exact coloring/source preservation, imports, transport and provenance. Browser checks exercise course/atlas routes, guided steps, chapter loading/retry, source coloring, keyboard focus, mobile, dark mode and the real Uno examples. Compiler tests use actual runner references. Software-WebGPU checks establish shader execution and CPU parity, not physical-GPU performance. The pipeline deploys the tested artifact and verifies the public URL; consult its result for a particular revision.
+The pipeline restores the actual host, compiles all core/workshop C# variants against its references, runs every authored variant and checks the application in Chromium. Node tests cover models, content, provenance, coloring, storage, transport and imports. UI checks cover mobile, themes, keyboard focus, reader steps, model comparisons, mockups and runtime interactions. Software-WebGPU tests establish API/shader execution and reference parity, not physical-device performance.
 
-## Execution and safety boundaries
+The same tested artifact is deployed, followed by public-URL verification. The workflow badge and `build.json` identify the revision and actual result; a source branch or locally passing model test is not a completed deployment.
 
-The preview is **Uno NativeRenderer / WebAssembly**, not an HTML imitation of XAML. C# compiles a single `Lesson.Build()` document; XAML uses `XamlReader.Load`. NuGet installation, arbitrary projects, source generators, compiled `x:Bind`, `x:Class` and compiled event handlers are outside this sandbox. Project-only examples and upstream excerpts retain their context labels.
+## Execution boundaries
 
-The opaque-origin preview has bounded ephemeral settings, but no hard CPU/memory quota; an infinite loop can stall a tab. Only run trusted code. Notes and progress are browser-local, not an encrypted account service. Visual models and grammar coloring do not certify platform support or complete IDE parity. See [security](docs/security.md), [playback](docs/atlas-playback.md), [lesson models/coloring](docs/lesson-specific-atlas.md) and [graphics validation](docs/graphics-validation.md).
+The sandbox compiles one C# document containing `Lesson.Build()`, or parses runtime XAML through XamlReader. It does not install arbitrary NuGet packages, compile multi-project applications, run project source generators, or generate compiled x:Bind/x:Class/event-handler glue. Project-only examples and imported fragments keep their context labels.
 
-## Source map
+The opaque-origin preview has bounded ephemeral settings but no hard CPU/memory quota. A non-returning loop can stall a tab; run only trusted code. Progress, notes and drafts are browser-local rather than encrypted account storage. Diagram or mockup behavior does not certify every native target, every control API or full IDE parity. See [security](docs/security.md), [playback](docs/atlas-playback.md) and [graphics validation](docs/graphics-validation.md).
+
+## Project structure and provenance
 
 ```text
-site/content/chapters/   Original expanded lesson and step material
-site/content/source-map.json  Curated pinned documentation/code selections
-site/src/course/         Existing runnable lessons and learning paths
-site/src/learning/       Chapter reader, phase companion and fundamentals
-site/src/atlas/          Unique models, playback and GPU comparison
-site/src/coloring/       Grammar engine, bounded worker and DOM adapter
-site/src/workspace.mjs   Real Uno editor/preview composition
-site/design/            Shell, reading, models and syntax-color themes
-scripts/study-material.mjs  Validated lazy chapter/provenance build
-runtime/                Uno application, Roslyn and sandbox bridge
-tests/                  Content, model, compiler, security and browser checks
-docs/                   Architecture, authoring and operational boundaries
+site/content/chapters/      Original source-connected core reading
+site/content/source-map.json  Reviewed documentation/code selections
+site/src/course/            Core runnable lessons and paths
+site/src/learning/          Reader, fundamentals, data and UI-design workshops
+site/src/atlas/             Lesson models, playback and GPU comparison
+site/src/coloring/          Grammar engine, worker and DOM adapter
+runtime/                   Real Uno application and Roslyn bridge
+scripts/                   Builds, pinned-source import and feature survey
+tests/                     Model, content, compiler, security and browser checks
+docs/                      Authoring, architecture and operational boundaries
 ```
 
-## Provenance and licensing
-
-`sources.lock.json` pins the upstream revision. `build.json` identifies the deployed commit, runtime availability and content counts; `study/index.json` records chapter coverage. Source documentation and the pinned runner may describe different versions, so API support must be checked against the selected target.
-
-Original code and lessons are MIT-licensed. Imported Uno documentation and code excerpts retain Apache-2.0 provenance and source links. Third-party names identify compatible technologies, not endorsement. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the [authoring guide](docs/course-authoring.md).
+`sources.lock.json` pins the upstream revision; `study/index.json` records chapter coverage. The reference snapshot and installed runner can describe different versions, so confirm APIs against the chosen target. Original code and prose are MIT-licensed. Imported Uno material retains Apache-2.0 provenance and source links. Names identify compatible technologies, not endorsement. See [third-party notices](THIRD_PARTY_NOTICES.md) and the [authoring guide](docs/course-authoring.md).

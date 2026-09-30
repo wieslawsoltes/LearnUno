@@ -53,5 +53,11 @@
       "why": "Request ownership and response correlation have explicit lifetimes."
     }
   ],
-  "bridge": "The official JavaScript interop pages explain project-level boundary mechanisms and may include APIs newer than the pinned runner. The course bridge is the executable reference for this sandbox. The atlas is a protocol model; it does not send arbitrary messages or grant capabilities."
+  "bridge": "The official JavaScript interop pages explain project-level boundary mechanisms and may include APIs newer than the pinned runner. The course bridge is the executable reference for this sandbox. The atlas is a protocol model; it does not send arbitrary messages or grant capabilities.",
+  "continueWith": [
+    {
+      "id": "deep-link-contracts",
+      "title": "Validate deep links as external input"
+    }
+  ]
 }

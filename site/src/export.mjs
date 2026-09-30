@@ -1,3 +1,4 @@
+import {packageReferences} from './runtime-dependencies.mjs';
 import { zipSync, strToU8 } from 'fflate';
 import { download } from './helpers.mjs';
 
@@ -13,12 +14,13 @@ export function createProjectFiles(lesson, code) {
     <TargetFrameworks>net10.0-browserwasm</TargetFrameworks>
     <UnoSingleProject>true</UnoSingleProject>
     <UnoFeatures>NativeRenderer</UnoFeatures>
+    <UnoDisableHotDesign>true</UnoDisableHotDesign>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishTrimmed>false</PublishTrimmed>
     <RunAOTCompilation>false</RunAOTCompilation>
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
-  </PropertyGroup>
+  </PropertyGroup>${packageReferences(lesson)}
 </Project>
 `;
   const app = `using System.Reflection;
@@ -55,7 +57,7 @@ public sealed class App : Application
     'LessonApp.csproj': project,
     'Program.cs': app,
     'WasmScripts/AppManifest.js': 'var UnoAppManifest = { displayName: "LearnUno Lesson", splashScreenColor: "transparent" };\n',
-    'README.md': `# ${lesson.title}\n\nExported from LearnUno.\n\nInstall .NET 10 and the Uno prerequisites for your environment.\n\n\`\`\`sh\ndotnet workload install wasm-tools\ndotnet run -f net10.0-browserwasm\ndotnet publish -f net10.0-browserwasm -c Release\n\`\`\`\n\nThis is a browser-only lesson project. XAML exports use runtime XamlReader, matching the playground. Reflection paths are preserved intentionally. Move markup into a compiled Page to use x:Bind or x:Class. Additional project-only examples may require packages and supporting members. This standalone app uses the browser's normal storage policy; the online playground instead uses per-frame ephemeral settings.\n\n## Exercise\n${lesson.challenge}\n\n## Independent work\n${lesson.transfer}\n`
+    'README.md': `# ${lesson.title}\n\nExported from LearnUno.\n\nInstall .NET 10 and the Uno prerequisites for your environment.\n\n\`\`\`sh\ndotnet workload install wasm-tools\ndotnet run -f net10.0-browserwasm\ndotnet publish -f net10.0-browserwasm -c Release\n\`\`\`\n\nThis is a browser-only lesson project. XAML exports use runtime XamlReader, matching the playground. Reflection paths are preserved intentionally. Hot Design is disabled with the supported UnoDisableHotDesign property so this minimal host does not restore optional Studio design tooling. This does not disable the course's Roslyn or XamlReader execution. Move markup into a compiled Page to use x:Bind or x:Class. Additional project-only examples may require packages and supporting members. This standalone app uses the browser's normal storage policy; the online playground instead uses per-frame ephemeral settings.\n\n## Exercise\n${lesson.challenge}\n\n## Independent work\n${lesson.transfer}\n`
   };
   if (lesson.language === 'xml') {
     files['Lesson.xaml.txt'] = code;

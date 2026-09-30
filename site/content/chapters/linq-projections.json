@@ -1,0 +1,64 @@
+{
+  "id": "linq-projections",
+  "scenario": "Your search view filters a mutable list and later appends more data. A stored query and a stored array look similar in a debugger, but they answer different questions when read again. Make evaluation time explicit so collection views, summaries, and exported snapshots do not unexpectedly disagree after an edit or an asynchronous update.",
+  "vocabulary": [
+    {
+      "term": "Deferred execution",
+      "meaning": "A query describes work that runs when a consumer enumerates it."
+    },
+    {
+      "term": "Materialization",
+      "meaning": "Evaluating a sequence into an owned collection such as an array at a particular time."
+    },
+    {
+      "term": "Projection",
+      "meaning": "A derived representation of source data; it does not automatically become an observable collection."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Where returns an enumerable that keeps access to its source and predicate. Declaring the query does not necessarily inspect every item immediately. ToArray enumerates it and stores the resulting elements. Both are useful: a deferred query can reflect current data, while a snapshot can give a consistent point-in-time input to a save, comparison, or calculation.",
+      "worked": "At startup, the list contains 1, 2, and 3 and the threshold is 3. Both displays show 3 because materialization and the first enumeration see the same input. Predict what happens when the append button adds 4 before running the interaction. The query should show the new match; the old array should not.",
+      "question": "Why do the displays initially agree?",
+      "answer": "They were evaluated against the same initial data. Agreement at startup does not imply that their later evaluation and ownership semantics are identical."
+    },
+    {
+      "explain": "A query can observe both a mutated source collection and a changed variable captured by its predicate. This makes concise code sensitive to evaluation timing. Avoid side effects inside selectors and predicates unless the repeated-execution contract is intentional. A logging counter in a predicate may increment each time several UI consumers enumerate the same query.",
+      "worked": "Press Append next value twice. The deferred sequence is reevaluated by string.Join during each Render call and includes new values. The materialized array retains its earlier membership. In a variation, change the threshold after creating the query and explain why the predicate can use the updated variable.",
+      "question": "Is a query necessarily a frozen result set?",
+      "answer": "No. It is often a recipe that reads current inputs on enumeration. Materialize explicitly when a stable result set is required."
+    },
+    {
+      "explain": "An IEnumerable is not automatically a source of collection-change events. Assigning a deferred query to ItemsSource does not promise that a control will discover mutations by itself. Use an observable projection, replace a materialized ItemsSource when appropriate, or update an ObservableCollection with a deliberate notification policy. Keep stable keys when replacing a projection.",
+      "worked": "The lab calls Render explicitly, so the text refreshes. Remove that call in a full-project variation and nothing has instructed the view to enumerate again. The lesson is about evaluation, not automatic binding refresh. Compare it with the existing observable-collections lesson before using LINQ as a live filtering layer.",
+      "question": "Why does the sample explicitly call Render?",
+      "answer": "The source is an ordinary List and the display is assigned text. Neither operation establishes observable collection updates, so the view needs an explicit refresh in this small experiment."
+    },
+    {
+      "explain": "If several computations must use the same membership, materialize once and pass the snapshot to each computation. This can avoid repeated expensive enumeration and prevent a source change between consumers from producing contradictory counts or totals. Do not assume ToArray deep-copies mutable objects; it copies references to elements unless those elements are value types.",
+      "worked": "Imagine a remote-backed enumerable or a source changed between Count and Sum. A single captured array can establish a common set of items for both calculations. Then test an object item whose Title changes after materialization: the array membership is stable, but the referenced object’s state may still change.",
+      "question": "What exactly is frozen by ToArray over mutable objects?",
+      "answer": "The array’s membership and ordering at materialization, not every referenced object’s internal state. Deep snapshot requirements need a separate copy or immutability policy."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Append value 4",
+      "expected": "Only the deferred membership grows.",
+      "why": "The array was already materialized."
+    },
+    {
+      "change": "Materialize again after appending",
+      "expected": "A new array includes the new matching values.",
+      "why": "Materialization captures the result of a new evaluation, not an ongoing subscription."
+    }
+  ],
+  "bridge": "Build a search projection over the capstone’s stable task IDs. Compare an explicit snapshot replacement with incremental ObservableCollection updates and verify that selected identity survives. Measure repeated enumeration before caching a projection, then define exactly when that cache becomes stale.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/standard/linq/deferred-execution-lazy-evaluation",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

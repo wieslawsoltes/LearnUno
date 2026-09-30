@@ -1,0 +1,64 @@
+{
+  "id": "combobox-keys",
+  "scenario": "An app offers Low and High priority, but a translated label or reordered menu must not change what is saved. Bind the selector to data objects, choose a display member for people and a stable value for application logic, and handle the absence of a selection instead of assuming every ComboBox always contains a valid item.",
+  "vocabulary": [
+    {
+      "term": "SelectedItem",
+      "meaning": "The data object currently selected in an items-based control."
+    },
+    {
+      "term": "SelectedValuePath",
+      "meaning": "A property path used to extract the selected item’s application value."
+    },
+    {
+      "term": "DisplayMemberPath",
+      "meaning": "A property path used for a simple textual representation of each item."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A choice has a meaning independent of its label. Code low can be displayed as Low priority, translated into another language, or shown with an icon without changing the saved value. Model both fields explicitly. Avoid using localized strings as database keys or branching on text that a designer may legitimately edit.",
+      "worked": "The two Priority records contain Code and Name. ComboBox displays Name and exposes Code through SelectedValuePath. Changing the display label in a project variation should not change the output key. This gives the learner a concrete contrast between user-facing language and stable application data.",
+      "question": "What survives translation in this design?",
+      "answer": "The Code field. The display name may change freely while the selected domain value remains stable."
+    },
+    {
+      "explain": "SelectedIndex is a position, SelectedItem is an object, and SelectedValue is the result of the configured path. They are related but not interchangeable. An index is convenient for an initial fixture, while a stable key is usually safer for restoration. Handle null when the control has no selection or its source is replaced.",
+      "worked": "Start with index zero and inspect low. Change the exercise to index one and verify high after selecting or initializing the output from the control. Reorder the input array and notice that the same index now refers to a different record. A key-based restore can still identify the intended priority.",
+      "question": "Why is SelectedIndex fragile for persistence?",
+      "answer": "Positions depend on the current source ordering. Sorting, localization, filtering, or inserted options can move an item without changing its identity."
+    },
+    {
+      "explain": "Provide ordinary data through ItemsSource and use DisplayMemberPath for a simple label. When richer visuals are required, use an ItemTemplate rather than turning the domain collection into a list of UI controls. The control should own selection behavior, keyboard navigation, and item-container lifecycle; the application should own the chosen domain value.",
+      "worked": "Extend Priority with an explanatory Description and replace DisplayMemberPath with a DataTemplate in a full project. Keep Code as the selected value. The template can add visual detail without requiring the save service to understand a StackPanel or extract text from the rendered tree.",
+      "question": "Should a service receive the selected ComboBoxItem control?",
+      "answer": "Usually no. Pass a domain value or stable key. Control instances couple service logic to presentation and make serialization and testing harder."
+    },
+    {
+      "explain": "Stored data can refer to an option that no longer exists. Decide whether to display an explicit unknown state, migrate the value, or request a new selection. Silently choosing the first item can change user data. Validate required selections at submission and test source replacement separately from ordinary keyboard or pointer selection.",
+      "worked": "Persist high, then remove that option from the source. Write the expected UI before coding the recovery path. The application should not silently reinterpret high as low because the remaining item happens to occupy index zero. Show useful feedback and preserve the original value until a deliberate decision is made.",
+      "question": "What is dangerous about defaulting every missing key to index zero?",
+      "answer": "It can silently change the meaning of saved data. Missing choices need an explicit reconciliation policy, not an arbitrary positional substitute."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Translate Name while preserving Code",
+      "expected": "The selected application value is unchanged.",
+      "why": "The label and key are separate fields."
+    },
+    {
+      "change": "Reorder items before restoring a selection",
+      "expected": "A key-based restore locates the same priority.",
+      "why": "The key does not depend on the current index."
+    }
+  ],
+  "bridge": "Add priority selection to the task workspace. Store its key, restore by key, test an unknown saved code, and provide accessible labels for richer templates. Compare the upstream ComboBox sample with your source-replacement behavior and keep any platform picker differences explicit.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/apps/design/controls/combo-box",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

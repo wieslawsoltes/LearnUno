@@ -1,0 +1,64 @@
+{
+  "id": "navigationview-shell",
+  "scenario": "Your application has several top-level areas that must remain recognizable on a wide desktop window and a narrow view. Use NavigationView as a shell, give each menu item a stable destination key, and connect invocation to content deliberately. Do not confuse a highlighted menu item with a completed navigation operation.",
+  "vocabulary": [
+    {
+      "term": "Shell",
+      "meaning": "The persistent application structure around changing content, such as navigation and global commands."
+    },
+    {
+      "term": "Destination key",
+      "meaning": "A stable value identifying a navigation intent independently of its translated label."
+    },
+    {
+      "term": "Adaptive pane",
+      "meaning": "A navigation presentation that changes how menu choices are shown under available-space constraints."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "A NavigationView owns menu presentation and content placement. It does not automatically define your repository, authentication policy, or page lifecycle. Keep the shell stable while the content region changes. A Frame or Uno.Extensions region can later supply page navigation without requiring every page to recreate the global menu.",
+      "worked": "The lab starts with two menu items and one content TextBlock. Invoking an item changes a destination label, making the shell-to-content connection visible before adding a page stack. This is a real NavigationView control, but the example does not claim to implement a complete router through a text assignment.",
+      "question": "Why keep the shell outside individual pages?",
+      "answer": "It avoids duplicating global navigation and gives page transitions a stable host. Individual pages can focus on their task rather than rebuilding application-wide structure."
+    },
+    {
+      "explain": "Menu Content is for presentation; a Tag or view-model property can hold a stable key. Read the invoked item’s data rather than comparing translated labels. Distinguish an invocation event from a selection-state update, because selecting an item programmatically may reflect navigation that already occurred through a deep link or back action.",
+      "worked": "Click Tasks and inspect destination tasks. Rename the visible Content to My work while retaining the Tag. The destination stays the same. This prepares the shell for localization and designer changes without changing route semantics or making tests depend on one English label.",
+      "question": "What should change when a menu label is translated?",
+      "answer": "Its presentation, not the stable destination key. Routing should use metadata or a registered route, not the visible string."
+    },
+    {
+      "explain": "PaneDisplayMode can alter the placement and compactness of the navigation UI. The destinations remain conceptually the same. Test the available width, text scaling, keyboard access, and current selection in each mode. Do not remove essential destinations on narrow screens merely because a desktop menu has become inconvenient.",
+      "worked": "Change LeftCompact to Top and run the same invocation sequence. The selected destination key should not depend on where the menu is drawn. A full adaptive shell may use automatic mode and visual states; test actual thresholds and overflow behavior with realistic translated menu text.",
+      "question": "Should switching pane layout reset the current application task?",
+      "answer": "No. A presentation change should preserve the destination and meaningful state unless the application explicitly defines a different workflow."
+    },
+    {
+      "explain": "When real navigation is added, update selection from the accepted destination rather than optimistically treating every click as success. A guard may reject leaving a dirty page, a data load may fail, or a route may be unavailable. Prevent event-feedback loops by distinguishing navigation intent from rendering the resulting selected state.",
+      "worked": "Extend the shell with a guarded editor. A click on Overview requests navigation; declining the unsaved-changes prompt keeps both the editor and its menu selection current. Then navigate back programmatically and ensure the menu follows the resulting destination without issuing a duplicate navigation request.",
+      "question": "What happens when a guard rejects a menu request?",
+      "answer": "The shell should retain or restore selection to the actual active destination. A menu highlight must not lie about which page is currently displayed."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Change pane mode to Top",
+      "expected": "The same destination keys remain usable.",
+      "why": "Layout is a shell presentation decision."
+    },
+    {
+      "change": "Rename Tasks while retaining its Tag",
+      "expected": "Routing intent still uses tasks.",
+      "why": "The key is independent of user-facing text."
+    }
+  ],
+  "bridge": "Connect this shell to the Frame and route-registration lessons. Add settings, a back action, and state restoration, then verify that rejected navigation and deep links keep menu selection coherent. Compare the pinned Uno NavigationView guidance with the renderer and target you actually deploy.",
+  "references": [
+    {
+      "url": "https://platform.uno/docs/articles/controls/NavigationView.html",
+      "title": "Uno Platform project documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "service-decorators",
+  "scenario": "A screen needs a catalog capability, while the application wants to add caching without changing every caller. Compose a decorator around an inner implementation and observe real call counts. The example uses a tiny synchronous cache to teach composition; it deliberately does not claim to be a thread-safe, bounded, production cache.",
+  "vocabulary": [
+    {
+      "term": "Decorator",
+      "meaning": "An implementation of a capability that adds behavior while delegating the underlying operation to another implementation."
+    },
+    {
+      "term": "Inner service",
+      "meaning": "The independently constructed collaborator wrapped by a decorator."
+    },
+    {
+      "term": "Cache key",
+      "meaning": "The complete identity of an operation result under a stated validity policy; omitted inputs can produce incorrect reuse."
+    }
+  ],
+  "steps": [
+    {
+      "explain": "Both MemoryCatalog and CachedCatalog implement ICatalog. The caller asks for Read(key) and does not need to know whether a cached value or the inner source produced the result. This pattern can add logging, metrics, retry policy, or validation when those behaviors preserve the capability’s observable contract.",
+      "worked": "Read uno twice. The returned strings agree and the inner Reads count remains one because the second request hits the cache. This is a calculated call-count observation, not a timing benchmark. A decorator that changed the meaning of a key would violate the contract even if it looked faster.",
+      "question": "Does reducing the inner call count prove a universal performance improvement?",
+      "answer": "No. It demonstrates reuse for this workload. Memory cost, synchronization, invalidation, payload size, and actual latency still need measurement and correctness tests."
+    },
+    {
+      "explain": "Register the concrete inner source independently, then register ICatalog with a factory that wraps that concrete source. Resolving ICatalog inside its own factory recursively asks for the service being constructed. Make the order and identity of layers explicit when several decorators are involved; caching before authorization can have very different consequences from caching a permission-safe result.",
+      "worked": "Draw provider → CachedCatalog → MemoryCatalog. Change the second key to xaml and observe two inner reads. The same graph handles both requests; the cache key determines reuse. Do not resolve a fresh provider inside the factory to escape recursion, because that creates another ownership graph rather than fixing the design.",
+      "question": "Why not build a second provider inside the decorator factory?",
+      "answer": "It hides the recursive registration problem and creates duplicated lifetimes and disposal ownership. Fix the independently resolvable inner-service registration instead."
+    },
+    {
+      "explain": "A production cache needs capacity, expiration or invalidation, concurrency behavior, and a definition of all inputs that affect a result. The small dictionary in this lesson intentionally omits those policies. It is safe only as a bounded teaching interaction; it should not be copied as an unlimited application-wide cache for arbitrary user data.",
+      "worked": "Imagine the same key returning different content after the underlying document changes. A permanent cache would now serve stale data even though the key matched. Include a revision or invalidate the entry when the source changes. Test that an authorization or tenant boundary cannot reuse another user’s cached result.",
+      "question": "What makes a cache hit incorrect even when the key string matches?",
+      "answer": "The key may omit relevant context or the cached result may no longer be valid. Correct reuse depends on the full operation contract and invalidation policy."
+    },
+    {
+      "explain": "A wrapper test can inject a counting fake directly without DI, while a composition test verifies which implementation the provider exposes. Preserve exception and cancellation semantics when adapting this pattern to asynchronous services. Do not retry side-effecting operations blindly or hide errors merely to keep a cache populated.",
+      "worked": "Write direct tests for first miss, repeated hit, distinct key, invalidation, and inner failure before adding concurrency. Then test the registered graph’s lifetimes and disposal. In an Uno app, the view model can remain unaware of the decorator while its repository dependency gains the reviewed policy.",
+      "question": "Where should a view model decide whether the repository is decorated?",
+      "answer": "Normally it should not. The composition boundary selects the implementation graph, while the view model depends on the stable capability contract."
+    }
+  ],
+  "cases": [
+    {
+      "change": "Read the same key twice",
+      "expected": "One inner read supplies both results.",
+      "why": "The decorator reuses an existing entry."
+    },
+    {
+      "change": "Read a different key second",
+      "expected": "The inner count becomes two.",
+      "why": "The cache cannot reuse the first key’s value for another key."
+    }
+  ],
+  "bridge": "Wrap an injected repository with a bounded cache or structured-logging decorator. Document the order of authorization, retry, and cache layers, then test behavior and provider wiring independently. Keep measured timing claims separate from the call-count experiment and do not ship the lesson’s unlimited dictionary unchanged.",
+  "references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines",
+      "title": "Microsoft API and pattern documentation",
+      "kind": "External primary reference"
+    }
+  ]
+}

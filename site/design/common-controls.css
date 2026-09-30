@@ -10,3 +10,6 @@
 .ip-device .cc-results>div,.ip-device .cc-number-flow>div{background:var(--mock-card);color:var(--mock-text)}
 .ip-device .cc-rich-split a{color:var(--mock-accent)}
 .ip-device :is(.cc-composition,.cc-rich,.cc-grid,.cc-number) button:focus-visible{outline-color:var(--mock-accent)}
+
+/* Version boundaries belong beside the runnable code. */
+.ip-runtime-note{border-left:3px solid var(--coral);background:var(--surface-2);padding:18px 21px;margin:18px 0}.ip-runtime-note strong{font-size:13px}.ip-runtime-note p{font-size:13px;line-height:1.85;margin:10px 0 0}.ip-project-example{border-top:1px solid var(--line);padding-top:28px;margin-top:30px}.ip-project-example p{font-size:13px;line-height:1.85}.ip-project-example pre{max-height:480px;overflow:auto}

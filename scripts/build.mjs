@@ -1,3 +1,6 @@
+import {buildControlStudy} from './control-study.mjs';
+import {interfaceLessons} from '../site/src/learning/interface-patterns/lessons.mjs';
+import {dataWorkspaces} from '../site/src/learning/data-workspaces/lessons.mjs';
 import {build} from 'esbuild';
 import {buildFeatureSurvey} from './feature-survey.mjs';
 import {mkdir, cp, writeFile, readFile, readdir} from 'node:fs/promises';
@@ -29,6 +32,7 @@ await cp('node_modules/highlight.js/LICENSE', 'dist/third-party/highlight.js-LIC
 await buildCatalog();
 const featureSurvey=await buildFeatureSurvey();
 const study = await buildStudyMaterial();
+const controlSourceExcerpts = await buildControlStudy();
 
 async function findEmbedded(directory) {
   if (!existsSync(directory)) return null;
@@ -56,7 +60,7 @@ const source = JSON.parse(await readFile('sources.lock.json', 'utf8'));
 const {labs}=await import('../site/src/atlas/catalog.mjs');
 const {guides}=await import('../site/src/learning/guides.mjs');
 const manifest = {
-  dataWorkshops: 6, designLessons: 8, independentWorkshopSteps: 56, sourceFeatureTypes: featureSurvey?.features.length || 0,
+  dataWorkshops: dataWorkspaces.length, designLessons: interfaceLessons.length, independentWorkshopSteps: [...dataWorkspaces,...interfaceLessons].reduce((n,l)=>n+l.steps.length,0), controlSourceExcerpts, sourceFeatureTypes: featureSurvey?.features.length || 0,
   version: JSON.parse(await readFile('package.json', 'utf8')).version, builtAt: new Date().toISOString(), commit: process.env.GITHUB_SHA || 'local',
   runtime: !!runtime, lessons: lessons.length, tracks: tracks.length, visualLabs:labs.length, foundationGuides:guides.length, studyChapters:study.lessons.length, guidedSteps:study.steps, studyWords:study.authoredWords, sourceExcerpts:study.documentExcerpts+study.codeExcerpts, source
 };

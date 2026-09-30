@@ -1,0 +1,46 @@
+{
+  "repository": "unoplatform/uno",
+  "revision": "e1292e0d87f9d38c9f3a120c69f0200b3c0999c1",
+  "lessons": {
+    "usercontrol-contracts": {
+      "path": "src/Uno.UI/UI/Xaml/Controls/UserControl/UserControl.cs",
+      "start": 18,
+      "end": 29,
+      "fileSha256": "c7797005e66b7261bdf711360983cd9fa3b97648afe53b19ca9831f800c6c768",
+      "sha256": "f9af2b2271c9d1ffcad5e226b42aa612236e6ec21542633eb6b25b66af8c33c3",
+      "language": "csharp",
+      "caption": "The implementation removes the previous visual child and attaches the new one when Content changes. Follow ownership before discussing binding context.",
+      "boundary": "This is a framework implementation fragment, not a standalone application or the entire DataContext inheritance algorithm. The course exercise separately demonstrates its binding contract."
+    },
+    "richtext-reading": {
+      "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/RichTextBlockTests/RichTextBlock_Hyperlinks.xaml",
+      "start": 29,
+      "end": 42,
+      "fileSha256": "9704fd2b6d145e55104c2cd103814f6919d4ef5bc63b70d3f6ba4ae0bc9b2693",
+      "sha256": "0683a6f7d92d46f59782df3d02ba94b96a54e613da89bd0a07b9c1687e1b7748",
+      "language": "xml",
+      "caption": "The multiple-link example groups Runs and Hyperlinks inside one Paragraph. Compare the descriptive labels with the earlier sample\u2019s generic here label.",
+      "boundary": "This fragment belongs to a compiled SamplesApp UserControl. It has external navigation targets; the course exercise uses a local click response so it stays deterministic and sandbox-compatible."
+    },
+    "gridview-identity": {
+      "path": "src/SamplesApp/SamplesApp.Samples/Microsoft/UI/Xaml/Controls/GridView/GridViewSelection.xaml",
+      "start": 37,
+      "end": 56,
+      "fileSha256": "7d5668f89978615f26117d66a92cd7531a446ad9c9e4a8f90e2110b54e10240a",
+      "sha256": "68f50bc197ce03faba3074619909e7dafa34155666f6f1e10bf469175e4a1ca1",
+      "language": "xml",
+      "caption": "GridView consumes separate ItemsSource, SelectionMode, ItemsPanel and ItemTemplate values. Follow those four contracts rather than confusing it with the Grid layout panel.",
+      "boundary": "The SamplesApp uses a special dictionary-like binding context and an ItemsWrapGrid setting for this test. It is not a standalone page, and the excerpt does not implement the course\u2019s key-restoration logic."
+    },
+    "numberbox-boundaries": {
+      "path": "src/Uno.UI/UI/Xaml/Controls/NumberBox/NumberBox.mux.cs",
+      "start": 506,
+      "end": 525,
+      "fileSha256": "7ad33ba5d05b4049012af66d54c02eedcb985870cfb237588a8f8d38a147fb0c",
+      "sha256": "b72845034c49e55b1bc634b6801b63add4257d6ab775f90dda686eccb85cde24",
+      "language": "csharp",
+      "caption": "The empty-text branch explicitly assigns double.NaN. Nonempty input proceeds through expression or number parsing; the whole-item rule remains application-owned.",
+      "boundary": "This is an intentionally partial method from the pinned implementation. Its following error, coercion and notification branches are omitted; the complete source link is authoritative for that revision."
+    }
+  }
+}

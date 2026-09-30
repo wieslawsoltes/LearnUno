@@ -2,9 +2,9 @@ name: Inline input diagnosis
 on:
   push:
     branches: [design/fluent-learning-shell]
-    paths: ['tests/diagnostics/**', '.github/workflows/inline-diagnostics.yml']
+    paths: ['tests/diagnostics/**', 'scripts/adapt-inline-input.mjs', '.github/workflows/inline-diagnostics.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -32,6 +32,15 @@ jobs:
           REQUIRE_RUNTIME: '1'
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test --config tests/diagnostics/playwright.config.mjs
+      - name: Apply only the proven source adaptation
+        run: |
+          node scripts/adapt-inline-input.mjs
+          npm test
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site/src/learning/interface-patterns/common-controls.mjs
+          git commit -m 'fix: enable native inline tab navigation and managed Enter activation'
+          git push origin HEAD:design/fluent-learning-shell
       - uses: actions/upload-artifact@v4
         if: always()
         with:

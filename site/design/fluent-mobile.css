@@ -1,0 +1,241 @@
+/* Safe-area aware, single-column reading. Local scroll belongs to code/diagrams only. */
+@media(min-width:1600px) {
+  :root[data-fluent] .route-view { padding-inline: 34px; }
+  :root[data-fluent] .study-layout { grid-template-columns: minmax(0,1fr) 230px; gap: 28px; }
+  :root[data-fluent] .study-main { padding: 30px 36px; }
+  :root[data-fluent] .study-main p { font-size: 16px; }
+}
+@media(max-width:1100px) {
+  :root[data-fluent] { --sidebar: 0px; }
+  :root[data-fluent] .page-shell { margin-left: 0; }
+  :root[data-fluent] .mobile-menu { display: inline-flex; }
+  :root[data-fluent] .sidebar {
+    position: fixed; width: min(304px,calc(100vw - 52px)); max-height: 100dvh;
+    transform: translateX(-105%); visibility: hidden; z-index: 101;
+    transition: transform .17s ease, visibility .17s; padding-top: max(20px,env(safe-area-inset-top));
+    padding-bottom: max(18px,env(safe-area-inset-bottom));
+  }
+  :root[data-fluent] .nav-open .sidebar {
+    transform: translateX(0); visibility: visible; background: var(--overlay);
+    backdrop-filter: blur(16px) saturate(1.12); -webkit-backdrop-filter: blur(16px) saturate(1.12); box-shadow: var(--overlay-shadow);
+  }
+  :root[data-fluent] .nav-open { overflow: hidden; }
+  :root[data-fluent] .nav-open .mobile-menu { position: static; background: transparent; box-shadow: none; }
+  :root[data-fluent] #close-navigation { display: inline-flex; align-self: flex-start; font-size: 24px; width: 40px; height: 40px; }
+  :root[data-fluent] .sidebar-brand-row { padding-bottom: 15px; }
+  :root[data-fluent] .brand { margin-bottom: 0; }
+  :root[data-fluent] .main-nav a { min-height: 42px; font-size: 13px; }
+  #navigation-backdrop:not([hidden]) { position: fixed; inset: 0; display: block; z-index: 100; background: #10152266; width: 100%; border: 0; padding: 0; }
+  :root[data-fluent] .topbar { padding-inline: max(18px,env(safe-area-inset-left)) max(18px,env(safe-area-inset-right)); }
+  :root[data-fluent] .route-view { padding-inline: 23px; }
+  :root[data-fluent] .home-atlas .atlas-card:last-child { grid-column: auto; display: flex; }
+  :root[data-fluent] .home-atlas .atlas-card:last-child .atlas-cover { height: 139px; min-height: 0; }
+}
+@media(max-width:980px) {
+  :root[data-fluent] .study-layout { grid-template-columns: minmax(0,1fr); gap: 15px; }
+  :root[data-fluent] .study-outline { grid-row: 1; position: static; max-height: none; overflow: visible; }
+  :root[data-fluent] .study-outline-inner { padding: 10px 13px; }
+  .chapter-contents>summary { pointer-events: auto; flex-direction: row; align-items: center; cursor: pointer; min-height: 44px; padding: 12px 15px; gap: 13px; }
+  .chapter-contents>summary::after { content: '⌄'; margin-left: auto; }
+  .chapter-contents[open]>summary::after { content: '⌃'; }
+  .chapter-location { max-width: 55%; font-size: 11px; }
+  :root[data-fluent] .study-outline nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; }
+  :root[data-fluent] .study-outline nav>div { min-width: 0; }
+  :root[data-fluent] .study-outline nav>div:has(ol) { grid-column: 1 / -1; }
+  :root[data-fluent] .study-outline nav ol { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 18px; }
+  :root[data-fluent] .study-outline nav button { min-height: 40px; font-size: 12px; padding: 9px; }
+  :root[data-fluent] .study-outline-note { display: none; }
+  :root[data-fluent] .study-outline .secondary { display: none; }
+  .chapter-reading-position { margin-bottom: 5px; }
+  :root[data-fluent] .atlas-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  :root[data-fluent] .editorial-hero { gap: 28px; }
+}
+@media(max-width:720px) {
+  :root[data-fluent] { --chrome-height: calc(56px + env(safe-area-inset-top)); --space: 16px; --reading-offset: calc(118px + env(safe-area-inset-top)); }
+  :root[data-fluent] .topbar { padding-top: env(safe-area-inset-top); height: var(--chrome-height); gap: 8px; }
+  :root[data-fluent] .topbar-left { flex: 1; }
+  :root[data-fluent] .breadcrumb { display: block; max-width: 37vw; font-size: 11px; }
+  :root[data-fluent] .topbar-actions { gap: 4px; }
+  :root[data-fluent] .learner-avatar { display: none; }
+  :root[data-fluent] .search-trigger { background: transparent; border: 0; min-width: 0; width: 40px; padding: 8px; min-height: 44px; }
+  :root[data-fluent] .search-trigger>span, :root[data-fluent] .search-trigger>kbd { display: none; }
+  :root[data-fluent] .topbar .icon-button { width: 40px; height: 44px; }
+  :root[data-fluent] .route-view { padding: 16px max(16px,env(safe-area-inset-right)) 26px max(16px,env(safe-area-inset-left)); }
+  :root[data-fluent] :is(.primary,.secondary,.quiet,.filter-chip) { min-height: 42px; }
+  :root[data-fluent] :is(.text-link,.text-button) { min-height: 36px; }
+  :root[data-fluent] input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=file]),
+  :root[data-fluent] textarea, :root[data-fluent] select { font-size: 16px; min-height: 44px; }
+  :root[data-fluent] .editorial-hero { grid-template-columns: 1fr; padding: 26px 22px; gap: 22px; }
+  :root[data-fluent] .editorial-copy h1 { font-size: 39px; line-height: 1.08; }
+  :root[data-fluent] .editorial-copy h1 em { font-size: .82em; }
+  :root[data-fluent] .editorial-copy .eyebrow { font-size: 9px; margin-bottom: 15px; }
+  :root[data-fluent] .editorial-copy>p { font-size: 14px; margin-bottom: 20px; }
+  :root[data-fluent] .editorial-actions { gap: 15px; flex-wrap: wrap; }
+  :root[data-fluent] .editorial-actions>a:last-child { max-width: none; font-size: 12px; }
+  :root[data-fluent] .editorial-caption { font-size: 10px; margin-top: 16px; }
+  :root[data-fluent] .hero-system { justify-self: center; max-width: 390px; }
+  :root[data-fluent] .hero-model-heading { font-size: 9px; }
+  :root[data-fluent] .layer-stack { height: 205px; margin-top: 12px; }
+  :root[data-fluent] .hero-layer-controls button { min-height: 42px; }
+  :root[data-fluent] .hero-system>p { font-size: 10px; line-height: 1.7; }
+  :root[data-fluent] .editorial-stats { grid-template-columns: 1fr 1fr; gap: 17px 0; padding: 22px 0; }
+  :root[data-fluent] .editorial-stats strong { font-size: 23px; }
+  :root[data-fluent] .editorial-stats span { font-size: 10px; }
+  :root[data-fluent] .edition-line { font-size: 8px; }
+  :root[data-fluent] .edition-line>span:last-child { display: none; }
+  :root[data-fluent] .section-heading h2 { font-size: 25px; }
+  :root[data-fluent] .section-heading { gap: 10px; }
+  :root[data-fluent] :is(.atlas-grid,.track-grid,.guide-grid) { grid-template-columns: minmax(0,1fr); gap: 14px; }
+  :root[data-fluent] .atlas-card { display: grid; grid-template-columns: 92px minmax(0,1fr); }
+  :root[data-fluent] .atlas-cover { height: 100%; min-height: 120px; }
+  :root[data-fluent] .atlas-cover>svg { padding: 2px; }
+  :root[data-fluent] .atlas-card-body { padding: 17px 16px; }
+  :root[data-fluent] .atlas-card-body .eyebrow { font-size: 8px; margin-bottom: 8px; }
+  :root[data-fluent] .atlas-card h3 { font-size: 17px; margin-bottom: 9px; }
+  :root[data-fluent] .atlas-card p { font-size: 12px; margin-bottom: 13px; }
+  :root[data-fluent] .atlas-card-footer { font-size: 9px; }
+  :root[data-fluent] .cover-label { left: 9px; top: 11px; font-size: 7px; }
+  :root[data-fluent] .cover-arrow { right: 8px; bottom: 8px; }
+  :root[data-fluent] .home-atlas .atlas-card:last-child { display: grid; grid-template-columns: 92px minmax(0,1fr); }
+  :root[data-fluent] .home-atlas .atlas-card:last-child .atlas-cover { height: 100%; }
+  :root[data-fluent] .home-atlas .atlas-card:last-child .atlas-card-body { padding: 17px 16px; }
+  :root[data-fluent] .track-card { min-height: 0; padding: 20px; }
+  :root[data-fluent] .track-card-top { margin-bottom: 17px; }
+  :root[data-fluent] .curriculum-map>a { padding: 18px; min-height: 90px; }
+  :root[data-fluent] .learning-loop { grid-template-columns: 1fr; gap: 20px; }
+  :root[data-fluent] .page-heading h1, :root[data-fluent] .path-hero h1 { font-size: 29px; }
+  :root[data-fluent] .lesson-heading { margin-bottom: 12px; }
+  :root[data-fluent] .lesson-heading h1 { font-size: 28px; line-height: 1.2; }
+  :root[data-fluent] .lesson-heading p { font-size: 13px; line-height: 1.7; }
+  :root[data-fluent] .lesson-breadcrumb { gap: 7px; font-size: 11px; margin-bottom: 10px; }
+  :root[data-fluent] .bookmark-button { width: 40px; height: 40px; flex-shrink: 0; }
+  :root[data-fluent] .lesson-kicker { font-size: 10px; margin-bottom: 10px; }
+  :root[data-fluent] .lesson-tabs { gap: 19px; margin-bottom: 13px; padding-top: 4px; overscroll-behavior-x: contain; }
+  :root[data-fluent] .lesson-tabs a { padding: 10px 2px 12px; min-height: 44px; font-size: 11px; }
+  :root[data-fluent] .lesson-tabs a svg { width: 15px; }
+  :root[data-fluent] .study-main { padding: 21px 18px; border-radius: 10px; }
+  :root[data-fluent] .study-main p { font-size: 15px; line-height: 1.85; }
+  :root[data-fluent] .study-intro h2 { font-size: 25px; }
+  :root[data-fluent] .study-intro-meta { gap: 7px; }
+  :root[data-fluent] .study-intro-meta>.eyebrow { font-size: 9px; }
+  :root[data-fluent] .study-intro-meta>span:last-child { max-width: none; }
+  :root[data-fluent] .study-intro { padding-bottom: 14px; }
+  :root[data-fluent] .study-vocabulary { grid-template-columns: 1fr; gap: 15px; padding: 18px 0; margin-bottom: 15px; }
+  :root[data-fluent] .study-vocabulary dt { font-size: 13px; }
+  :root[data-fluent] .study-vocabulary dd { font-size: 13px; }
+  :root[data-fluent] .study-main h2 { font-size: 24px; }
+  :root[data-fluent] .study-main h3 { font-size: 21px; }
+  :root[data-fluent] .study-concepts>section { gap: 10px; margin: 22px 0; }
+  :root[data-fluent] .study-main .study-steps>article { padding: 18px 15px; margin: 16px 0; }
+  :root[data-fluent] .study-steps header button { margin-left: 0; min-height: 40px; font-size: 12px; }
+  :root[data-fluent] .study-step-links { gap: 5px; }
+  :root[data-fluent] .study-step-links :is(a,button) { min-height: 40px; font-size: 12px; }
+  :root[data-fluent] .study-worked { padding: 15px; }
+  :root[data-fluent] .study-worked p { font-size: 14px; }
+  :root[data-fluent] .study-outline nav { grid-template-columns: 1fr 1fr; gap: 5px; }
+  :root[data-fluent] .study-outline nav ol { grid-template-columns: 1fr; margin-left: 13px; padding-left: 12px; }
+  :root[data-fluent] .study-outline nav button { min-height: 44px; font-size: 12px; }
+  :root[data-fluent] .study-figure-top { gap: 6px; padding: 13px; }
+  :root[data-fluent] .study-figure-controls { grid-template-columns: 1fr 1fr; padding: 9px; }
+  :root[data-fluent] .study-figure-controls button { font-size: 12px; min-height: 55px; }
+  :root[data-fluent] .study-metrics { padding: 14px 11px; gap: 9px; }
+  :root[data-fluent] .study-metrics output { font-size: 21px; }
+  :root[data-fluent] .study-source { padding: 17px 12px; }
+  :root[data-fluent] .study-code pre { padding: 15px 13px; font-size: 12px; }
+  :root[data-fluent] .study-source .study-code pre { padding: 14px 11px; font-size: 11px; }
+  :root[data-fluent] .study-code figcaption { padding: 11px 13px; font-size: 10px; }
+  :root[data-fluent] .study-main :is(.study-document-excerpt,.study-source) p { font-size: 13px; line-height: 1.85; }
+  :root[data-fluent] .study-next { gap: 14px; }
+  :root[data-fluent] .study-next a { min-height: 44px; }
+  :root[data-fluent] .lesson-navigation { gap: 16px; padding-top: 18px; margin-top: 24px; font-size: 12px; }
+  :root[data-fluent] .lesson-navigation a { min-height: 44px; }
+  :root[data-fluent] .visual-title :is(h1,h2) { font-size: 27px; }
+  :root[data-fluent] .v-control input:not([type=range]), :root[data-fluent] .v-control select { font-size: 16px; }
+  :root[data-fluent] .v-control>span { font-size: 12px; }
+  :root[data-fluent] .v-stages button { min-height: 44px; }
+  :root[data-fluent] .v-playback .icon-button { width: 40px; height: 40px; }
+  :root[data-fluent] .v-inspector-body { grid-template-columns: 1fr 1fr; gap: 16px; }
+  :root[data-fluent] .v-readout p { font-size: 13px; }
+  :root[data-fluent] .visual-transfer>a { white-space: normal; }
+  :root[data-fluent] .workspace-pane-switch { display: flex; gap: 4px; padding: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 7px; margin: 10px 0; }
+  .workspace-pane-switch button { flex: 1; background: transparent; color: var(--muted); padding: 10px; font-size: 13px; min-height: 42px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .workspace-pane-switch button[aria-pressed=true] { background: var(--surface); color: var(--purple); box-shadow: 0 1px 4px #15233b18; }
+  :root[data-fluent] .lab-grid { grid-template-columns: 1fr; margin-top: 0; }
+  .lab-grid[data-pane=code]>.preview-pane, .lab-grid[data-pane=preview]>.editor-pane { display: none; }
+  :root[data-fluent] .preview-pane { border: 0; }
+  :root[data-fluent] .lab-toolbar { padding: 12px; gap: 9px; }
+  :root[data-fluent] .lab-toolbar .toolbar-actions { flex-wrap: wrap; gap: 5px; }
+  :root[data-fluent] .lab-toolbar .quiet { font-size: 10px; padding: 9px 5px; }
+  :root[data-fluent] #run-code { font-size: 12px; min-height: 42px; }
+  :root[data-fluent] #plain-editor { font-size: 16px; padding: 15px; }
+  :root[data-fluent] #editor-mount, :root[data-fluent] .preview-stage { height: clamp(310px,52dvh,500px); }
+  :root[data-fluent] .runtime-intro small { font-size: 10px; }
+  :root[data-fluent] .preview-footer { flex-wrap: wrap; font-size: 10px; padding: 7px 10px; }
+  :root[data-fluent] .runtime-boundary { font-size: 11px; }
+  :root[data-fluent] .playground-select { flex-wrap: wrap; }
+  :root[data-fluent] .playground-select select { font-size: 16px; }
+  :root[data-fluent] dialog { max-width: calc(100vw - 24px); width: 560px; padding: 26px 20px; max-height: calc(100dvh - 30px); }
+  :root[data-fluent] .setting-row { gap: 14px; flex-wrap: wrap; font-size: 13px; }
+  :root[data-fluent] .setting-row select { font-size: 16px; }
+  :root[data-fluent] .dialog-close { width: 40px; height: 40px; top: 4px; right: 6px; }
+  :root[data-fluent] dialog h2 { font-size: 25px; }
+  :root[data-fluent] .search-field input { font-size: 16px; }
+  :root[data-fluent] .search-results>a { min-height: 52px; }
+  :root[data-fluent] .reference-card { padding: 16px; }
+  :root[data-fluent] .reference-card p { font-size: 12px; }
+  :root[data-fluent] .reference-card h3 { font-size: 17px; }
+  :root[data-fluent] .document-top { align-items: flex-start; }
+  :root[data-fluent] .document-top .back-link { min-height: 44px; }
+  :root[data-fluent] .notes-layout textarea { min-height: 300px; }
+  :root[data-fluent] .site-footer { padding: 19px max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
+  :root[data-fluent] .site-footer a { display: inline-flex; align-items: center; min-height: 34px; font-size: 11px; }
+  :root[data-fluent] #toast { bottom: max(16px,env(safe-area-inset-bottom)); width: max-content; max-width: calc(100vw - 28px); }
+  :root[data-fluent][data-density=comfortable] .study-main { padding: 24px 19px; }
+  :root[data-fluent][data-density=comfortable] .study-main .study-steps>article { padding: 22px 17px; }
+}
+@media(max-width:360px) {
+  :root[data-fluent] .route-view { padding-inline: 12px; }
+  :root[data-fluent] .editorial-hero { padding: 24px 18px; }
+  :root[data-fluent] .editorial-copy h1 { font-size: 35px; }
+  :root[data-fluent] .breadcrumb { max-width: 30vw; font-size: 10px; }
+  :root[data-fluent] .topbar { padding-inline: 10px; }
+  :root[data-fluent] .topbar-actions { gap: 0; }
+  :root[data-fluent] .study-main { padding: 20px 14px; }
+  :root[data-fluent] .v-inspector-body { grid-template-columns: 1fr; }
+}
+@media(prefers-reduced-motion:reduce) {
+  :root[data-fluent] *, :root[data-fluent] *::before, :root[data-fluent] *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+@media(prefers-contrast:more) {
+  :root[data-fluent] { --line: #828c9b; --overlay: var(--surface); }
+  :root[data-fluent] .editorial-hero::before, :root[data-fluent] .editorial-hero::after { display: none; }
+  :root[data-fluent] :is(dialog,.sidebar) { backdrop-filter: none; background: var(--surface); }
+}
+@media(forced-colors:active) {
+  :root[data-fluent] { --bg: Canvas; --surface: Canvas; --surface-2: Canvas; --shell: Canvas; --shell-tint: Canvas; --overlay: Canvas; --text: CanvasText; --muted: CanvasText; --line: ButtonText; --purple: LinkText; --focus-ring: Highlight; }
+  :root[data-fluent] :is(dialog,.sidebar,.topbar,.editorial-hero) { background: Canvas; color: CanvasText; backdrop-filter: none; box-shadow: none; }
+  :root[data-fluent] .editorial-hero::before, :root[data-fluent] .editorial-hero::after { display: none; }
+  :root[data-fluent] .primary { background: ButtonFace; color: ButtonText; border: 1px solid ButtonText; }
+  :root[data-fluent] .main-nav a.active { outline: 1px solid Highlight; }
+  :root[data-fluent] .lesson-tabs a[aria-current] { text-decoration: underline; }
+  :root[data-fluent] :is(.chapter-reading-position>i,.main-nav a.active::before) { background: Highlight; forced-color-adjust: none; }
+}
+@media print {
+  :root[data-fluent] .study-main { padding: 0; border: 0; }
+  :root[data-fluent] :is(.topbar,.sidebar,.lesson-tabs,.study-outline,.site-footer,.workspace-pane-switch) { display: none !important; }
+  :root[data-fluent] .page-shell { margin: 0; }
+  :root[data-fluent] .study-layout { display: block; }
+  :root[data-fluent] .study-main p { color: #111; }
+}
+/* Later than overlay rules: user/system accessibility overrides must win the cascade. */
+:root[data-fluent][data-materials=solid] .nav-open .sidebar { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+@media(prefers-reduced-transparency:reduce), (prefers-contrast:more), (forced-colors:active) {
+  :root[data-fluent] .nav-open .sidebar, :root[data-fluent] dialog { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root[data-fluent] .nav-open .sidebar, :root[data-fluent] dialog { background: var(--surface); }
+}
+@media(pointer:coarse) {
+  :root[data-fluent] :is(.icon-button,.main-nav a,.secondary,.primary,.quiet,.filter-chip) { min-height: 44px; }
+  :root[data-fluent] .icon-button { min-width: 44px; }
+}

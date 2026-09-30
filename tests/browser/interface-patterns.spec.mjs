@@ -1,3 +1,4 @@
+import {expectRichTextContent} from './rich-text-contract.mjs';
 import {test,expect} from '@playwright/test';
 import {interfaceLessons} from '../../site/src/learning/interface-patterns/lessons.mjs';
 for(const l of interfaceLessons)test('design lesson reading, mockup and recall: '+l.id,async({page})=>{
@@ -29,6 +30,6 @@ test('design source map exposes pinned evidence and honest lesson gaps',async({p
 });
 test('design all C# examples execute in actual Uno',async({page})=>{
  test.skip(!!process.env.PUBLIC_URL,'All design C# variants are exercised before deployment.');test.setTimeout(300000);await page.goto('./#/design-labs/bounded-scrolling/playground');await page.waitForFunction(()=>!!window.learnUnoLab);await page.evaluate(()=>window.learnUnoLab.start());const evidence=[];
- for(const lesson of interfaceLessons)for(const variant of ['code','solution']){const result=await page.evaluate(p=>window.learnUnoLab.request(p),{method:'run',language:'csharp',code:lesson[variant]});evidence.push({id:lesson.id,variant,...result});expect.soft(result.rendered,lesson.id+': '+JSON.stringify(result.diagnostics||result)).toBe(true);}
+ for(const lesson of interfaceLessons)for(const variant of ['code','solution']){const result=await page.evaluate(p=>window.learnUnoLab.request(p),{method:'run',language:'csharp',code:lesson[variant]});evidence.push({id:lesson.id,variant,...result});expect.soft(result.rendered,lesson.id+': '+JSON.stringify(result.diagnostics||result)).toBe(true);if(lesson.id==='richtext-reading'&&result.rendered)await expectRichTextContent(page.frameLocator('iframe[title="Real Uno WebAssembly preview"]'));}
  await test.info().attach('design-runtime-results',{body:JSON.stringify(evidence,null,2),contentType:'application/json'});
 });

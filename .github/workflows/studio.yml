@@ -31,7 +31,7 @@ jobs:
         env:
           REQUIRE_SOURCES: '1'
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test --grep 'dashboard|interactive model|pinned documentation|WebGPU compute|visual atlas|lesson edition|guided chapter|guided step|common controls (?!actual Uno)'
+      - run: npx playwright test --grep 'dashboard|interactive model|pinned documentation|WebGPU compute|visual atlas|lesson edition|guided chapter|guided step|common controls (?!actual Uno)|Fluent (?!small-screen)'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

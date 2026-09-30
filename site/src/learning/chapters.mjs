@@ -1,3 +1,4 @@
+import {installChapterNavigation} from '../presentation/chapter-navigation.mjs';
 import {lessonMap} from '../course.mjs';
 import {$, $$, escapeHtml as h, inline, markdown, icon} from '../helpers.mjs';
 import {labMap, labForLesson} from '../atlas/catalog.mjs';
@@ -132,6 +133,7 @@ export function mountChapter(root, lesson) {
       if (button.dataset.studyShowPhase !== undefined) { phase = +button.dataset.studyShowPhase; paint(); jump('model'); }
       if (button.hasAttribute('data-study-variation')) { varied = !varied; paint(); }
     }, {signal});
+    installChapterNavigation(root, signal);
     paint();
     const section = new URLSearchParams(location.hash.split('?').slice(1).join('?')).get('section');
     if (section && /^(?:overview|model|steps|example|sources|practice|step-[0-3])$/.test(section)) requestAnimationFrame(() => { if (!disposed) jump(section); });

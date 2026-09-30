@@ -189,6 +189,7 @@ test('app-building roadmap and chapters are readable on mobile in both themes', 
   await expect(page.locator('[data-chapter="scope-ownership"]')).toBeVisible();
   await page.getByRole('button', {name: 'Switch color theme'}).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  await page.locator('.chapter-contents>summary').click();
   await page.locator('.study-outline [data-study-jump="step-2"]').click();
   await expect(page.locator('#study-scope-ownership-step-2')).toBeFocused();
   await page.screenshot({path: 'artifacts/evidence/app-building-mobile.png', fullPage: true});

@@ -56,7 +56,7 @@ jobs:
         run: |
           mkdir -p artifacts/evidence
           node --input-type=module -e "import {validationLessons as lessons} from './scripts/validation-lessons.mjs'; import {writeFileSync} from 'node:fs'; writeFileSync('artifacts/lessons.json',JSON.stringify(lessons));"
-          dotnet run --project tests/CompilerTests -c Release -- artifacts/runtime/compiler-metadata.dll artifacts/lessons.json | tee artifacts/evidence/compiler-tests.log
+          bash scripts/compile-lessons.sh artifacts/runtime/compiler-metadata.dll artifacts/lessons.json artifacts/evidence/compiler-tests.log
       - run: npm run build
         env:
           REQUIRE_RUNTIME: '1'

@@ -1,3 +1,5 @@
+import {runWorkspaceCode} from './workspace-driver.mjs';
+import {expectRichTextContent} from './rich-text-contract.mjs';
 import {test,expect} from '@playwright/test';
 import {commonControlLessons} from '../../site/src/learning/interface-patterns/common-controls.mjs';
 import {unoControls} from './uno-controls.mjs';
@@ -23,12 +25,58 @@ test('common controls text and collection specimens preserve purpose and identit
 test('common controls quantity specimen does not commit missing or fractional edits',async({page})=>{
  await page.goto('./#/design-labs/numberbox-boundaries/mockup');await page.getByRole('button',{name:'Clear input',exact:true}).click();await page.getByRole('button',{name:'Apply quantity',exact:true}).click();await expect(page.locator('#cc-accepted')).toHaveText('3');await expect(page.locator('#cc-number-result')).toContainText('Not applied');await expect(page.locator('#cc-number')).toBeFocused();await page.getByRole('button',{name:'Try fraction (2.5)',exact:true}).click();await expect(page.locator('#cc-kind')).toHaveText('fraction');await page.locator('#cc-number').fill('12');await page.getByRole('button',{name:'Apply quantity',exact:true}).click();await expect(page.locator('#cc-accepted')).toHaveText('12');await page.screenshot({path:'artifacts/evidence/common-numeric-contract.png',fullPage:true});
 });
-async function run(page,id){const l=commonControlLessons.find(x=>x.id===id);await page.goto('./#/design-labs/'+id+'/playground');await page.waitForFunction(()=>!!window.learnUnoLab);const result=await page.evaluate(code=>window.learnUnoLab.request({method:'run',language:'csharp',code}),l.code);expect(result.rendered,JSON.stringify(result)).toBe(true);return page.frameLocator('iframe[title="Real Uno WebAssembly preview"]');}
+async function run(page,id,variant='code') {
+ const lesson=commonControlLessons.find(item=>item.id===id);
+ await page.goto('./#/design-labs/'+id+'/playground');
+ await page.waitForFunction(()=>!!window.learnUnoLab);
+ await runCurrentCode(page,lesson[variant]);
+ return page.frameLocator('iframe[title="Real Uno WebAssembly preview"]');
+}
+async function runCurrentCode(page,code) {
+ return runWorkspaceCode(page,code);
+}
 test('common controls actual Uno UserControl follows host changes without sharing instance values',async({page})=>{
  const frame=await run(page,'usercontrol-contracts');await expect(frame.getByText('Research queue',{exact:true})).toBeVisible();await expect(frame.getByText('Archive',{exact:true})).toBeVisible();await unoControls(page,frame).button('Rename host').click();await expect(frame.getByText('Release queue',{exact:true})).toBeVisible();await expect(frame.getByText('Archive',{exact:true})).toBeVisible();
 });
-test('common controls actual Uno rich text link activates local help',async({page})=>{
- const frame=await run(page,'richtext-reading');await frame.getByText('Read keyboard guidance',{exact:true}).click();await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible();
+test('common controls actual Uno inline text preserves content and activates local help',async({page})=>{
+ const frame=await run(page,'richtext-reading');
+ const route=page.url(),link=await expectRichTextContent(frame);
+ await expect(frame.getByText('Help topic: none',{exact:true})).toBeVisible();
+ await link.click();
+ await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible();
+ await expectRichTextContent(frame);
+ expect(page.url()).toBe(route);
+ // Reset through the public runner so the previous click cannot satisfy the
+ // keyboard assertion without a second event actually firing.
+ const starter=commonControlLessons.find(l=>l.id==='richtext-reading').code;
+ await runCurrentCode(page,starter);
+ await expect(frame.getByText('Help topic: none',{exact:true})).toBeVisible();
+ const keyboardLink=await expectRichTextContent(frame);
+ // Enter from the preceding toolbar with real Tab events. The Uno root
+ // has an intermediate stop; Shift+Tab from a programmatically focused inline
+ // is not an inverse traversal guarantee. Never patch or directly focus the link.
+ await page.locator('iframe[title="Real Uno WebAssembly preview"]').scrollIntoViewIfNeeded();
+ await page.getByRole('button',{name:'Fluid preview',exact:true}).focus();
+ for(let attempt=0;attempt<8;attempt++){
+  await page.keyboard.press('Tab');
+  if(await keyboardLink.evaluate(node=>document.activeElement===node))break;
+ }
+ await expect(keyboardLink).toBeFocused();
+ const frameUrl=await keyboardLink.evaluate(()=>location.href);
+ await page.keyboard.press('Enter');
+ expect(await keyboardLink.evaluate(()=>location.href)).toBe(frameUrl);
+ await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible();
+ await expectRichTextContent(frame);
+ await page.screenshot({path:'artifacts/evidence/common-richtext-live-contract.png',fullPage:true});
+});
+for(const variant of ['code','solution'])test(`common controls actual Uno text remains complete at narrow width: ${variant}`,async({page})=>{
+ const lesson=commonControlLessons.find(l=>l.id==='richtext-reading');
+ await page.setViewportSize({width:390,height:844});
+ const frame=await run(page,'richtext-reading',variant);
+ const link=await expectRichTextContent(frame);
+ await link.click();await expect(frame.getByText('Help topic: keyboard navigation and visible focus',{exact:true})).toBeVisible();
+ await expectRichTextContent(frame);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 test('common controls actual Uno GridView retains keyed selection after reversing',async({page})=>{
  const frame=await run(page,'gridview-identity');await unoControls(page,frame).button('Reverse card order').click();await expect(frame.getByText('Selected key: doc-1',{exact:true})).toBeVisible();await expect(frame.getByText('Opened key: none',{exact:true})).toBeVisible();

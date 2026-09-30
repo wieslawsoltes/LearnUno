@@ -83,10 +83,12 @@ test('guided step reading follows atlas steps, loads once and links to the full 
 test('guided chapters remain readable on mobile and in dark mode',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.goto('./#/lesson/events/learn');
   await expect(page.locator('.study-layout')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+  await page.locator('.chapter-contents>summary').click();
   await page.locator('.study-outline [data-study-jump="steps"]').click();
   await expect(page.locator('#study-events-steps')).toBeFocused();
   await page.screenshot({path:'artifacts/evidence/expanded-chapter-mobile.png',fullPage:true});
   await page.locator('#theme-button').click();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+  await page.locator('.chapter-contents>summary').click();
   await page.locator('.study-outline [data-study-jump="sources"]').click();
   await expect(page.locator('.study-source').first()).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);

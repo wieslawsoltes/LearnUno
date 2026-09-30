@@ -1,0 +1,191 @@
+:root[data-fluent] {
+  --font-ui: 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --bg: #f3f5fa;
+  --surface: #fff;
+  --surface-2: #f6f7fb;
+  --text: #20232b;
+  --muted: #596372;
+  --line: #dfe3ec;
+  --purple: #0f6cbd;
+  --lavender: #edf4ff;
+  --mint: #edf7f4;
+  --coral: #5265be;
+  --teal: #157168;
+  --serif: inherit;
+  --sidebar: 236px;
+  --chrome-height: 56px;
+  --reading-offset: 126px;
+  --card-radius: 12px;
+  --space: 20px;
+  --shell: #eef1f8;
+  --shell-tint: linear-gradient(150deg, #f0f1fb 0%, #eef4f8 48%, #f4f5f9 100%);
+  --overlay: rgba(249, 250, 254, .95);
+  --on-accent: #fff;
+  --accent-hover: #115ea3;
+  --border-hover: #c1c9d7;
+  --elevation: 0 2px 5px #26366b06, 0 0 0 1px #ffffff70 inset;
+  --overlay-shadow: 0 12px 48px #16285626, 0 2px 9px #14274414;
+  --focus-ring: #075aa4;
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  color-scheme: light;
+}
+:root[data-fluent][data-theme=dark] {
+  --bg: #181c24;
+  --surface: #232831;
+  --surface-2: #2a303b;
+  --text: #f1f3f8;
+  --muted: #b2bccb;
+  --line: #3c4453;
+  --purple: #90c8ff;
+  --lavender: #29394f;
+  --mint: #243d39;
+  --coral: #b2beff;
+  --teal: #8ed7cd;
+  --shell: #1b212c;
+  --shell-tint: linear-gradient(155deg, #232439, #1c2933 53%, #20232d);
+  --overlay: rgba(35, 41, 52, .96);
+  --on-accent: #122437;
+  --accent-hover: #b1d9ff;
+  --border-hover: #606e83;
+  --elevation: 0 1px 4px #00000015, 0 1px 0 #ffffff05 inset;
+  --overlay-shadow: 0 18px 55px #00000055, 0 2px 8px #00000022;
+  --focus-ring: #9ed0ff;
+  color-scheme: dark;
+}
+:root[data-fluent][data-density=comfortable] { --space: 28px; }
+:root[data-fluent] body { background: var(--bg); }
+:root[data-fluent] h1, :root[data-fluent] h2, :root[data-fluent] h3 { letter-spacing: -.025em; font-weight: 650; }
+:root[data-fluent] p { line-height: 1.75; }
+:root[data-fluent] .eyebrow { font: 600 10px/1.5 var(--font-ui); letter-spacing: .085em; }
+:root[data-fluent] .primary { background: var(--purple); color: var(--on-accent); box-shadow: 0 1px 2px #00000012; }
+:root[data-fluent] .primary:hover { background: var(--accent-hover); transform: none; }
+:root[data-fluent] :is(.primary,.secondary,.quiet) { border-radius: 6px; font-size: 13px; padding: 9px 15px; min-height: 36px; }
+:root[data-fluent] .secondary { background: var(--surface); border: 1px solid var(--line); box-shadow: 0 1px 1px #00000006; }
+:root[data-fluent] .secondary:hover { border-color: var(--border-hover); background: var(--surface-2); }
+:root[data-fluent] :is(.small,.text-link,.text-button) { font-size: 12px; }
+:root[data-fluent] .icon-button { border-radius: 6px; width: 34px; height: 34px; }
+:root[data-fluent] :is(button,a,input,select,textarea,summary):focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+:root[data-fluent] .filter-chip { border-radius: 6px; padding: 8px 13px; font-size: 12px; min-height: 34px; }
+:root[data-fluent] .filter-chip.active { background: var(--lavender); color: var(--purple); border-color: var(--line); }
+:root[data-fluent] :is(.track-card,.atlas-card,.guide-card):hover { transform: none; border-color: var(--border-hover); }
+:root[data-fluent] .sidebar {
+  width: var(--sidebar); background: var(--shell-tint); padding: 19px 13px 14px;
+  border-right: 1px solid var(--line); box-shadow: none; gap: 0; scrollbar-gutter: stable;
+}
+.sidebar-brand-row { display: flex; align-items: center; justify-content: space-between; }
+:root[data-fluent] .brand { font-size: 24px; gap: 10px; padding: 0 9px; margin: 0 0 25px; letter-spacing: -.04em; }
+:root[data-fluent] .brand img { width: 31px; height: 31px; border-radius: 7px; }
+:root[data-fluent] .brand small { font-family: inherit; font-size: 8px; letter-spacing: .1em; color: var(--muted); margin-top: 5px; }
+#close-navigation { display: none; }
+:root[data-fluent] .main-nav { display: grid; gap: 17px; }
+.navigation-group { display: grid; gap: 2px; }
+:root[data-fluent] .sidebar-caption { font: 600 11px/1.4 var(--font-ui); text-transform: none; color: var(--muted); letter-spacing: 0; margin: 0 0 5px; padding: 0 12px; }
+:root[data-fluent] .main-nav a { min-height: 34px; padding: 7px 12px; gap: 11px; font-size: 12px; border-radius: 6px; color: var(--text); }
+:root[data-fluent] .main-nav a.active { background: var(--surface); box-shadow: var(--elevation); color: var(--text); }
+:root[data-fluent] .main-nav a.active::before { content: ''; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 3px; background: var(--purple); }
+:root[data-fluent] .main-nav a.active svg { color: var(--purple); }
+:root[data-fluent] .main-nav small { background: var(--surface-2); color: var(--muted); }
+.path-disclosure { margin: 17px 4px 0; border-top: 1px solid var(--line); padding-top: 10px; }
+.path-disclosure>summary { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; font-size: 11px; color: var(--muted); list-style: none; }
+.path-disclosure>summary::before { content: '›'; font-size: 15px; transform: rotate(0deg); }
+.path-disclosure[open]>summary::before { transform: rotate(90deg); }
+.path-disclosure>summary>span { margin-left: auto; }
+:root[data-fluent] .track-nav a { font-size: 11px; padding: 7px 10px; }
+:root[data-fluent] .sidebar-bottom { padding: 20px 10px 0; margin-top: auto; }
+:root[data-fluent] .sidebar-help { padding: 9px 0; background: none; margin-top: 14px; color: var(--muted); }
+:root[data-fluent] .source-link { margin-top: 6px; font-size: 9px; text-align: left; }
+:root[data-fluent] .topbar { height: var(--chrome-height); padding: 0 26px; background: var(--shell-tint); position: sticky; top: 0; z-index: 40; }
+:root[data-fluent] .breadcrumb { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root[data-fluent] .topbar-left { min-width: 0; }
+:root[data-fluent] .search-trigger { min-width: 228px; padding: 7px 12px; background: var(--surface); font-size: 11px; min-height: 32px; border-bottom-color: var(--border-hover); }
+:root[data-fluent] .learner-avatar { background: var(--lavender); color: var(--purple); }
+:root[data-fluent] .route-view { padding: var(--space) 26px 32px; max-width: 1520px; }
+:root[data-fluent] .site-footer { padding: 19px 26px; font-size: 10px; }
+/* Static light caustics on the welcome surface only. No pointer tracking or frame loop. */
+:root[data-fluent] .edition-line { font-family: inherit; font-size: 10px; letter-spacing: .06em; margin-bottom: 14px; }
+:root[data-fluent] .editorial-hero {
+  background: linear-gradient(120deg, var(--surface), var(--surface-2)); color: var(--text); border: 1px solid var(--line);
+  box-shadow: var(--elevation); border-radius: 14px; padding: 32px; gap: 40px; min-height: 0; position: relative; isolation: isolate;
+}
+:root[data-fluent] .editorial-hero::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(ellipse at 93% 4%, #bdc9ff30, transparent 52%), radial-gradient(ellipse at 62% 112%, #a1e1f128, transparent 52%);
+}
+:root[data-fluent] .editorial-hero::after {
+  content: ''; position: absolute; right: 0; top: 0; width: 42%; height: 100%; z-index: -1; pointer-events: none; opacity: .35;
+  background: conic-gradient(from 130deg at 80% 90%, transparent 50%, #b4c7ee36 64%, #ffffffb0 69%, #9fd1ee32 75%, transparent 82%);
+  mask-image: radial-gradient(ellipse at 80% 40%, transparent 30%, #000 47%, transparent 68%);
+}
+:root[data-fluent] .editorial-copy { padding: 0; align-self: center; }
+:root[data-fluent] .editorial-copy .eyebrow { color: var(--purple); font: 600 10px/1.6 var(--font-ui); letter-spacing: .07em; margin-bottom: 18px; }
+:root[data-fluent] .editorial-copy h1 { font-size: clamp(34px, 3.2vw, 48px); font-weight: 660; line-height: 1.1; margin: 0 0 19px; letter-spacing: -.04em; }
+:root[data-fluent] .editorial-copy h1 em { font: inherit; font-size: .9em; font-style: normal; color: var(--purple); white-space: normal; }
+:root[data-fluent] .editorial-copy>p { color: var(--muted); font-size: 14px; max-width: 390px; line-height: 1.75; margin-bottom: 23px; }
+:root[data-fluent] .editorial-actions .primary { background: var(--purple); color: var(--on-accent); font-size: 12px; padding: 10px 15px; min-height: 38px; }
+:root[data-fluent] .editorial-actions>a:last-child { color: var(--purple); font-size: 12px; }
+:root[data-fluent] .editorial-caption { color: var(--muted); font: 11px/1.6 var(--font-ui); margin-top: 21px; }
+:root[data-fluent] .hero-system { max-width: 435px; width: 100%; justify-self: end; }
+:root[data-fluent] .hero-model-heading { color: var(--muted); border-color: var(--line); font: 10px/1.5 var(--font-ui); padding-bottom: 10px; }
+:root[data-fluent] .layer-stack { height: 221px; margin-top: 18px; }
+:root[data-fluent] .system-layer { height: 173px; border-color: var(--line); border-radius: 9px; transform: rotateX(9deg) rotateY(-3deg) rotateZ(-3deg); box-shadow: 0 4px 10px #1323410c; }
+:root[data-fluent] .layer-state { background: var(--mint); color: var(--teal); padding: 16px; top: 39px; }
+:root[data-fluent] .layer-state code { color: var(--teal); font-size: 12px; }
+:root[data-fluent] .layer-layout { background: var(--lavender); color: var(--purple); padding: 16px; top: 20px; }
+:root[data-fluent] .layer-interface { background: var(--surface); color: var(--text); }
+:root[data-fluent] .hero-app-header { height: 33px; border-color: var(--line); font-size: 10px; }
+:root[data-fluent] .hero-app-content { padding: 15px 17px 0; }
+:root[data-fluent] .hero-app-content>strong { font: 600 19px/1.2 var(--font-ui); letter-spacing: -.025em; }
+:root[data-fluent] .hero-task-cards { margin-top: 12px; }
+:root[data-fluent] .hero-task-cards span { background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 8px; font-size: 9px; }
+:root[data-fluent] .hero-app-content small { margin-top: 8px; color: var(--muted); }
+:root[data-fluent] .hero-layer-controls { margin-top: 0; background: var(--surface-2); border-color: var(--line); }
+:root[data-fluent] .hero-layer-controls button { color: var(--muted); font-size: 11px; min-height: 30px; padding: 6px 8px; }
+:root[data-fluent] .hero-layer-controls button[aria-pressed=true] { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px #13234118; }
+:root[data-fluent] .hero-system>p { color: var(--muted); font-size: 10px; margin: 10px 0 0; min-height: 28px; }
+:root[data-fluent] .hero-system[data-layer=layout] .layer-layout, :root[data-fluent] .hero-system[data-layer=state] .layer-state { border-color: var(--border-hover); }
+:root[data-fluent] .editorial-stats { padding: 20px 0; margin-bottom: 19px; }
+:root[data-fluent] .editorial-stats strong { font: 600 25px/1.2 var(--font-ui); letter-spacing: -.04em; }
+:root[data-fluent] .editorial-stats span { font-size: 11px; }
+:root[data-fluent] .home-continue { padding: 16px 19px; margin-bottom: 25px; border-radius: 10px; }
+:root[data-fluent] .continue-icon { background: var(--lavender); color: var(--purple); width: 39px; height: 39px; }
+:root[data-fluent] .home-continue h2 { font-size: 18px; }
+:root[data-fluent] .home-continue .eyebrow { color: var(--purple); }
+:root[data-fluent] .section-heading { margin-bottom: 18px; }
+:root[data-fluent] .section-heading h2 { font-size: 26px; line-height: 1.22; }
+:root[data-fluent] .section-heading p { font-size: 13px; }
+:root[data-fluent] :is(.atlas-grid,.track-grid,.guide-grid) { gap: 16px; }
+:root[data-fluent] :is(.atlas-card,.track-card,.guide-card) { border-radius: var(--card-radius); box-shadow: var(--elevation); }
+:root[data-fluent] .atlas-cover { height: 139px; }
+:root[data-fluent] .atlas-card-body { padding: 18px; }
+:root[data-fluent] .atlas-card h3 { font-size: 18px; margin-bottom: 10px; }
+:root[data-fluent] .atlas-card p { font-size: 12px; margin-bottom: 15px; }
+:root[data-fluent] .track-card { padding: 19px; min-height: 215px; }
+:root[data-fluent] .track-card-top { margin-bottom: 17px; }
+:root[data-fluent] .track-card h3 { font-size: 18px; }
+:root[data-fluent] .curriculum-section { margin-top: 34px; }
+:root[data-fluent] .curriculum-map>a { padding: 19px; min-height: 91px; }
+:root[data-fluent] .curriculum-number { font: 400 24px/1 var(--font-ui); }
+:root[data-fluent] .curriculum-map h3 { font-size: 16px; }
+:root[data-fluent] .learning-loop { margin-top: 32px; padding: 29px 0; }
+:root[data-fluent] .learning-loop h2 { font-size: 28px; }
+:root[data-fluent] .learning-loop h2 em { font: inherit; color: var(--purple); }
+:root[data-fluent] .reference-promo { background: var(--surface); border: 1px solid var(--line); padding: 23px; }
+:root[data-fluent] .reference-promo h2 { font-size: 23px; }
+/* Glass never sits behind a long chapter. Only modal surfaces opt into acrylic. */
+:root[data-fluent] dialog { background: var(--overlay); color: var(--text); border: 1px solid var(--border-hover); border-radius: 12px; padding: 29px; box-shadow: var(--overlay-shadow); backdrop-filter: blur(18px) saturate(1.12); -webkit-backdrop-filter: blur(18px) saturate(1.12); }
+:root[data-fluent] dialog::backdrop { background: #10152259; backdrop-filter: none; }
+:root[data-fluent] dialog h2 { font-size: 26px; }
+:root[data-fluent] .appearance-note { font-size: 11px; margin: 12px 0 5px; line-height: 1.7; }
+:root[data-fluent] .setting-row { font-size: 13px; padding: 12px 0; }
+:root[data-fluent] .setting-row select { font-size: 12px; }
+:root[data-fluent] .dialog-close { border-radius: 5px; font-size: 23px; }
+:root[data-fluent] #toast { background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--overlay-shadow); font-size: 12px; }
+:root[data-fluent][data-materials=solid] { --shell-tint: var(--shell); --overlay: var(--surface); }
+:root[data-fluent][data-materials=solid] :is(dialog,.sidebar), :root[data-fluent][data-materials=solid] dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
+:root[data-fluent][data-materials=solid] .editorial-hero::before, :root[data-fluent][data-materials=solid] .editorial-hero::after { display: none; }
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-fluent] { --shell-tint: var(--shell); --overlay: var(--surface); }
+  :root[data-fluent] :is(dialog,.sidebar) { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--surface); }
+  :root[data-fluent] .editorial-hero::before, :root[data-fluent] .editorial-hero::after { display: none; }
+}

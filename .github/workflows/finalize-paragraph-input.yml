@@ -1,0 +1,45 @@
+name: Finalize checked paragraph input adapter
+on:
+  push:
+    branches: [design/fluent-learning-shell]
+    paths: ['.github/workflows/finalize-paragraph-input.yml']
+permissions:
+  contents: write
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/fluent-learning-shell
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply exact two-file adapter correction
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 18a4851a593d76af7f30c943a66854021e541c46 HEAD
+          gh api repos/$GITHUB_REPOSITORY/git/blobs/d36110ba97beae3948ddbd5524bfbf7733d0ff68 --jq .content | base64 --decode > /tmp/paragraph.gz
+          echo '4d47c03cb5d59442f710fce2bbafb08498cf986e7eec03a3b97e93ee55e7fac2  /tmp/paragraph.gz' | sha256sum -c -
+          gzip -dc /tmp/paragraph.gz > /tmp/paragraph.patch
+          echo '37ee4f58c12b94d0d584cd792526e24387335559db2014b9de3f5c15120d23a2  /tmp/paragraph.patch' | sha256sum -c -
+          git apply --check /tmp/paragraph.patch
+          git apply --index /tmp/paragraph.patch
+          python - <<'PY'
+          import subprocess
+          expected = {'site/src/learning/interface-patterns/common-controls.mjs', 'site/src/learning/interface-patterns/rich-text-contract.mjs'}
+          actual = set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          if actual != expected: raise SystemExit('Unexpected patch paths')
+          PY
+      - run: npm ci
+      - run: npm test
+      - name: Commit only the two checked source files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: observe inline keyboard input through the paragraph owner'
+          git push origin HEAD:design/fluent-learning-shell

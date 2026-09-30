@@ -1,26 +1,32 @@
 # Fluent release regression findings
 
-The first complete PR suite ran 250 browser tests: 247 passed and three stronger rich-text checks failed. The lightweight Fluent route, preference, drawer, focus, overflow and high-contrast checks passed. This distinction matters: an interface-only green check does not prove every embedded-runtime interaction works.
+## Mobile presentation and focus
 
-## Mobile exercise presentation
+The initial complete PR suite ran 250 browser tests: 247 passed and three stronger rich-text checks failed. The lightweight Fluent route, preference, drawer, focus, overflow and high-contrast checks passed. Interface-only success did not prove embedded-runtime behavior.
 
-The two narrow rich-text tests called the low-level `learnUnoLab.request` transport while the new workspace was showing its Code pane. That API intentionally does not control presentation or award exercise completion. The tests now invoke the same Run code action as a learner. They require a real Roslyn result, the visible Preview pane, full paragraph content and a working inline link. The pane-retention test independently checks that tab changes keep the original iframe and draft.
+Two narrow tests called the low-level request transport while the mobile workspace was showing Code. That API intentionally does not select presentation tabs or award exercise completion. The tests now use the same Run action as a learner. They require the current run to finish, a real Roslyn success, a visible Preview pane, complete paragraphs and a working inline link. Separate tests verify that switching panes and resizing preserve the original iframe, draft and focus owner.
 
-## Keyboard activation in the pinned runner
+## Inline keyboard input and the actual compiler surface
 
-The fresh-instance test exposed a separate problem: the original inline Hyperlink had `tabindex="-1"`, and pressing Enter after DOM focus did not raise its managed Click event in the pinned Uno 6.7.135 NativeRenderer. A prior pointer click must not satisfy a subsequent keyboard assertion.
+The fresh-instance keyboard test exposed that the inline link was not a tab stop and Enter did not raise its managed Click in the pinned runner. The first proposed adapter attached KeyDown to Hyperlink. That was incorrect: the **reference metadata available to both compilers does not expose Hyperlink.KeyDown**, regardless of internal implementation inheritance. The full browser run correctly rejected both variants with CS1061.
 
-The two authored browser variants now explicitly enable `IsTabStop` and attach a small KeyDown adapter for Enter. Pointer Click and keyboard input call the same local help action. The adapter handles the key so default anchor navigation does not change the iframe channel fragment. This uses the browser target's Hyperlink/UIElement surface; it is not presented as a portable Windows App SDK Hyperlink API. The separate project-only RichTextBlock program does not contain that handler.
+The revised browser example explicitly sets Hyperlink.IsTabStop and registers KeyDown on the owning TextBlock. It accepts Enter only while the link's FocusState is not Unfocused, marks the event handled, and calls the same local help action as pointer Click. This is a documented workaround for the pinned browser host, not a replacement Hyperlink implementation. The portable project-only RichTextBlock comparison does not include the adapter.
 
-Primary runner-version implementations:
+Primary API and source references:
+- https://learn.microsoft.com/en-us/windows/apps/develop/ui/controls/hyperlinks#input-events
 - https://github.com/unoplatform/uno/blob/6.7.135/src/Uno.UI/UI/Xaml/Documents/Hyperlink.wasm.cs
-- https://github.com/unoplatform/uno/blob/6.7.135/src/Uno.UI/UI/Xaml/Documents/Hyperlink.cs
 - https://github.com/unoplatform/uno/blob/6.7.135/src/Uno.UI/UI/Xaml/Controls/TextBlock/TextBlock.cs
 
-The test resets the program, checks the untouched help label, reaches the link through Tab navigation and requires Enter to produce the result. Full content must remain readable afterward. No host-side DOM click adapter or synthetic managed action is substituted for the real Uno input path.
+The test starts a fresh example, checks the untouched label, reaches the link through Tab navigation and requires Enter to produce the help result. A prior pointer click cannot satisfy the assertion. Full content remains checked after activation. No synthetic DOM click or host-side help action substitutes for Uno input.
 
-## Preservation and gates
+## Compiler failures must fail the gate
 
-Only the rich-text starter and derived solution change; the other 214 authored runnable variants are unchanged. Lesson IDs, progress, source excerpts, dependency versions and runtime sandbox permissions are unchanged. The refined suite also includes a coarse-pointer portrait/landscape check in addition to the ordinary 320/390/768/1024-width route matrix. Those tests are Chromium emulation, not physical iOS certification.
+Run 36742187162 exposed a second, independent validation defect: `dotnet run ... | tee report.log` returned tee's success under the implicit GitHub shell even though compilation produced two errors. The compiler itself correctly returned failure, and the browser gate prevented publication, but the compilation step misleadingly appeared green.
 
-Check the final PR/main workflow and its public-site job for release results. A source change or a discovered test is not a completed validation.
+`scripts/compile-lessons.sh` now owns that pipeline with `set -euo pipefail`, quoted arguments and merged diagnostic logging. The CI step invokes it explicitly. Regression tests inject a deterministic compiler process returning 0 or 23 and verify that tee preserves the exact exit status and complete report. These fixture tests do not claim to compile C#; the separate real compiler and Uno gates remain mandatory.
+
+## Preservation and release evidence
+
+Only the rich-text starter and derived solution change in this PR; the other 214 variants, lesson identifiers, progress, source excerpts and dependency versions are unchanged. The refined suite includes coarse-pointer portrait/landscape checks alongside the 320/390/768/1024-width route matrix. Chromium emulation is not physical iOS certification.
+
+Check the final PR/main workflows and their public-site jobs for the exact released revision. Earlier failed runs and source inspections are recorded here as regression history, not advertised as passing release evidence.

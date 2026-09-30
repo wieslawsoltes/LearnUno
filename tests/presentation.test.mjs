@@ -36,3 +36,13 @@ test('Presentation controllers dispose listeners and preserve the Uno sandbox bo
   assert.match(reader,/observer\.disconnect/);assert.match(reader,/cancelAnimationFrame/);
   assert.match(panes,/removeEventListener/);assert.doesNotMatch(panes,/iframe|contentWindow|postMessage|localStorage/);
 });
+
+test('chapter navigation resolves the scroll margin rather than parsing unevaluated calc tokens',()=>{
+ const source=readFileSync('site/src/presentation/chapter-navigation.mjs','utf8');
+ assert.match(source,/getComputedStyle\(anchor\)\.scrollMarginTop/);
+ assert.doesNotMatch(source,/parseFloat\(getComputedStyle\(document\.documentElement\)/);
+});
+test('icon-only search retains a name when the mobile visual label is hidden',()=>{
+ const source=readFileSync('site/src/app.mjs','utf8');
+ assert.match(source,/id="global-search" aria-label="Find your next idea"/);
+});

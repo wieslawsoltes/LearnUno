@@ -112,3 +112,36 @@ test('Fluent solid mode and forced colors remove optional materials without losi
   await expect(page.locator('.sidebar [data-nav="paths"]')).toBeVisible();await noOverflow(page);
   await page.screenshot({path:'artifacts/evidence/fluent-high-contrast.png'});
 });
+
+for(const width of [320,390])test(`Fluent mobile search remains named and keyboard-operable at ${width}px`,async({page})=>{
+  await page.setViewportSize({width,height:844});await goto(page,'');
+  const search=page.getByRole('button',{name:'Find your next idea',exact:true});
+  await expect(search).toBeVisible();await search.focus();await search.press('Enter');
+  const modal=page.getByRole('dialog',{name:'LearnUno dialog'});
+  await expect(modal).toBeVisible();await modal.getByLabel('Search lessons').fill('binding');
+  await expect(modal.locator('#search-results a').first()).toBeVisible();
+  await page.keyboard.press('Escape');await expect(search).toBeFocused();await noOverflow(page);
+});
+
+test('Fluent small-screen compiler errors reveal source without replacing the session',async({page})=>{
+  await page.setViewportSize({width:390,height:844});await goto(page,'lesson/events/playground');
+  await page.waitForFunction(()=>!!window.learnUnoLab);
+  const original=await page.evaluate(()=>window.learnUnoLab.getValue());
+  const broken=original+'\n#error Deliberate lesson diagnostic';
+  await page.evaluate(code=>window.learnUnoLab.setValue(code),broken);
+  const switcher=page.getByRole('group',{name:'Playground view'});
+  await switcher.getByRole('button',{name:'Preview',exact:true}).click();
+  const run=page.getByRole('button',{name:'Run code',exact:false});
+  await run.click();await expect(run).toBeEnabled({timeout:120000});
+  await expect(page.locator('#run-output')).toHaveClass(/error/);
+  await expect(page.locator('#run-output')).toContainText('Deliberate lesson diagnostic');
+  await expect(switcher.getByRole('button',{name:'Code',exact:true})).toHaveAttribute('aria-pressed','true');
+  await expect(page.getByLabel('Lesson code editor')).toHaveValue(broken);
+  const session=await page.locator('#runtime-mount iframe').getAttribute('src');
+  await page.evaluate(code=>window.learnUnoLab.setValue(code),original);
+  await run.click();await expect(run).toBeEnabled({timeout:120000});
+  await expect(page.locator('#run-output')).toHaveClass(/success/);
+  await expect(page.locator('.preview-pane')).toBeVisible();
+  expect(await page.locator('#runtime-mount iframe').getAttribute('src')).toBe(session);
+  await noOverflow(page);
+});

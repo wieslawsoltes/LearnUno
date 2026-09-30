@@ -26,7 +26,8 @@ export function installChapterNavigation(root, signal) {
   function update() {
     frame = 0;
     if (signal.aborted || !root.isConnected) return;
-    const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--reading-offset')) || 128;
+    const anchor = chapters[0] || root.querySelector('.study-main');
+    const top = parseFloat(getComputedStyle(anchor).scrollMarginTop) || 128;
     const active = chapters.filter(node => node.getBoundingClientRect().top <= top + 24).at(-1) || chapters[0];
     if (active && current !== active.id) {
       current = active.id;

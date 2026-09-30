@@ -1,3 +1,4 @@
+import {runWorkspaceCode} from './workspace-driver.mjs';
 import {expectRichTextContent} from './rich-text-contract.mjs';
 import {test,expect} from '@playwright/test';
 import {commonControlLessons} from '../../site/src/learning/interface-patterns/common-controls.mjs';
@@ -32,12 +33,7 @@ async function run(page,id,variant='code') {
  return page.frameLocator('iframe[title="Real Uno WebAssembly preview"]');
 }
 async function runCurrentCode(page,code) {
- // Use the learner-facing action: it owns both rendering and mobile pane state.
- // The low-level request API deliberately does not select presentation tabs.
- await page.evaluate(source=>window.learnUnoLab.setValue(source),code);
- await page.getByRole('button',{name:/Run code/}).click();
- await expect(page.locator('#run-output')).toContainText('Roslyn + Uno',{timeout:90000});
- await expect(page.locator('.preview-pane')).toBeVisible();
+ return runWorkspaceCode(page,code);
 }
 test('common controls actual Uno UserControl follows host changes without sharing instance values',async({page})=>{
  const frame=await run(page,'usercontrol-contracts');await expect(frame.getByText('Research queue',{exact:true})).toBeVisible();await expect(frame.getByText('Archive',{exact:true})).toBeVisible();await unoControls(page,frame).button('Rename host').click();await expect(frame.getByText('Release queue',{exact:true})).toBeVisible();await expect(frame.getByText('Archive',{exact:true})).toBeVisible();

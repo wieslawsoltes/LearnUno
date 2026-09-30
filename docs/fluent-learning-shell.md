@@ -84,7 +84,13 @@ identity across pane changes. The main workflow still compiles and executes all
 Screenshots and validation results identify the specific tested commit; local
 component previews are not substituted for full browser/public-site results.
 
-The previously delivered rich-text regression-guard follow-up is included as a
-separate source change. It leaves all runnable variants unchanged, keeps the
-RichTextBlock implementation boundary visible, and strengthens text/link/export
-checks. The theme does not remove or hide those notices.
+The earlier rich-text regression-guard follow-up keeps the RichTextBlock
+implementation boundary visible and strengthens text/link/export checks. The
+subsequent pinned-browser input fix explicitly changes two rich-text variants,
+as documented in fluent-validation.md. The focus refinement described below
+preserves all 216 variants relative to f14d99394773. The theme does not remove
+or hide those notices.
+
+## Focus and regression follow-up
+
+The pane controller now tracks desktop focus before responsive CSS can hide the editor or preview. Programmatic pane changes move focus before making an active pane inert, while retaining external Run-button focus and the existing iframe. Compiler diagnostics, hints and explicit solution selection reveal the Code pane. Chapter position uses the computed scroll margin; the mobile search icon retains an explicit accessible name. See [fluent-ci-refinement.md](fluent-ci-refinement.md) for preservation and separate component/full-application validation boundaries.
